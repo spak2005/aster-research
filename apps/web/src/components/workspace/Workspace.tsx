@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Keyboard } from 'lucide-react';
 import type { Recording } from '../../types';
 import { setRunBadge } from '../../lib/runBadge';
 import ModeBadge from '../common/ModeBadge';
@@ -9,6 +10,8 @@ import EvidencePanel from './EvidencePanel';
 import Dossier from './Dossier';
 import ScenePane from './ScenePane';
 import ShareMoment from './ShareMoment';
+import KeyboardHelp from './KeyboardHelp';
+import { useTransportKeys } from './useTransportKeys';
 import type { Moment } from '../../lib/shareLink';
 import { formatDate } from '../../lib/format';
 import { useDocumentMeta } from '../../lib/useDocumentMeta';
@@ -41,6 +44,11 @@ export default function Workspace({ recording, initial }: WorkspaceProps) {
   }, [recording.id, recording.mode, recording.created_at, recording.title]);
 
   const workspace = useWorkspace(recording, initial);
+  const [helpOpen, setHelpOpen] = useState(false);
+  useTransportKeys(
+    workspace,
+    useCallback(() => setHelpOpen((open) => !open), []),
+  );
   const { visible } = workspace;
   const selectedHypothesis =
     visible.hypotheses.find((item) => item.id === workspace.selectedHypothesisId) ?? null;
@@ -53,11 +61,22 @@ export default function Workspace({ recording, initial }: WorkspaceProps) {
           <h1 className="workspace__title">{recording.title}</h1>
           <p className="workspace__question">{recording.question}</p>
         </div>
-        <ShareMoment
-          nodeId={workspace.selectedNodeId}
-          runId={recording.id}
-          sequence={workspace.sequence}
-        />
+        <div className="workspace__tools">
+          <button
+            aria-expanded={helpOpen}
+            className="btn btn--sm btn--ghost"
+            onClick={() => setHelpOpen((open) => !open)}
+            type="button"
+          >
+            <Keyboard size={14} aria-hidden />
+            Shortcuts
+          </button>
+          <ShareMoment
+            nodeId={workspace.selectedNodeId}
+            runId={recording.id}
+            sequence={workspace.sequence}
+          />
+        </div>
       </header>
 
       <div className="workspace__console">
@@ -95,6 +114,8 @@ export default function Workspace({ recording, initial }: WorkspaceProps) {
       </div>
 
       <Dossier recording={recording} workspace={workspace} />
+
+      <KeyboardHelp onClose={useCallback(() => setHelpOpen(false), [])} open={helpOpen} />
     </div>
   );
 }
