@@ -100,8 +100,12 @@ node apps/web/src/lib/visibility.check.mjs public/recordings/<id>.json
   a device.
 - **`node_modules` is an untracked symlink** to `../science-harness/node_modules`.
   `.gitignore` lists `node_modules/` with a trailing slash, which does not match
-  a symlink, so `git add -A` would commit the link. Either add `/node_modules`
-  to `.gitignore` or keep staging files explicitly.
+  a symlink, so `git add -A` would commit the link. The scene link is already
+  handled this way in `.git/info/exclude`; `node_modules` is not. Either add
+  `/node_modules` there too or keep staging files explicitly.
+- **`apps/web/src/scene` is a symlink** into the main checkout, excluded via
+  `.git/info/exclude`. It resolves for both Vite and `tsc`, so the scene is
+  fully exercised here, but nothing on this branch tracks it.
 - **No test runner.** `visibility.check.mjs` is a standalone Node script relying
   on native TypeScript stripping (Node 22.6+). It is not wired into a suite.
 
