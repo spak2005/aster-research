@@ -1,0 +1,536 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aster.local/contracts/recording.schema.json",
+  "title": "Aster Research recording v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "recorded",
+        "live",
+        "development-fixture"
+      ]
+    },
+    "status": {
+      "enum": [
+        "running",
+        "completed",
+        "failed",
+        "canceled"
+      ]
+    },
+    "simulator": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "software_versions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "objective": {
+          "type": "string"
+        },
+        "objective_units": {
+          "type": "string"
+        },
+        "config_hash": {
+          "type": "string"
+        },
+        "raw_artifact_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "software_versions",
+        "seed",
+        "objective",
+        "objective_units",
+        "config_hash"
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_experiments": {
+          "type": "integer"
+        },
+        "completed_experiments": {
+          "type": "integer"
+        },
+        "wall_time_s": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "max_experiments",
+        "completed_experiments",
+        "wall_time_s"
+      ]
+    },
+    "baseline_id": {
+      "type": "string"
+    },
+    "best_experiment_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "temperature_scale_kev": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "major_radius_m": {
+          "type": "number"
+        },
+        "minor_radius_m": {
+          "type": "number"
+        },
+        "elongation": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "major_radius_m",
+        "minor_radius_m",
+        "elongation"
+      ]
+    },
+    "hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "prediction": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "running",
+              "supported",
+              "refuted",
+              "inconclusive",
+              "abandoned"
+            ]
+          },
+          "assessment": {
+            "type": "string"
+          },
+          "experiment_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_sequence": {
+            "type": "integer"
+          },
+          "resolved_sequence": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "parent_id",
+          "title",
+          "prediction",
+          "status",
+          "assessment",
+          "experiment_ids",
+          "evidence_ids",
+          "created_sequence"
+        ]
+      }
+    },
+    "experiments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hypothesis_id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "baseline",
+              "candidate",
+              "verification",
+              "control"
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "failed",
+              "running"
+            ]
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "heating_location": {
+                "type": "number"
+              },
+              "heating_width": {
+                "type": "number"
+              },
+              "heating_power_mw": {
+                "type": "number"
+              },
+              "duration_s": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "heating_location",
+              "heating_width",
+              "heating_power_mw",
+              "duration_s"
+            ]
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "fusion_energy_mj": {
+                "type": "number"
+              },
+              "heating_energy_mj": {
+                "type": "number"
+              },
+              "peak_ion_temperature_kev": {
+                "type": "number"
+              },
+              "improvement_pct": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "fusion_energy_mj",
+              "heating_energy_mj",
+              "peak_ion_temperature_kev",
+              "improvement_pct"
+            ]
+          },
+          "frames": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time_s": {
+                  "type": "number"
+                },
+                "rho": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "electron_temperature_kev": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "ion_temperature_kev": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "fusion_power_mw": {
+                  "type": "number"
+                },
+                "cumulative_fusion_energy_mj": {
+                  "type": "number"
+                },
+                "cumulative_heating_energy_mj": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "time_s",
+                "rho",
+                "electron_temperature_kev",
+                "ion_temperature_kev",
+                "fusion_power_mw",
+                "cumulative_fusion_energy_mj",
+                "cumulative_heating_energy_mj"
+              ]
+            }
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "path"
+              ]
+            }
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "status": {
+                  "enum": [
+                    "passed",
+                    "failed",
+                    "pending",
+                    "inconclusive"
+                  ]
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "status",
+                "detail"
+              ]
+            }
+          },
+          "wall_time_s": {
+            "type": "number"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "hypothesis_id",
+          "label",
+          "role",
+          "status",
+          "config",
+          "metrics",
+          "frames",
+          "artifacts",
+          "checks",
+          "wall_time_s"
+        ]
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          },
+          "event_id": {
+            "type": "string"
+          },
+          "run_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "run.started",
+              "hypothesis.proposed",
+              "experiment.requested",
+              "experiment.started",
+              "experiment.completed",
+              "experiment.failed",
+              "assessment.recorded",
+              "verification.requested",
+              "verification.completed",
+              "hypothesis.revised",
+              "branch.created",
+              "conclusion.recorded",
+              "run.completed",
+              "run.failed",
+              "run.canceled"
+            ]
+          },
+          "hypothesis_id": {
+            "type": "string"
+          },
+          "experiment_id": {
+            "type": "string"
+          },
+          "parent_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "schema_version",
+          "event_id",
+          "run_id",
+          "sequence",
+          "timestamp",
+          "type",
+          "title",
+          "summary",
+          "evidence_ids",
+          "payload"
+        ]
+      }
+    },
+    "conclusion": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "proposed",
+            "running",
+            "supported",
+            "refuted",
+            "inconclusive",
+            "abandoned"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "status",
+        "title",
+        "summary",
+        "evidence_ids"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "title",
+    "question",
+    "created_at",
+    "mode",
+    "status",
+    "simulator",
+    "model",
+    "description",
+    "limitations",
+    "provenance",
+    "budget",
+    "baseline_id",
+    "best_experiment_id",
+    "temperature_scale_kev",
+    "geometry",
+    "hypotheses",
+    "experiments",
+    "events",
+    "conclusion"
+  ]
+}
