@@ -78,7 +78,7 @@ export function useWorkspace(
   });
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<Speed>(1);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(initial?.node ?? null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(initial?.node ?? (initial?.sequence == null ? recording.best_experiment_id : null));
   const [frameIndex, setFrameIndexRaw] = useState(0);
   const [compare, setCompare] = useState(true);
 
@@ -91,7 +91,7 @@ export function useWorkspace(
       previousRunId.current = recording.id;
       previousMax.current = bounds.max;
       setSequenceRaw(bounds.max);
-      setSelectedNodeId(null);
+      setSelectedNodeId(recording.best_experiment_id);
       setFrameIndexRaw(0);
       setPlaying(false);
       return;
@@ -109,6 +109,7 @@ export function useWorkspace(
 
   const setSequence = useCallback(
     (value: number) => {
+      setSelectedNodeId(null);
       setSequenceRaw(Math.min(Math.max(Math.round(value), bounds.min), bounds.max));
     },
     [bounds.min, bounds.max],
@@ -116,6 +117,7 @@ export function useWorkspace(
 
   const stepSequence = useCallback(
     (delta: number) => {
+      setSelectedNodeId(null);
       setPlaying(false);
       setSequenceRaw((current) =>
         Math.min(Math.max(current + delta, bounds.min), bounds.max),
@@ -126,6 +128,7 @@ export function useWorkspace(
 
   const jumpChapter = useCallback(
     (direction: 1 | -1) => {
+      setSelectedNodeId(null);
       setPlaying(false);
       setSequenceRaw((current) => {
         const target =
@@ -141,13 +144,14 @@ export function useWorkspace(
   const atEnd = sequence >= bounds.max;
 
   const togglePlaying = useCallback(() => {
-    setPlaying((current) => {
-      if (current) return false;
-      // Restarting from the end rewinds rather than sitting still.
-      setSequenceRaw((position) => (position >= bounds.max ? bounds.min : position));
-      return true;
-    });
-  }, [bounds.min, bounds.max]);
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    setSelectedNodeId(null);
+    setSequenceRaw(position => position >= bounds.max ? bounds.min : position);
+    setPlaying(true);
+  }, [playing, bounds.min, bounds.max]);
 
   // Research timeline transport.
   useEffect(() => {
