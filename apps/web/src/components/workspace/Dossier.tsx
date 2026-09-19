@@ -61,6 +61,8 @@ export default function Dossier({ recording, workspace }: DossierProps) {
         units={recording.provenance.objective_units}
         selectedId={workspace.selectedExperimentId}
         onSelect={workspace.select}
+        leadingId={visible.bestExperimentId}
+        verdict={visible.conclusion?.status ?? null}
       />
 
       <Conclusion state={visible} onSelectEvidence={workspace.select} />

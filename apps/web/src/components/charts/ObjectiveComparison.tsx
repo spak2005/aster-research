@@ -1,5 +1,6 @@
+import type { Verdict } from '../../types';
 import type { VisibleExperiment } from '../../lib/visibility';
-import { ROLE_LABEL } from '../../lib/status';
+import { ROLE_LABEL, VERDICT_META } from '../../lib/status';
 import { formatNumber, formatPercent } from '../../lib/format';
 import '../../styles/charts.css';
 
@@ -10,14 +11,19 @@ interface ObjectiveComparisonProps {
   units: string;
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** The run's own designation, withheld until its conclusion is visible. */
+  leadingId: string | null;
+  verdict: Verdict | null;
 }
 
 /**
  * Objective value per experiment, in the order they were run.
  *
- * Deliberately not sorted by value and not annotated with a winner: ranking is
- * a claim, and the recording states its own conclusion elsewhere. Failed runs
- * keep a row and say plainly that no value exists for them.
+ * Deliberately not sorted by value. Ranking is a claim, so the only experiment
+ * marked out is the one the recording itself designated, and it is marked in
+ * the recording's own terms: a leading value is not an improvement unless the
+ * run's conclusion says it cleared the declared threshold. Failed runs keep a
+ * row and say plainly that no value exists for them.
  */
 export default function ObjectiveComparison({
   experiments,
@@ -26,6 +32,8 @@ export default function ObjectiveComparison({
   units,
   selectedId,
   onSelect,
+  leadingId,
+  verdict,
 }: ObjectiveComparisonProps) {
   const values = experiments
     .map((experiment) => experiment.result?.metrics.fusion_energy_mj)
@@ -59,11 +67,15 @@ export default function ObjectiveComparison({
           const failed = experiment.result?.status === 'failed';
           const selected = experiment.id === selectedId;
           const isBaseline = experiment.id === baselineId;
+          const leading = experiment.id === leadingId;
           return (
             <li className={`bars__row${selected ? ' is-selected' : ''}`} key={experiment.id}>
               <button className="bars__label" onClick={() => onSelect(experiment.id)}>
                 <span className="bars__name">{experiment.label}</span>
-                <span className="bars__role">{ROLE_LABEL[experiment.role]}</span>
+                <span className="bars__role">
+                  {ROLE_LABEL[experiment.role]}
+                  {leading ? <span className="bars__leading">leading value</span> : null}
+                </span>
               </button>
 
               <span className="bars__track">
@@ -111,13 +123,22 @@ export default function ObjectiveComparison({
         })}
       </ul>
 
-      {baselineValue !== undefined ? (
-        <ul className="chart__legend">
+      <ul className="chart__legend">
+        {baselineValue !== undefined ? (
           <li className="chart__key chart__key--reference">
             Dashed line: baseline at {formatNumber(baselineValue, 2)} {units}
           </li>
-        </ul>
-      ) : null}
+        ) : null}
+        {leadingId && verdict ? (
+          <li className="chart__key">
+            {verdict === 'supported'
+              ? 'Leading value: the run recorded this as its best result.'
+              : `Leading value only. The run's verdict was ${VERDICT_META[
+                  verdict
+                ].label.toLowerCase()}, so no improvement is claimed for it.`}
+          </li>
+        ) : null}
+      </ul>
     </figure>
   );
 }
