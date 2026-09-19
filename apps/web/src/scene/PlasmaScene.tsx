@@ -12,6 +12,14 @@ import { TemperatureLegend } from './TemperatureLegend';
 import { TokamakStage } from './TokamakStage';
 import { hasWebGLSupport, WebGLFallback } from './WebGLFallback';
 
+function sceneLabel(experiment: PlasmaSceneProps['experiment']) {
+  if (!experiment) return 'No experiment selected';
+  if (experiment.label === 'baseline_refined') return 'Refined baseline';
+  if (experiment.label === 'candidate_refined') return 'Refined candidate';
+  if (experiment.label === 'candidate_location_perturbation') return 'Shifted-heating check';
+  return experiment.role === 'baseline' ? 'Baseline' : experiment.role === 'control' ? 'Fixed-grid control' : 'Candidate';
+}
+
 export default function PlasmaScene({
   experiment,
   baseline = null,
@@ -50,8 +58,8 @@ export default function PlasmaScene({
   const displayedExperiment = showCompactBaseline ? baseline : experiment;
   const label =
     displayedProfile.status === 'ready' && displayedExperiment
-      ? `${displayedExperiment.label}, frame ${displayedProfile.value.index + 1} of ${displayedProfile.value.count}`
-      : displayedExperiment?.label ?? 'No experiment selected';
+      ? `${sceneLabel(displayedExperiment)} · frame ${displayedProfile.value.index + 1}/${displayedProfile.value.count}`
+      : sceneLabel(displayedExperiment);
 
   if (!webGLAvailable) {
     return (
@@ -144,7 +152,7 @@ export default function PlasmaScene({
           position: 'absolute',
           left: 16,
           top: 14,
-          maxWidth: 'calc(100% - 32px)',
+          maxWidth: 'calc(100% - 138px)',
           fontSize: 11,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -152,9 +160,8 @@ export default function PlasmaScene({
           pointerEvents: 'none',
         }}
       >
-        {label} · R {geometry.major_radius_m.toFixed(2)} m · a{' '}
-        {geometry.minor_radius_m.toFixed(2)} m · κ {geometry.elongation.toFixed(2)} ·{' '}
-        {temperatureScale[0].toFixed(1)}–{temperatureScale[1].toFixed(1)} keV
+        {label}{!compact && <> · R {geometry.major_radius_m.toFixed(2)} m · a {geometry.minor_radius_m.toFixed(2)} m</>}
+        {' '}· {temperatureScale[0].toFixed(1)}–{temperatureScale[1].toFixed(1)} keV
       </div>
       {showSplitComparison ? (
         <div
@@ -215,7 +222,7 @@ export default function PlasmaScene({
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
-                {item.experiment?.label ?? 'Unavailable'}
+                {sceneLabel(item.experiment ?? null)}
                 {item.result.status === 'ready'
                   ? ` · t ${item.result.value.frame.time_s.toFixed(2)} s`
                   : ''}
