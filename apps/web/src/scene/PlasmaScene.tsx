@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { PlasmaSceneProps } from '../../../../contracts/recording';
 import { SceneCanvas } from './SceneCanvas';
 import { SceneControls } from './SceneControls';
+import { loadProfileFrame } from './profileFrames';
 import { TokamakStage } from './TokamakStage';
 
 export default function PlasmaScene({
@@ -16,9 +17,11 @@ export default function PlasmaScene({
   className,
 }: PlasmaSceneProps) {
   const [cameraResetRevision, setCameraResetRevision] = useState(0);
-  const label = experiment
-    ? `${experiment.label}, frame ${frameIndex + 1}`
-    : 'No experiment selected';
+  const profile = loadProfileFrame(experiment, frameIndex);
+  const label =
+    profile.status === 'ready' && experiment
+      ? `${experiment.label}, frame ${profile.value.index + 1} of ${profile.value.count}`
+      : experiment?.label ?? 'No experiment selected';
 
   return (
     <section
@@ -82,6 +85,27 @@ export default function PlasmaScene({
       >
         Reset view
       </button>
+      {profile.status !== 'ready' ? (
+        <div
+          role="status"
+          style={{
+            position: 'absolute',
+            left: '50%',
+            bottom: 18,
+            transform: 'translateX(-50%)',
+            maxWidth: 'calc(100% - 36px)',
+            border: '1px solid rgba(202, 157, 91, 0.3)',
+            borderRadius: 4,
+            padding: '8px 11px',
+            background: 'rgba(17, 15, 11, 0.86)',
+            color: '#d2b27d',
+            fontSize: 11,
+            textAlign: 'center',
+          }}
+        >
+          {profile.reason}
+        </div>
+      ) : null}
     </section>
   );
 }
