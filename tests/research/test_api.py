@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from tests.research.isolation import IsolatedResearchTest
 
 from fastapi import HTTPException
 from pydantic import ValidationError
@@ -14,8 +15,9 @@ from services.research.models import Decision
 from tests.research.test_loop import _executor_factory
 
 
-class ApiTests(unittest.TestCase):
+class ApiTests(IsolatedResearchTest):
     def setUp(self) -> None:
+        super().setUp()
         api._FACTORY["executor"] = _executor_factory(
             {
                 (round(preset.BASELINE_LOCATION, 5), round(preset.BASELINE_WIDTH, 5)): 100.0e6,

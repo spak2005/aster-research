@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 import unittest
+from tests.research.isolation import IsolatedResearchTest
 from pathlib import Path
 
 from services.research.executor import ExecutionBudget, execute
@@ -29,7 +30,7 @@ def _slow_runner(config: HeatingConfig, budget: ExecutionBudget, dest: Path) -> 
     return _ok_runner(config, budget, dest)
 
 
-class ExecutorTests(unittest.TestCase):
+class ExecutorTests(IsolatedResearchTest):
     def test_injected_runner_saves_meta(self) -> None:
         cfg = HeatingConfig(heating_location=0.2, heating_width=0.1)
         result = execute(

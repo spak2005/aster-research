@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from tests.research.isolation import IsolatedResearchTest
 from pathlib import Path
 
 import numpy as np
@@ -70,7 +71,7 @@ def _executor_factory(energies: dict[tuple[float, float], float]):
     return runner
 
 
-class LoopTests(unittest.TestCase):
+class LoopTests(IsolatedResearchTest):
     def test_baseline_then_candidate_records_prediction_first(self) -> None:
         from experiments.torax import preset
 

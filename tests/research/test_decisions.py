@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from tests.research.isolation import IsolatedResearchTest
 
 from experiments.torax import preset
 from services.research.models import Decision
@@ -10,7 +11,7 @@ from services.research.orchestrator import Investigation, RunBudget
 from tests.research.test_loop import _executor_factory
 
 
-class DecisionTests(unittest.TestCase):
+class DecisionTests(IsolatedResearchTest):
     def _inv(self, run_id: str) -> Investigation:
         energies = {
             (round(preset.BASELINE_LOCATION, 5), round(preset.BASELINE_WIDTH, 5)): 100.0e6,

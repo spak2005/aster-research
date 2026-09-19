@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from tests.research.isolation import IsolatedResearchTest
 
 from experiments.torax import preset
 from services.research.executor import ExecutionBudget, ExecutionResult
@@ -12,7 +13,7 @@ from services.research.validation import HeatingConfig
 from tests.research.test_loop import _executor_factory
 
 
-class BudgetTests(unittest.TestCase):
+class BudgetTests(IsolatedResearchTest):
     def test_rejects_out_of_range_max_experiments(self) -> None:
         with self.assertRaises(ValueError):
             RunBudget(max_experiments=2)
