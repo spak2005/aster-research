@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import SetupForm from '../components/start/SetupForm';
 import BackendStatus from '../components/start/BackendStatus';
+import LocalRunGuide from '../components/start/LocalRunGuide';
 import { DEFAULT_CONFIG, type RunConfig } from '../lib/runConfig';
 import '../styles/start.css';
 
@@ -27,6 +28,8 @@ export default function StartPage() {
           <BackendStatus config={config} />
         </aside>
       </div>
+
+      <LocalRunGuide config={config} />
     </div>
   );
 }
