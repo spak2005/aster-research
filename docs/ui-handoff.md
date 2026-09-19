@@ -103,9 +103,10 @@ node apps/web/src/lib/visibility.check.mjs public/recordings/<id>.json
   a symlink, so `git add -A` would commit the link. The scene link is already
   handled this way in `.git/info/exclude`; `node_modules` is not. Either add
   `/node_modules` there too or keep staging files explicitly.
-- **`apps/web/src/scene` is a symlink** into the main checkout, excluded via
-  `.git/info/exclude`. It resolves for both Vite and `tsc`, so the scene is
-  fully exercised here, but nothing on this branch tracks it.
+- **`apps/web/src/scene` is a symlink** into the main checkout, with a matching
+  entry in `.git/info/exclude`, though `git status` still lists it at times. It
+  resolves for both Vite and `tsc`, so the scene is fully exercised here, but
+  nothing on this branch tracks it and neither link should ever be staged.
 - **No test runner.** `visibility.check.mjs` is a standalone Node script relying
   on native TypeScript stripping (Node 22.6+). It is not wired into a suite.
 
