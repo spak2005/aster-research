@@ -4,6 +4,7 @@ import { useWorkspace } from './useWorkspace';
 import Transport from './Transport';
 import ResearchTree from './ResearchTree';
 import EvidencePanel from './EvidencePanel';
+import Dossier from './Dossier';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -69,6 +70,8 @@ export default function Workspace({ recording }: WorkspaceProps) {
       <div className="workspace__transport">
         <Transport workspace={workspace} />
       </div>
+
+      <Dossier recording={recording} workspace={workspace} />
     </div>
   );
 }
