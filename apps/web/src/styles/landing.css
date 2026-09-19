@@ -286,8 +286,20 @@
 }
 
 .showcase__head .section__lede {
-  --step: 0.8;
   padding-bottom: 0.2rem;
+}
+
+/* Section heads arrive in their written order: label, headline, argument. */
+.section__head .eyebrow {
+  --step: 0;
+}
+
+.section__head .section__title {
+  --step: 0.6;
+}
+
+.section__head .section__lede {
+  --step: 1.2;
 }
 
 /* Published runs settle onto the shelf one after another. Written here rather
@@ -348,11 +360,68 @@
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: clamp(1rem, 2.4vw, 2.25rem);
-  /* The rail itself: one hairline threaded through every node. */
+  /* The rail itself: one hairline threaded through every node. It draws from
+     left to right as the rail is reached, and each node lights as the thread
+     arrives at it. */
   background-image: linear-gradient(to right, var(--line) 0, var(--line) 100%);
-  background-size: 100% 1px;
+  background-size: calc(var(--thread, 1) * 100%) 1px;
   background-position: 0 0;
   background-repeat: no-repeat;
+  transition: background-size 820ms var(--ease-out);
+}
+
+/* The rail is observed separately from its section: threading it while it is
+   still below the fold would spend the effect on nobody. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="ready"] .loop__rail {
+    --thread: 0;
+  }
+
+  :root[data-motion="ready"] .loop__rail[data-revealed] {
+    --thread: 1;
+  }
+
+  :root[data-motion="ready"] .loop__rail .loop__step {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-rise), 0);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
+    transition-delay: calc(var(--step, 0) * var(--reveal-step));
+  }
+
+  :root[data-motion="ready"] .loop__rail[data-revealed] .loop__step {
+    opacity: 1;
+    transform: none;
+  }
+
+  :root[data-motion="ready"] .loop__rail .loop__node {
+    transform: scale(0);
+  }
+
+  :root[data-motion="ready"] .loop__rail[data-revealed] .loop__node {
+    transform: scale(1);
+  }
+}
+
+.loop__step:nth-child(1) {
+  --step: 0.8;
+}
+
+.loop__step:nth-child(2) {
+  --step: 2.6;
+}
+
+.loop__step:nth-child(3) {
+  --step: 4.4;
+}
+
+.loop__step:nth-child(4) {
+  --step: 6.2;
+}
+
+.loop__step:nth-child(5) {
+  --step: 8;
 }
 
 .loop__step {
@@ -369,6 +438,10 @@
   border-radius: 50%;
   background: var(--ink-900);
   border: 1px solid var(--signal-edge);
+  /* Half a step ahead of its own text: the thread reaches the node, then the
+     step arrives under it. */
+  transition: transform 460ms var(--ease-out);
+  transition-delay: calc((var(--step, 0) - 0.8) * var(--reveal-step));
 }
 
 .loop__step:first-child .loop__node {

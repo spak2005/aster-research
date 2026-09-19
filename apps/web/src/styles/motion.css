@@ -20,9 +20,11 @@
     transition-delay: calc(var(--step, 0) * var(--reveal-step));
   }
 
-  /* Revealed either in its own right, or by an ancestor entering the viewport. */
+  /* Revealed either in its own right, or by an ancestor entering the viewport.
+     `reveal--self` opts out of the ancestor path: an element far below its
+     section's heading waits for its own arrival instead. */
   :root[data-motion="ready"] .reveal[data-revealed],
-  :root[data-motion="ready"] [data-revealed] .reveal {
+  :root[data-motion="ready"] [data-revealed] .reveal:not(.reveal--self) {
     opacity: 1;
     transform: none;
   }
@@ -46,7 +48,7 @@
   }
 
   :root[data-motion="ready"] .reveal--unfold[data-revealed],
-  :root[data-motion="ready"] [data-revealed] .reveal--unfold {
+  :root[data-motion="ready"] [data-revealed] .reveal--unfold:not(.reveal--self) {
     clip-path: inset(0 0 0 0);
   }
 }
