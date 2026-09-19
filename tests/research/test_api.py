@@ -41,6 +41,23 @@ class ApiTests(unittest.TestCase):
         api._WORKER = None
         api._WORKER_RESERVED = False
 
+    def test_default_local_flow_reserves_verification(self) -> None:
+        budget = api._budget_for(CreateRun(max_experiments=6))
+        self.assertEqual(budget.search_slots, 3)
+        self.assertEqual(budget.verification_slots, 3)
+
+    def test_minimum_budget_remains_bounded(self) -> None:
+        budget = api._budget_for(CreateRun(max_experiments=3))
+        self.assertEqual(budget.search_slots, 2)
+        self.assertEqual(budget.verification_slots, 1)
+
+    def test_invalid_allocation_is_rejected_before_worker_reservation(self) -> None:
+        with self.assertRaises(HTTPException) as caught:
+            api.create_run(CreateRun(max_experiments=6, search_slots=5, verification_slots=3))
+        self.assertEqual(caught.exception.status_code, 422)
+        self.assertFalse(api._WORKER_RESERVED)
+        self.assertFalse(api._RUNS)
+
     def test_health(self) -> None:
         body = api.health()
         self.assertEqual(body["status"], "ok")

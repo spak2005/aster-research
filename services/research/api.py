@@ -31,8 +31,20 @@ class CreateRun(BaseModel):
     preset: str = "fixed-energy"
     max_experiments: int = Field(default=6, ge=3, le=12)
     seed: int = 0
-    search_slots: int | None = None
-    verification_slots: int = 0
+    search_slots: int | None = Field(default=None, ge=1, le=12)
+    verification_slots: int | None = Field(default=None, ge=0, le=11)
+
+
+def _budget_for(body: CreateRun) -> RunBudget:
+    verification = body.verification_slots
+    if verification is None:
+        available = body.max_experiments - (body.search_slots if body.search_slots is not None else 2)
+        verification = max(0, min(3, available))
+    try:
+        return RunBudget(max_experiments=body.max_experiments, seed=body.seed,
+                         search_slots=body.search_slots, verification_slots=verification)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 def _torax_ready() -> bool:
@@ -138,6 +150,7 @@ def _launch(inv: Investigation) -> None:
 def create_run(body: CreateRun) -> dict[str, str]:
     if body.preset != "fixed-energy":
         raise HTTPException(400, "only preset 'fixed-energy' is supported")
+    budget = _budget_for(body)
     _reserve_worker()
     try:
         kwargs: dict[str, Any] = {}
@@ -147,12 +160,7 @@ def create_run(body: CreateRun) -> dict[str, str]:
             kwargs["proposer"] = _FACTORY["proposer"]
         inv = Investigation(
             question=body.question,
-            budget=RunBudget(
-                max_experiments=body.max_experiments,
-                seed=body.seed,
-                search_slots=body.search_slots,
-                verification_slots=body.verification_slots,
-            ),
+            budget=budget,
             **kwargs,
         )
         with _LOCK:
