@@ -1,0 +1,354 @@
+{
+  "schema_version": "1.0",
+  "id": "development-only",
+  "title": "DEVELOPMENT FIXTURE: branch and failure",
+  "question": "Does the player handle completed and failed branches?",
+  "created_at": "2026-09-19T00:00:00Z",
+  "mode": "development-fixture",
+  "status": "completed",
+  "simulator": "NONE: synthetic UI fixture",
+  "model": "NONE",
+  "description": "Hand-authored developer test data. Not a scientific investigation.",
+  "limitations": [
+    "All values synthetic; never publish as research."
+  ],
+  "provenance": {
+    "software_versions": {},
+    "seed": 0,
+    "objective": "fixture only",
+    "objective_units": "MJ",
+    "config_hash": "not-a-scientific-run"
+  },
+  "budget": {
+    "max_experiments": 3,
+    "completed_experiments": 1,
+    "wall_time_s": 0
+  },
+  "baseline_id": "e0",
+  "best_experiment_id": null,
+  "temperature_scale_kev": [
+    0,
+    20
+  ],
+  "geometry": {
+    "major_radius_m": 6.2,
+    "minor_radius_m": 2.0,
+    "elongation": 1.7
+  },
+  "hypotheses": [
+    {
+      "id": "h0",
+      "parent_id": null,
+      "title": "Baseline fixture",
+      "prediction": "Synthetic test prediction",
+      "status": "inconclusive",
+      "assessment": "Synthetic assessment",
+      "experiment_ids": [
+        "e0"
+      ],
+      "evidence_ids": [
+        "e0"
+      ],
+      "created_sequence": 1,
+      "resolved_sequence": 4
+    },
+    {
+      "id": "h1",
+      "parent_id": "h0",
+      "title": "Failed candidate fixture",
+      "prediction": "Synthetic test prediction",
+      "status": "inconclusive",
+      "assessment": "Synthetic assessment",
+      "experiment_ids": [
+        "e1"
+      ],
+      "evidence_ids": [
+        "e1"
+      ],
+      "created_sequence": 5,
+      "resolved_sequence": 8
+    }
+  ],
+  "experiments": [
+    {
+      "id": "e0",
+      "hypothesis_id": "h0",
+      "label": "Synthetic baseline",
+      "role": "baseline",
+      "status": "completed",
+      "config": {
+        "heating_location": 0.3,
+        "heating_width": 0.2,
+        "heating_power_mw": 20,
+        "duration_s": 1
+      },
+      "metrics": {
+        "fusion_energy_mj": 10,
+        "heating_energy_mj": 20,
+        "peak_ion_temperature_kev": 15,
+        "improvement_pct": null
+      },
+      "frames": [
+        {
+          "time_s": 0,
+          "rho": [
+            0,
+            0.5,
+            1
+          ],
+          "electron_temperature_kev": [
+            10,
+            6,
+            1
+          ],
+          "ion_temperature_kev": [
+            14,
+            7,
+            1
+          ],
+          "fusion_power_mw": 10,
+          "cumulative_fusion_energy_mj": 0,
+          "cumulative_heating_energy_mj": 0
+        },
+        {
+          "time_s": 0.5,
+          "rho": [
+            0,
+            0.5,
+            1
+          ],
+          "electron_temperature_kev": [
+            10.5,
+            6,
+            1
+          ],
+          "ion_temperature_kev": [
+            14.5,
+            7,
+            1
+          ],
+          "fusion_power_mw": 10,
+          "cumulative_fusion_energy_mj": 5.0,
+          "cumulative_heating_energy_mj": 10.0
+        },
+        {
+          "time_s": 1,
+          "rho": [
+            0,
+            0.5,
+            1
+          ],
+          "electron_temperature_kev": [
+            11,
+            6,
+            1
+          ],
+          "ion_temperature_kev": [
+            15,
+            7,
+            1
+          ],
+          "fusion_power_mw": 10,
+          "cumulative_fusion_energy_mj": 10,
+          "cumulative_heating_energy_mj": 20
+        }
+      ],
+      "artifacts": [],
+      "checks": [],
+      "wall_time_s": 0
+    },
+    {
+      "id": "e1",
+      "hypothesis_id": "h1",
+      "label": "Synthetic failure",
+      "role": "candidate",
+      "status": "failed",
+      "config": {
+        "heating_location": 0.3,
+        "heating_width": 0.2,
+        "heating_power_mw": 20,
+        "duration_s": 1
+      },
+      "metrics": {
+        "fusion_energy_mj": 0,
+        "heating_energy_mj": 0,
+        "peak_ion_temperature_kev": 0,
+        "improvement_pct": null
+      },
+      "frames": [],
+      "artifacts": [],
+      "checks": [],
+      "wall_time_s": 0,
+      "error": "Deliberate fixture failure"
+    }
+  ],
+  "events": [
+    {
+      "schema_version": "1.0",
+      "event_id": "event-0",
+      "run_id": "development-only",
+      "sequence": 0,
+      "timestamp": "2026-09-19T00:00:00Z",
+      "type": "run.started",
+      "title": "Fixture run.started",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [],
+      "payload": {}
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-1",
+      "run_id": "development-only",
+      "sequence": 1,
+      "timestamp": "2026-09-19T00:00:01Z",
+      "type": "hypothesis.proposed",
+      "title": "Fixture hypothesis.proposed",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [],
+      "payload": {},
+      "hypothesis_id": "h0"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-2",
+      "run_id": "development-only",
+      "sequence": 2,
+      "timestamp": "2026-09-19T00:00:02Z",
+      "type": "experiment.started",
+      "title": "Fixture experiment.started",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [],
+      "payload": {},
+      "hypothesis_id": "h0",
+      "experiment_id": "e0"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-3",
+      "run_id": "development-only",
+      "sequence": 3,
+      "timestamp": "2026-09-19T00:00:03Z",
+      "type": "experiment.completed",
+      "title": "Fixture experiment.completed",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [
+        "e0"
+      ],
+      "payload": {},
+      "hypothesis_id": "h0",
+      "experiment_id": "e0"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-4",
+      "run_id": "development-only",
+      "sequence": 4,
+      "timestamp": "2026-09-19T00:00:04Z",
+      "type": "assessment.recorded",
+      "title": "Fixture assessment.recorded",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [
+        "e0"
+      ],
+      "payload": {},
+      "hypothesis_id": "h0",
+      "experiment_id": "e0"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-5",
+      "run_id": "development-only",
+      "sequence": 5,
+      "timestamp": "2026-09-19T00:00:05Z",
+      "type": "branch.created",
+      "title": "Fixture branch.created",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [],
+      "payload": {},
+      "hypothesis_id": "h1",
+      "parent_id": "h0"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-6",
+      "run_id": "development-only",
+      "sequence": 6,
+      "timestamp": "2026-09-19T00:00:06Z",
+      "type": "experiment.started",
+      "title": "Fixture experiment.started",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [],
+      "payload": {},
+      "hypothesis_id": "h1",
+      "experiment_id": "e1"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-7",
+      "run_id": "development-only",
+      "sequence": 7,
+      "timestamp": "2026-09-19T00:00:07Z",
+      "type": "experiment.failed",
+      "title": "Fixture experiment.failed",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [
+        "e1"
+      ],
+      "payload": {},
+      "hypothesis_id": "h1",
+      "experiment_id": "e1"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-8",
+      "run_id": "development-only",
+      "sequence": 8,
+      "timestamp": "2026-09-19T00:00:08Z",
+      "type": "assessment.recorded",
+      "title": "Fixture assessment.recorded",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [
+        "e1"
+      ],
+      "payload": {},
+      "hypothesis_id": "h1",
+      "experiment_id": "e1"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-9",
+      "run_id": "development-only",
+      "sequence": 9,
+      "timestamp": "2026-09-19T00:00:09Z",
+      "type": "conclusion.recorded",
+      "title": "Fixture conclusion.recorded",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [
+        "e0",
+        "e1"
+      ],
+      "payload": {}
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "event-10",
+      "run_id": "development-only",
+      "sequence": 10,
+      "timestamp": "2026-09-19T00:00:10Z",
+      "type": "run.completed",
+      "title": "Fixture run.completed",
+      "summary": "Synthetic developer event",
+      "evidence_ids": [],
+      "payload": {}
+    }
+  ],
+  "conclusion": {
+    "status": "inconclusive",
+    "title": "Fixture finished",
+    "summary": "A failed candidate supplies no scientific finding.",
+    "evidence_ids": [
+      "e0",
+      "e1"
+    ]
+  }
+}
