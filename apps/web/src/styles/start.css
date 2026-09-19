@@ -130,6 +130,104 @@
   border-color: var(--signal-edge);
 }
 
+/* ---- Backend status ---- */
+
+.backend {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: linear-gradient(180deg, rgba(27, 34, 45, 0.45), rgba(11, 14, 20, 0.45));
+}
+
+.backend--connected {
+  border-left-color: var(--signal);
+}
+
+.backend__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.backend__recheck {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  transition: color var(--dur-1) var(--ease);
+}
+
+.backend__recheck:hover:not(:disabled) {
+  color: var(--signal);
+}
+
+.backend__spin {
+  animation: backend-spin 1.1s linear infinite;
+}
+
+@keyframes backend-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.backend__state {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: 1.02rem;
+  color: var(--text-hi);
+}
+
+.backend__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.backend__state--live {
+  color: var(--signal);
+}
+
+.backend__state--live .backend__dot {
+  animation: badge-pulse 2.4s var(--ease) infinite;
+}
+
+.backend__state--absent {
+  color: var(--text-dim);
+}
+
+.backend__line {
+  max-width: 58ch;
+  font-size: var(--fs-xs);
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+
+.backend__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.backend__run {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line-faint);
+}
+
 @media (max-width: 980px) {
   .start__grid {
     grid-template-columns: 1fr;

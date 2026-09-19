@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SetupForm from '../components/start/SetupForm';
+import BackendStatus from '../components/start/BackendStatus';
 import { DEFAULT_CONFIG, type RunConfig } from '../lib/runConfig';
 import '../styles/start.css';
 
@@ -22,7 +23,9 @@ export default function StartPage() {
 
       <div className="start__grid">
         <SetupForm config={config} onChange={setConfig} />
-        <aside className="start__aside" />
+        <aside className="start__aside">
+          <BackendStatus config={config} />
+        </aside>
       </div>
     </div>
   );
