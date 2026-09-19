@@ -3,8 +3,49 @@
 .hero {
   position: relative;
   padding-block: clamp(3.5rem, 9vh, 7rem) clamp(4rem, 10vh, 8rem);
-  border-bottom: 1px solid var(--line-faint);
   overflow: hidden;
+}
+
+/* ---- Section seams ----
+   Each boundary is a hairline that draws itself open from the centre as its
+   section arrives, so the page reads as unfolding along its own rules rather
+   than fading in. Closed only while the reveal module is driving. */
+
+.hero::after,
+.loop::before,
+.adapter::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+  transform: scaleX(var(--seam, 1));
+  transform-origin: center;
+  transition: transform 1.15s var(--ease-out);
+}
+
+.hero::after {
+  bottom: 0;
+}
+
+.loop::before,
+.adapter::before {
+  top: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="ready"] .hero,
+  :root[data-motion="ready"] .loop,
+  :root[data-motion="ready"] .adapter {
+    --seam: 0;
+  }
+
+  :root[data-motion="ready"] .hero[data-revealed],
+  :root[data-motion="ready"] .loop[data-revealed],
+  :root[data-motion="ready"] .adapter[data-revealed] {
+    --seam: 1;
+  }
 }
 
 .hero__inner {
@@ -258,7 +299,7 @@
 /* ---- Research loop ---- */
 
 .loop {
-  border-top: 1px solid var(--line-faint);
+  position: relative;
 }
 
 .loop__rail {
@@ -363,7 +404,7 @@
 /* ---- Adapter ---- */
 
 .adapter {
-  border-top: 1px solid var(--line-faint);
+  position: relative;
 }
 
 .adapter__grid {

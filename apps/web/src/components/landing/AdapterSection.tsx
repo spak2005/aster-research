@@ -1,4 +1,5 @@
 import CodeBlock from '../common/CodeBlock';
+import { useReveal } from '../../lib/useReveal';
 
 const ADAPTER_SOURCE = `class ScientificAdapter(Protocol):
     """All the harness may know about a backend."""
@@ -47,8 +48,10 @@ const INTEGRATIONS: IntegrationRow[] = [
 ];
 
 export default function AdapterSection() {
+  const reveal = useReveal<HTMLElement>();
+
   return (
-    <section className="section adapter" id="adapter" aria-labelledby="adapter-title">
+    <section className="section adapter" id="adapter" aria-labelledby="adapter-title" ref={reveal}>
       <div className="shell adapter__grid">
         <div className="adapter__copy">
           <p className="eyebrow">Integration</p>

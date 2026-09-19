@@ -1,3 +1,5 @@
+import { useReveal } from '../../lib/useReveal';
+
 interface Step {
   title: string;
   body: string;
@@ -39,8 +41,10 @@ const STEPS: Step[] = [
 ];
 
 export default function LoopSection() {
+  const reveal = useReveal<HTMLElement>();
+
   return (
-    <section className="section loop" id="loop" aria-labelledby="loop-title">
+    <section className="section loop" id="loop" aria-labelledby="loop-title" ref={reveal}>
       <div className="shell">
         <div className="section__head">
           <p className="eyebrow">How it works</p>
