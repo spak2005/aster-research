@@ -134,10 +134,17 @@ export function useWorkspace(recording: Recording): WorkspaceController {
 
   // Selection: an explicit choice wins; otherwise follow the run.
   const followedExperimentId = useMemo(() => defaultExperimentId(visible), [visible]);
+  const selectedHypothesis = visible.hypotheses.find(h => h.id === selectedNodeId);
+  const hypothesisExperiments = selectedHypothesis
+    ? visible.experiments.filter(e => e.hypothesisId === selectedHypothesis.id)
+    : [];
   const selectedExperimentId =
     selectedNodeId && visible.experimentById.has(selectedNodeId)
       ? selectedNodeId
-      : followedExperimentId;
+      : selectedHypothesis
+        ? [...hypothesisExperiments].reverse().find(e => e.result !== null)?.id
+          ?? hypothesisExperiments.at(-1)?.id ?? null
+        : followedExperimentId;
 
   const selectedExperiment = selectedExperimentId
     ? visible.experimentById.get(selectedExperimentId) ?? null
@@ -168,20 +175,22 @@ export function useWorkspace(recording: Recording): WorkspaceController {
 
   const frameCount = selectedExperiment?.result?.frames.length ?? 0;
 
-  // Clamp the frame cursor whenever the selected experiment changes length.
+  // A paused selection opens on its final measured frame, so comparisons show
+  // the outcome rather than the shared initial condition. Pausing itself freezes
+  // the current frame; it must not secretly keep animating the simulation clock.
   useEffect(() => {
-    setFrameIndexRaw((current) => (frameCount === 0 ? 0 : Math.min(current, frameCount - 1)));
+    setFrameIndexRaw(frameCount === 0 || playing ? 0 : frameCount - 1);
   }, [frameCount, selectedExperimentId]);
 
   // Simulation-time cursor. Loops over stored frames; interpolation is never
   // introduced here, so each step corresponds to a saved sample.
   useEffect(() => {
-    if (reducedMotion || frameCount < 2) return undefined;
+    if (!playing || reducedMotion || frameCount < 2) return undefined;
     const timer = window.setInterval(() => {
       setFrameIndexRaw((current) => (current + 1) % frameCount);
     }, FRAME_DWELL_MS / speed);
     return () => window.clearInterval(timer);
-  }, [frameCount, speed, reducedMotion]);
+  }, [frameCount, speed, reducedMotion, playing]);
 
   const setFrameIndex = useCallback(
     (value: number) => {
