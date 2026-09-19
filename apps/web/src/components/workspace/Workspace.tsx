@@ -1,6 +1,7 @@
 import type { Recording } from '../../types';
 import ModeBadge from '../common/ModeBadge';
 import { useWorkspace } from './useWorkspace';
+import Transport from './Transport';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -51,8 +52,8 @@ export default function Workspace({ recording }: WorkspaceProps) {
         </aside>
       </div>
 
-      <div className="workspace__transport" aria-label="Playback transport">
-        <p className="label">Transport</p>
+      <div className="workspace__transport">
+        <Transport workspace={workspace} />
       </div>
     </div>
   );
