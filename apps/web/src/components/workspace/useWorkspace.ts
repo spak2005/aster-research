@@ -1,0 +1,218 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Experiment, Recording } from '../../types';
+import {
+  type Chapter,
+  type VisibleExperiment,
+  type VisibleState,
+  defaultExperimentId,
+  getChapters,
+  getVisibleState,
+  revealSequence,
+  sequenceBounds,
+} from '../../lib/visibility';
+import { useReducedMotion } from '../../lib/useMediaQuery';
+
+/** Milliseconds one research event occupies at 1x. */
+const EVENT_DWELL_MS = 1100;
+/** Milliseconds one stored profile frame occupies at 1x. */
+const FRAME_DWELL_MS = 220;
+
+export const SPEEDS = [0.5, 1, 2, 4] as const;
+export type Speed = (typeof SPEEDS)[number];
+
+export interface WorkspaceController {
+  recording: Recording;
+  visible: VisibleState;
+  chapters: Chapter[];
+
+  sequence: number;
+  setSequence: (value: number) => void;
+  stepSequence: (delta: number) => void;
+  jumpChapter: (direction: 1 | -1) => void;
+
+  playing: boolean;
+  togglePlaying: () => void;
+  speed: Speed;
+  setSpeed: (value: Speed) => void;
+  atEnd: boolean;
+
+  /** Selected tree node: a hypothesis, an experiment, or both. */
+  selectedHypothesisId: string | null;
+  selectedExperimentId: string | null;
+  select: (nodeId: string) => void;
+
+  selectedExperiment: VisibleExperiment | null;
+  /** Baseline as known at the current sequence; null before its result exists. */
+  baseline: Experiment | null;
+  compare: boolean;
+  toggleCompare: () => void;
+
+  frameIndex: number;
+  setFrameIndex: (value: number) => void;
+  frameCount: number;
+  reducedMotion: boolean;
+}
+
+export function useWorkspace(recording: Recording): WorkspaceController {
+  const bounds = useMemo(() => sequenceBounds(recording), [recording]);
+  const chapters = useMemo(() => getChapters(recording), [recording]);
+  const reducedMotion = useReducedMotion();
+
+  const [sequence, setSequenceRaw] = useState(bounds.max);
+  const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState<Speed>(1);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [frameIndex, setFrameIndexRaw] = useState(0);
+  const [compare, setCompare] = useState(true);
+
+  // A different recording resets the transport rather than carrying position over.
+  useEffect(() => {
+    setSequenceRaw(bounds.max);
+    setSelectedNodeId(null);
+    setFrameIndexRaw(0);
+    setPlaying(false);
+  }, [recording.id, bounds.max]);
+
+  const visible = useMemo(() => getVisibleState(recording, sequence), [recording, sequence]);
+
+  const setSequence = useCallback(
+    (value: number) => {
+      setSequenceRaw(Math.min(Math.max(Math.round(value), bounds.min), bounds.max));
+    },
+    [bounds.min, bounds.max],
+  );
+
+  const stepSequence = useCallback(
+    (delta: number) => {
+      setPlaying(false);
+      setSequenceRaw((current) =>
+        Math.min(Math.max(current + delta, bounds.min), bounds.max),
+      );
+    },
+    [bounds.min, bounds.max],
+  );
+
+  const jumpChapter = useCallback(
+    (direction: 1 | -1) => {
+      setPlaying(false);
+      setSequenceRaw((current) => {
+        const target =
+          direction === 1
+            ? chapters.find((chapter) => chapter.sequence > current)
+            : [...chapters].reverse().find((chapter) => chapter.sequence < current);
+        return target ? target.sequence : current;
+      });
+    },
+    [chapters],
+  );
+
+  const atEnd = sequence >= bounds.max;
+
+  const togglePlaying = useCallback(() => {
+    setPlaying((current) => {
+      if (current) return false;
+      // Restarting from the end rewinds rather than sitting still.
+      setSequenceRaw((position) => (position >= bounds.max ? bounds.min : position));
+      return true;
+    });
+  }, [bounds.min, bounds.max]);
+
+  // Research timeline transport.
+  useEffect(() => {
+    if (!playing) return undefined;
+    const timer = window.setInterval(() => {
+      setSequenceRaw((current) => {
+        if (current >= bounds.max) {
+          setPlaying(false);
+          return current;
+        }
+        return current + 1;
+      });
+    }, EVENT_DWELL_MS / speed);
+    return () => window.clearInterval(timer);
+  }, [playing, speed, bounds.max]);
+
+  // Selection: an explicit choice wins; otherwise follow the run.
+  const followedExperimentId = useMemo(() => defaultExperimentId(visible), [visible]);
+  const selectedExperimentId =
+    selectedNodeId && visible.experimentById.has(selectedNodeId)
+      ? selectedNodeId
+      : followedExperimentId;
+
+  const selectedExperiment = selectedExperimentId
+    ? visible.experimentById.get(selectedExperimentId) ?? null
+    : null;
+
+  const selectedHypothesisId = useMemo(() => {
+    if (selectedNodeId && visible.hypotheses.some((h) => h.id === selectedNodeId)) {
+      return selectedNodeId;
+    }
+    return selectedExperiment?.hypothesisId ?? null;
+  }, [selectedNodeId, visible.hypotheses, selectedExperiment]);
+
+  const select = useCallback(
+    (nodeId: string) => {
+      setSelectedNodeId(nodeId);
+      // Selecting a node never reveals it early: playback moves forward to the
+      // point where the node's evidence exists, and stays put if already past it.
+      const reveal = revealSequence(recording, nodeId);
+      if (reveal !== null) {
+        setSequenceRaw((current) => (reveal > current ? reveal : current));
+      }
+    },
+    [recording],
+  );
+
+  const baselineSource = visible.experimentById.get(recording.baseline_id) ?? null;
+  const baseline = baselineSource?.result ?? null;
+
+  const frameCount = selectedExperiment?.result?.frames.length ?? 0;
+
+  // Clamp the frame cursor whenever the selected experiment changes length.
+  useEffect(() => {
+    setFrameIndexRaw((current) => (frameCount === 0 ? 0 : Math.min(current, frameCount - 1)));
+  }, [frameCount, selectedExperimentId]);
+
+  // Simulation-time cursor. Loops over stored frames; interpolation is never
+  // introduced here, so each step corresponds to a saved sample.
+  useEffect(() => {
+    if (reducedMotion || frameCount < 2) return undefined;
+    const timer = window.setInterval(() => {
+      setFrameIndexRaw((current) => (current + 1) % frameCount);
+    }, FRAME_DWELL_MS / speed);
+    return () => window.clearInterval(timer);
+  }, [frameCount, speed, reducedMotion]);
+
+  const setFrameIndex = useCallback(
+    (value: number) => {
+      setFrameIndexRaw(Math.min(Math.max(Math.round(value), 0), Math.max(0, frameCount - 1)));
+    },
+    [frameCount],
+  );
+
+  return {
+    recording,
+    visible,
+    chapters,
+    sequence: visible.sequence,
+    setSequence,
+    stepSequence,
+    jumpChapter,
+    playing,
+    togglePlaying,
+    speed,
+    setSpeed,
+    atEnd,
+    selectedHypothesisId,
+    selectedExperimentId,
+    select,
+    selectedExperiment,
+    baseline,
+    compare,
+    toggleCompare: useCallback(() => setCompare((value) => !value), []),
+    frameIndex,
+    setFrameIndex,
+    frameCount,
+    reducedMotion,
+  };
+}
