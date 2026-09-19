@@ -33,6 +33,15 @@ export {
   type ReplayChapter,
   type ReplayChapterKind,
 } from './chapters';
+export {
+  isRecording,
+  loadRecording,
+  RecordingLoadError,
+  useRecording,
+  type LoadRecordingOptions,
+  type RecordingLoadErrorCode,
+  type RecordingLoadState,
+} from './recordingLoader';
 
 export type ReplayRunStatus = 'pending' | Recording['status'];
 export type VisibleExperimentStatus =
