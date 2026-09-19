@@ -1,0 +1,117 @@
+/* Aster design tokens. Dark observatory palette, editorial type, restrained signal colour. */
+
+:root {
+  /* Surfaces: near-black neutrals with a faint cold cast. */
+  --ink-900: #05070a;
+  --ink-850: #070a0f;
+  --ink-800: #0b0e14;
+  --ink-750: #0f141c;
+  --ink-700: #141a23;
+  --ink-600: #1b222d;
+
+  /* Hairlines. Depth comes from rules and value steps, not drop shadows. */
+  --line-faint: rgba(154, 176, 208, 0.07);
+  --line: rgba(154, 176, 208, 0.13);
+  --line-strong: rgba(154, 176, 208, 0.24);
+
+  /* Text ramp. */
+  --text-hi: #e9eef6;
+  --text: #b6c1d1;
+  --text-dim: #7b8797;
+  --text-faint: #566274;
+
+  /* Signals. Cyan = instrument / measured. Amber = heating / applied energy. */
+  --signal: #5ad6e8;
+  --signal-deep: #2b93a8;
+  --signal-wash: rgba(90, 214, 232, 0.12);
+  --signal-edge: rgba(90, 214, 232, 0.36);
+
+  --heat: #f2a950;
+  --heat-deep: #b4762c;
+  --heat-wash: rgba(242, 169, 80, 0.12);
+  --heat-edge: rgba(242, 169, 80, 0.38);
+
+  --adverse: #e0674f;
+  --adverse-wash: rgba(224, 103, 79, 0.12);
+
+  /* Plasma temperature ramp, shared by legend, charts and scene tinting. */
+  --t-0: #0f2036;
+  --t-1: #1d6d99;
+  --t-2: #4fc3d9;
+  --t-3: #f0b552;
+  --t-4: #fdf1d8;
+
+  /* Type families. System faces only: no network dependency, no layout shift. */
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* Type scale. Display sizes are deliberately large; body stays readable. */
+  --fs-display: clamp(2.9rem, 7.4vw, 6.25rem);
+  --fs-h1: clamp(2.1rem, 4.6vw, 3.4rem);
+  --fs-h2: clamp(1.55rem, 3vw, 2.2rem);
+  --fs-h3: 1.2rem;
+  --fs-body: 1.0625rem;
+  --fs-sm: 0.9375rem;
+  --fs-xs: 0.8125rem;
+  --fs-micro: 0.6875rem;
+
+  --lh-tight: 1.04;
+  --lh-snug: 1.24;
+  --lh-body: 1.62;
+
+  /* Spacing. */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+  --s-10: 8rem;
+
+  /* Geometry. Tight radii only; no pill-shaped SaaS cards. */
+  --r-1: 2px;
+  --r-2: 4px;
+  --r-3: 8px;
+
+  --measure: 66ch;
+  --shell-max: 1280px;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --header-h: 64px;
+
+  /* Motion. Deliberate, never bouncy. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 140ms;
+  --dur-2: 320ms;
+  --dur-3: 720ms;
+
+  --z-header: 40;
+  --z-overlay: 60;
+}
+
+/* Small-caps instrument label used throughout for axis names, units and states. */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.unit {
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  margin-left: 0.3em;
+}
