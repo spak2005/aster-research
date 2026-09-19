@@ -286,7 +286,49 @@
 }
 
 .showcase__head .section__lede {
+  --step: 0.8;
   padding-bottom: 0.2rem;
+}
+
+/* Published runs settle onto the shelf one after another. Written here rather
+   than on the catalogue component, which is shared with the investigations
+   index and stays motion-free there. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="ready"] .showcase .run-list > li {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-rise), 0);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
+    transition-delay: calc(var(--step, 0) * var(--reveal-step));
+  }
+
+  :root[data-motion="ready"] .showcase[data-revealed] .run-list > li {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.showcase .run-list > li:nth-child(1) {
+  --step: 1.4;
+}
+
+.showcase .run-list > li:nth-child(2) {
+  --step: 1.9;
+}
+
+.showcase .run-list > li:nth-child(3) {
+  --step: 2.4;
+}
+
+.showcase .run-list > li:nth-child(4) {
+  --step: 2.9;
+}
+
+/* Anything beyond the fourth arrives together: a long shelf should not make the
+   reader wait for it. */
+.showcase .run-list > li:nth-child(n + 5) {
+  --step: 3.3;
 }
 
 @media (max-width: 860px) {
