@@ -28,6 +28,8 @@ jobs:
       - run: npm ci
       - run: npm run test:contracts
       - run: npm run test:replay
+      - run: npm run test:scene
+      - run: npm run test:ui
       - run: python3 scripts/check_public.py
       - uses: actions/configure-pages@v5
         id: pages

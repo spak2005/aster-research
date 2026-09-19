@@ -80,6 +80,9 @@ async function request(path: string, init: RequestInit = {}, timeoutMs = 8000): 
  * the public site and is reported as `absent`, not as a failure.
  */
 export async function probeBackend(signal?: AbortSignal): Promise<BackendProbe> {
+  // Static releases never probe an unrelated host's API. Real execution is
+  // enabled by the documented local dev server, or an explicit future host opt-in.
+  if (import.meta.env.PROD && import.meta.env.VITE_ENABLE_LOCAL_API !== 'true') return { state: 'absent' };
   try {
     const response = await request('/health', { signal }, 2000);
     const payload = (await response.json()) as Partial<Health>;
