@@ -152,6 +152,31 @@
   transition-delay: calc(var(--step, 0) * var(--reveal-step));
 }
 
+/* Depth on the way out. Where the browser can drive an animation from scroll
+   position itself, the figure recedes as the hero leaves rather than sliding
+   flatly off the top. No listener, no fallback needed: without support the
+   figure simply scrolls away. The caption is left alone — it is text. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__schematic {
+      animation: hero-recede linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 90%;
+    }
+  }
+}
+
+@keyframes hero-recede {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0.22;
+    transform: scale(0.955);
+  }
+}
+
 .hero__schematic .schematic__glow {
   --step: 1;
 }
