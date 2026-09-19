@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import type { Recording } from '../../types';
+import { setRunBadge } from '../../lib/runBadge';
 import ModeBadge from '../common/ModeBadge';
 import { useWorkspace } from './useWorkspace';
 import Transport from './Transport';
@@ -20,6 +22,16 @@ interface WorkspaceProps {
  * fixed-height panel.
  */
 export default function Workspace({ recording }: WorkspaceProps) {
+  // Keep the recorded/live label and run date in the site header while open.
+  useEffect(() => {
+    setRunBadge({
+      mode: recording.mode,
+      createdAt: recording.created_at,
+      title: recording.title,
+    });
+    return () => setRunBadge(null);
+  }, [recording.id, recording.mode, recording.created_at, recording.title]);
+
   const workspace = useWorkspace(recording);
   const { visible } = workspace;
   const selectedHypothesis =

@@ -35,6 +35,29 @@
   height: 100%;
 }
 
+.site-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  min-width: 0;
+}
+
+.site-header__run {
+  padding-block: 0.2rem;
+}
+
+@media (max-width: 1180px) {
+  .site-header__run .mode-badge__text {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .wordmark__kind {
+    display: none;
+  }
+}
+
 .wordmark {
   display: inline-flex;
   align-items: baseline;
