@@ -582,10 +582,49 @@ class Investigation:
             last = self.apply_decision(decision)
             if last.get("status") in {"stopped", "canceled", "failed", "verified"}:
                 break
+        if (
+            not self.cancel.is_set()
+            and self.remaining() > 0
+            and any(
+                exp["role"] == "candidate" and exp["status"] == "completed"
+                for exp in self.recording["experiments"]
+            )
+            and last.get("status") != "verified"
+        ):
+            last = self.run_verification_from_decision(
+                Decision(
+                    ok=True,
+                    action="verify",
+                    hypothesis="Frozen verification of the latest candidate",
+                    prediction="Refinement will not invent an improvement",
+                    rationale="End-of-loop withheld checks",
+                )
+            )
         if self.cancel.is_set() and self.recording["status"] == "running":
             last = self._fail_run("canceled")
+            return last
+        last["conclusion"] = self.finish()
         self._persist()
         return last
 
     def propose_next(self) -> Decision:
         return self.proposer(self.context())
+
+    def finish(self) -> dict[str, Any]:
+        from services.research.gate import apply_gate
+
+        conclusion = apply_gate(self.recording)
+        self._emit(
+            event_type="conclusion.recorded",
+            title=conclusion["title"],
+            summary=conclusion["summary"],
+            evidence_ids=conclusion["evidence_ids"],
+            payload={"status": conclusion["status"]},
+        )
+        self._emit(
+            event_type="run.completed",
+            title="Run completed",
+            summary=conclusion["summary"],
+        )
+        self._persist()
+        return conclusion
