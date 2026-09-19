@@ -103,12 +103,20 @@ interface EventIndex {
   resolvedHypothesis: Map<string, number>;
 }
 
+/** Events that end a run without a separately recorded conclusion. */
+const TERMINAL_TYPES = new Set<ResearchEvent['type']>([
+  'run.completed',
+  'run.failed',
+  'run.canceled',
+]);
+
 function indexEvents(recording: Recording): EventIndex {
   const introSequence = new Map<string, number>();
   const resolveSequence = new Map<string, number>();
   const checkSequence = new Map<string, number>();
   const resolvedHypothesis = new Map<string, number>();
   let conclusionSequence: number | null = null;
+  let terminalSequence: number | null = null;
 
   for (const event of recording.events) {
     const experimentId = event.experiment_id;
@@ -127,7 +135,15 @@ function indexEvents(recording: Recording): EventIndex {
     if (event.type === 'conclusion.recorded' && conclusionSequence === null) {
       conclusionSequence = event.sequence;
     }
+    // A run that was canceled or failed still records what it ended with, and
+    // withholding that would misrepresent the run as unfinished rather than
+    // stopped. The terminating event is when that outcome became known.
+    if (TERMINAL_TYPES.has(event.type) && conclusionSequence === null) {
+      terminalSequence = event.sequence;
+    }
   }
+
+  if (conclusionSequence === null) conclusionSequence = terminalSequence;
 
   // Hypothesis resolution comes from the recorded field; the event log is only
   // consulted when the field is absent.
