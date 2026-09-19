@@ -12,7 +12,8 @@
     "dev:api": ".venv/bin/python -m uvicorn services.research.api:app --host 127.0.0.1 --port 8765",
     "test:contracts": "python3 -m unittest discover -s tests/contracts -v",
     "validate:recording": "python3 scripts/validate_recording.py",
-    "test:replay": "node scripts/check_replay.mjs"
+    "test:replay": "node scripts/check_replay.mjs",
+    "test:scene": "esbuild tests/scene/replay.test.ts --bundle --platform=node --format=esm --outfile=runtime/tests/scene-replay.mjs --log-level=warning && node --test runtime/tests/scene-replay.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.0",
