@@ -26,3 +26,11 @@ export function useReducedMotion(): boolean {
 export function useIsNarrow(): boolean {
   return useMediaQuery('(max-width: 1080px)');
 }
+
+/**
+ * Phone-sized viewports, where stacking three tall panes would bury the
+ * transport. These show one pane at a time instead.
+ */
+export function useIsCompact(): boolean {
+  return useMediaQuery('(max-width: 760px)');
+}
