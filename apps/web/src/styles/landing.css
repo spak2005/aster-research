@@ -529,9 +529,46 @@
   align-items: start;
 }
 
+.adapter__copy .eyebrow {
+  --step: 0;
+}
+
+.adapter__copy .section__title {
+  --step: 0.6;
+}
+
+.adapter__copy .prose {
+  --step: 1.2;
+}
+
+.adapter__copy .prose + .prose {
+  --step: 1.7;
+}
+
 .adapter__list {
   margin-top: var(--s-7);
   border-top: 1px solid var(--line);
+}
+
+/* The ledger writes itself out a row at a time, under its own observer. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="ready"] .adapter__list .adapter__row {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-rise), 0);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
+    transition-delay: calc(var(--step, 0) * var(--reveal-step));
+  }
+
+  :root[data-motion="ready"] .adapter__list[data-revealed] .adapter__row {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.adapter__row:nth-child(2) {
+  --step: 1.4;
 }
 
 .adapter__row {

@@ -49,27 +49,35 @@ const INTEGRATIONS: IntegrationRow[] = [
 
 export default function AdapterSection() {
   const reveal = useReveal<HTMLElement>();
+  // The ledger and the source panel each wait for their own arrival: stacked on
+  // a narrow screen they are a long way below the heading.
+  const revealList = useReveal<HTMLUListElement>();
+  const revealCode = useReveal<HTMLDivElement>();
 
   return (
     <section className="section adapter" id="adapter" aria-labelledby="adapter-title" ref={reveal}>
       <div className="shell adapter__grid">
         <div className="adapter__copy">
-          <p className="eyebrow">Integration</p>
-          <h2 className="section__title" id="adapter-title" style={{ marginTop: 'var(--s-4)' }}>
+          <p className="eyebrow reveal">Integration</p>
+          <h2
+            className="section__title reveal"
+            id="adapter-title"
+            style={{ marginTop: 'var(--s-4)' }}
+          >
             One boundary, deliberately narrow
           </h2>
-          <p className="prose" style={{ marginTop: 'var(--s-5)', color: 'var(--text-dim)' }}>
+          <p className="prose reveal" style={{ marginTop: 'var(--s-5)', color: 'var(--text-dim)' }}>
             The agent never touches a simulator directly. It sees an adapter that declares what can
             be controlled, in what range, and in which units — and it receives results only through
             an extraction step it cannot rewrite. That boundary is what makes a second scientific
             backend a question of engineering rather than a question of trust.
           </p>
-          <p className="prose" style={{ marginTop: 'var(--s-4)', color: 'var(--text-dim)' }}>
+          <p className="prose reveal" style={{ marginTop: 'var(--s-4)', color: 'var(--text-dim)' }}>
             What generalises here is the interface. The working integration is one simulator, and
             the list below says exactly that.
           </p>
 
-          <ul className="adapter__list">
+          <ul className="adapter__list" ref={revealList}>
             {INTEGRATIONS.map((row) => (
               <li className={`adapter__row adapter__row--${row.tone}`} key={row.name}>
                 <span className="adapter__name">{row.name}</span>
@@ -80,7 +88,7 @@ export default function AdapterSection() {
           </ul>
         </div>
 
-        <div className="adapter__code">
+        <div className="adapter__code reveal reveal--unfold reveal--self" ref={revealCode}>
           <CodeBlock caption="scientific adapter v1" code={ADAPTER_SOURCE} copyable={false} />
           <p className="adapter__footnote">
             TORAX solves radial transport, not three-dimensional turbulence. Views built from its
