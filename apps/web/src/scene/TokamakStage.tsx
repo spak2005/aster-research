@@ -1,8 +1,14 @@
-import type { Recording } from '../../../../contracts/recording';
+import type {
+  ProfileFrame,
+  Recording,
+} from '../../../../contracts/recording';
+import { PlasmaVolume } from './PlasmaVolume';
 import { useSceneViewport } from './SceneCanvas';
 
 interface TokamakStageProps {
   geometry: Recording['geometry'];
+  frame: ProfileFrame | null;
+  temperatureScale: [number, number];
 }
 
 function getVisualDimensions(geometry: Recording['geometry']) {
@@ -16,7 +22,11 @@ function getVisualDimensions(geometry: Recording['geometry']) {
   };
 }
 
-export function TokamakStage({ geometry }: TokamakStageProps) {
+export function TokamakStage({
+  geometry,
+  frame,
+  temperatureScale,
+}: TokamakStageProps) {
   const { quality } = useSceneViewport();
   const { majorRadius, minorRadius } = getVisualDimensions(geometry);
   const cutawayArc = Math.PI * 1.72;
@@ -43,6 +53,17 @@ export function TokamakStage({ geometry }: TokamakStageProps) {
         decay={2}
         color="#d49a54"
       />
+
+      {frame ? (
+        <PlasmaVolume
+          frame={frame}
+          majorRadius={majorRadius}
+          minorRadius={minorRadius}
+          cutawayArc={cutawayArc}
+          temperatureScale={temperatureScale}
+          rotation={torusRotation}
+        />
+      ) : null}
 
       <mesh rotation={torusRotation} receiveShadow>
         <torusGeometry

@@ -39,7 +39,11 @@ export default function PlasmaScene({
     >
       <SceneCanvas className={className} reducedMotion={reducedMotion}>
         <Suspense fallback={null}>
-          <TokamakStage geometry={geometry} />
+          <TokamakStage
+            geometry={geometry}
+            frame={profile.status === 'ready' ? profile.value.frame : null}
+            temperatureScale={temperatureScale}
+          />
           <SceneControls
             resetRevision={cameraResetRevision}
             reducedMotion={reducedMotion}
@@ -63,6 +67,25 @@ export default function PlasmaScene({
         {label} · {geometry.major_radius_m.toFixed(2)} m major radius ·{' '}
         {temperatureScale[0].toFixed(1)}–{temperatureScale[1].toFixed(1)} keV
       </div>
+      {profile.status === 'ready' ? (
+        <div
+          style={{
+            position: 'absolute',
+            left: 16,
+            bottom: 14,
+            maxWidth: 'calc(100% - 32px)',
+            fontSize: 10,
+            lineHeight: 1.45,
+            letterSpacing: '0.04em',
+            color: '#73979a',
+            pointerEvents: 'none',
+          }}
+        >
+          SCHEMATIC AXISYMMETRIC RECONSTRUCTION
+          <br />
+          VOLUME ENCODING: MEAN RECORDED Tₑ / Tᵢ PROFILE
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={() => setCameraResetRevision((revision) => revision + 1)}
