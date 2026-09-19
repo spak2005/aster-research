@@ -639,3 +639,10 @@
     max-height: none;
   }
 }
+
+/* Keep the scientific label legible without squeezing it beside the toggle. */
+@media (max-width: 760px) {
+  .scene__head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .scene__stage { min-width: 0; }
+  .scene__canvas { max-width: 100%; }
+}

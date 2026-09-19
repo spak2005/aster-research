@@ -283,6 +283,8 @@ export default function PlasmaScene({
             position: 'absolute',
             left: 16,
             top: comparisonEnabled && compact ? 92 : 38,
+            maxWidth: 'calc(100% - 32px)',
+            lineHeight: 1.5,
             paddingLeft: 8,
             borderLeft: '2px solid #d99b4f',
             color: '#c9aa78',

@@ -55,7 +55,7 @@ export default function LocalRunGuide({ config }: LocalRunGuideProps) {
       </div>
 
       <p className="setup__hint">
-        Prerequisites: <a href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Node.js 22+</a>,{' '}
+        Prerequisites: <a href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Node.js 22.12+</a>,{' '}
         <a href="https://docs.astral.sh/uv/getting-started/installation/" target="_blank" rel="noreferrer">uv</a>, and{' '}
         <a href="https://cursor.com/docs/cli/installation" target="_blank" rel="noreferrer">Cursor CLI</a>.
         {' '}<a href="https://github.com/spak2005/aster-research" target="_blank" rel="noreferrer">View the source</a>.
