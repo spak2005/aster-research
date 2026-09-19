@@ -1,3 +1,4 @@
+import { publicAssetUrl } from '../../../../contracts/public-url';
 /**
  * Client for the published recording catalogue.
  *
@@ -25,7 +26,7 @@ function isSummary(value: unknown): value is RecordingSummary {
 }
 
 async function readJson(url: string, signal?: AbortSignal): Promise<unknown> {
-  const response = await fetch(url, { signal, headers: { accept: 'application/json' } });
+  const response = await fetch(publicAssetUrl(url, import.meta.env.BASE_URL), { signal, headers: { accept: 'application/json' } });
   if (!response.ok) {
     throw new Error(`${url} responded ${response.status} ${response.statusText}`.trim());
   }
