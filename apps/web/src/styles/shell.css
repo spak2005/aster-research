@@ -7,6 +7,12 @@
   min-height: 100dvh;
 }
 
+/* Focus lands here after navigation; the ring would be noise on a whole page. */
+.app__main:focus,
+.app__main:focus-visible {
+  outline: none;
+}
+
 .app__main {
   flex: 1 1 auto;
   padding-top: var(--header-h);
