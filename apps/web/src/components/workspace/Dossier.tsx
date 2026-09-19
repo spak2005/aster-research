@@ -1,3 +1,4 @@
+import { nearestFrame } from '../../lib/comparison';
 import type { Recording } from '../../types';
 import type { WorkspaceController } from './useWorkspace';
 import MetricCards from './MetricCards';
@@ -26,14 +27,14 @@ export default function Dossier({ recording, workspace }: DossierProps) {
   const frame = frames[frameIndex] ?? null;
   const baselineFrame =
     workspace.compare && baselineFrames.length > 0
-      ? baselineFrames[Math.min(frameIndex, baselineFrames.length - 1)]
+      ? nearestFrame(baselineFrames, frame?.time_s ?? 0)
       : null;
   const showBaselineSeries =
-    workspace.compare && selectedExperiment?.id !== recording.baseline_id;
+    workspace.compare && selectedExperiment?.id !== workspace.baseline?.id;
 
   return (
     <section className="dossier shell section" aria-label="Investigation detail">
-      <MetricCards recording={recording} experiment={selectedExperiment} />
+      <MetricCards recording={recording} experiment={selectedExperiment} baseline={workspace.baseline} />
 
       <div className="dossier__charts">
         <ProfileChart

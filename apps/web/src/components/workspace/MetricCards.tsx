@@ -1,10 +1,12 @@
-import type { Recording } from '../../types';
+import { matchedGain } from '../../lib/comparison';
+import type { Experiment, Recording } from '../../types';
 import type { VisibleExperiment } from '../../lib/visibility';
 import { formatNumber, formatPercent } from '../../lib/format';
 
 interface MetricCardsProps {
   recording: Recording;
   experiment: VisibleExperiment | null;
+  baseline: Experiment | null;
 }
 
 interface Card {
@@ -20,10 +22,10 @@ interface Card {
  * recorded metrics; where a metric does not exist yet the card says so instead
  * of showing a zero.
  */
-export default function MetricCards({ recording, experiment }: MetricCardsProps) {
+export default function MetricCards({ recording, experiment, baseline }: MetricCardsProps) {
   const result = experiment?.result?.status === 'completed' ? experiment.result : null;
   const metrics = result?.metrics ?? null;
-  const improvement = metrics?.improvement_pct ?? null;
+  const improvement = matchedGain(result, baseline);
 
   const cards: Card[] = [
     {
@@ -33,9 +35,9 @@ export default function MetricCards({ recording, experiment }: MetricCardsProps)
       note: metrics ? 'frozen objective definition' : 'no value recorded yet',
     },
     {
-      label: 'Against its reference',
+      label: 'Against matched baseline',
       value: improvement === null ? '—' : formatPercent(improvement),
-      note: improvement === null ? 'no comparison recorded' : 'as recorded by the harness',
+      note: improvement === null ? 'no comparison recorded' : 'derived from same-grid measurements',
       tone: improvement === null ? undefined : improvement > 0 ? 'signal' : 'adverse',
     },
     {

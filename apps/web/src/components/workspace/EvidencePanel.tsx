@@ -1,5 +1,6 @@
+import { matchedBaseline, matchedGain } from '../../lib/comparison';
 import { publicAssetUrl } from '../../../../../contracts/public-url';
-import type { Recording } from '../../types';
+import type { Experiment, Recording } from '../../types';
 import type { VisibleExperiment, VisibleHypothesis, VisibleState } from '../../lib/visibility';
 import { CHECK_META, EXPERIMENT_STATUS_META, ROLE_LABEL, VERDICT_META } from '../../lib/status';
 import { formatNumber, formatPercent, formatDuration } from '../../lib/format';
@@ -18,7 +19,7 @@ function ConfigList({ experiment }: { experiment: VisibleExperiment }) {
   const config = experiment.config;
   const extras = Object.entries(config).filter(
     ([key]) =>
-      !['heating_location', 'heating_width', 'heating_power_mw', 'duration_s'].includes(key),
+      !['heating_location', 'heating_width', 'heating_power_mw', 'duration_s', 'config_hash'].includes(key) && typeof config[key] !== 'object',
   );
 
   return (
@@ -62,11 +63,14 @@ function ConfigList({ experiment }: { experiment: VisibleExperiment }) {
 function MetricsList({
   experiment,
   recording,
+  baseline,
 }: {
   experiment: VisibleExperiment;
   recording: Recording;
+  baseline: Experiment | null;
 }) {
   const result = experiment.result;
+  const improvement = matchedGain(result, baseline);
   if (!result) {
     return (
       <p className="evidence__pending">
@@ -106,17 +110,17 @@ function MetricsList({
         </dd>
       </div>
       <div>
-        <dt className="label">Against its reference</dt>
+        <dt className="label">Against matched baseline</dt>
         <dd
           className={
-            result.metrics.improvement_pct === null
+            improvement === null
               ? ''
-              : result.metrics.improvement_pct > 0
+              : improvement > 0
                 ? 'tone-signal evidence__delta'
                 : 'tone-adverse evidence__delta'
           }
         >
-          <span className="numeric">{formatPercent(result.metrics.improvement_pct)}</span>
+          <span className="numeric">{formatPercent(improvement)}</span>
         </dd>
       </div>
       <div>
@@ -192,7 +196,7 @@ export default function EvidencePanel({
           <ConfigList experiment={experiment} />
 
           <p className="label evidence__field-label">Result</p>
-          <MetricsList experiment={experiment} recording={recording} />
+          <MetricsList experiment={experiment} recording={recording} baseline={matchedBaseline(experiment.result, state.experiments.flatMap(e => e.result ? [e.result] : []), recording.baseline_id)} />
 
           <p className="label evidence__field-label">Checks</p>
           {experiment.checks.length === 0 ? (

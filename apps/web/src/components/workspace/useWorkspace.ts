@@ -1,3 +1,4 @@
+import { matchedBaseline } from '../../lib/comparison';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Experiment, Recording } from '../../types';
 import {
@@ -206,8 +207,8 @@ export function useWorkspace(
     [recording],
   );
 
-  const baselineSource = visible.experimentById.get(recording.baseline_id) ?? null;
-  const baseline = baselineSource?.result ?? null;
+  const baseline = matchedBaseline(selectedExperiment?.result ?? null,
+    visible.experiments.flatMap(e => e.result ? [e.result] : []), recording.baseline_id);
 
   const frameCount = selectedExperiment?.result?.frames.length ?? 0;
 
