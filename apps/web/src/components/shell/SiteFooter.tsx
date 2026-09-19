@@ -48,7 +48,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="site-footer__base">
-          <span>Working title. Product name and domain not yet selected.</span>
+          <span>Built for questions that can be tested.</span>
           <span className="numeric">Recording contract v1.0</span>
         </div>
       </div>

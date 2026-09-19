@@ -8,23 +8,23 @@ interface LocalRunGuideProps {
 
 const STEPS: { title: string; body: string; code?: string; caption?: string }[] = [
   {
-    title: 'Create the isolated environment',
-    body: 'From a clone of the project, build a project-local Python environment. The pinned lock file keeps the scientific stack at the versions the runs were measured with.',
-    caption: 'in the project root',
-    code: 'python3.12 -m venv .venv\n.venv/bin/pip install -r requirements.lock.txt',
+    "title": "Get the project and connect the research model",
+    "body": "Clone the project and sign in to Cursor CLI. The research proposer uses that local login; credentials are never sent to the browser.",
+    "caption": "terminal",
+    "code": "git clone https://github.com/spak2005/aster-research.git\ncd aster-research\nagent login"
   },
   {
-    title: 'Start the research service',
-    body: 'It binds to localhost only. There is no public compute endpoint, and model credentials stay in your environment rather than in any recording or page.',
-    caption: 'research service',
-    code: '.venv/bin/python -m uvicorn services.research.api:app \\\n  --host 127.0.0.1 --port 8765',
+    "title": "Install the scientific environment",
+    "body": "Create a project-local Python 3.12 environment and install the pinned scientific stack. uv can install the required Python version for you.",
+    "caption": "in the project root",
+    "code": "uv venv --python 3.12\nuv pip install --python .venv/bin/python -r requirements.lock.txt"
   },
   {
-    title: 'Serve the interface',
-    body: 'The dev server proxies /api to the service above, so this page will detect it and switch out of download-only mode.',
-    caption: 'web interface',
-    code: 'npm install\nnpm run dev',
-  },
+    "title": "Start Aster locally",
+    "body": "This launches the local research service and the website together. Open the address printed by Vite in your terminal.",
+    "caption": "in the project root",
+    "code": "npm ci\nnpm run dev:all"
+  }
 ];
 
 export default function LocalRunGuide({ config }: LocalRunGuideProps) {
@@ -47,14 +47,19 @@ export default function LocalRunGuide({ config }: LocalRunGuideProps) {
     <section className="guide">
       <div className="section__head">
         <p className="eyebrow">Run it locally</p>
-        <h2 className="section__title">Four steps, no hosted queue</h2>
+        <h2 className="section__title">Run your first investigation</h2>
         <p className="section__lede">
           Everything below runs on your own machine. The configuration you picked above is the
-          entire request body the service accepts, so you can post it directly if you would rather
-          not use this page at all.
+          supported request body, so you can also post it directly to the local service.
         </p>
       </div>
 
+      <p className="setup__hint">
+        Prerequisites: <a href="https://nodejs.org/en/download" target="_blank" rel="noreferrer">Node.js 22+</a>,{' '}
+        <a href="https://docs.astral.sh/uv/getting-started/installation/" target="_blank" rel="noreferrer">uv</a>, and{' '}
+        <a href="https://cursor.com/docs/cli/installation" target="_blank" rel="noreferrer">Cursor CLI</a>.
+        {' '}<a href="https://github.com/spak2005/aster-research" target="_blank" rel="noreferrer">View the source</a>.
+      </p>
       <div className="guide__config">
         <CodeBlock caption={filename} code={JSON.stringify(body, null, 2)} />
         <div className="guide__config-actions">
@@ -86,8 +91,8 @@ export default function LocalRunGuide({ config }: LocalRunGuideProps) {
           <div className="guide__step-body">
             <h3 className="guide__step-title">Start the investigation</h3>
             <p className="guide__step-text">
-              Reload this page with the service running and the panel above will offer a real start
-              button. Or post the downloaded file yourself — same endpoint, same validation.
+              In the local website, open Run locally and choose Start investigation. Or run the
+              command below from the folder containing your downloaded configuration.
             </p>
             <CodeBlock
               caption="direct request"
