@@ -12,6 +12,8 @@ interface TokamakStageProps {
   frame: ProfileFrame | null;
   temperatureScale: [number, number];
   heating: HeatingEnvelope | null;
+  position?: [number, number, number];
+  scale?: number;
 }
 
 function getVisualDimensions(geometry: Recording['geometry']) {
@@ -30,6 +32,8 @@ export function TokamakStage({
   frame,
   temperatureScale,
   heating,
+  position = [0, 0, 0],
+  scale = 1,
 }: TokamakStageProps) {
   const { quality } = useSceneViewport();
   const { majorRadius, minorRadius } = getVisualDimensions(geometry);
@@ -41,7 +45,7 @@ export function TokamakStage({
   ];
 
   return (
-    <group>
+    <group position={position} scale={scale}>
       <ambientLight intensity={0.24} color="#8ab9bd" />
       <hemisphereLight args={['#9debf0', '#071113', 0.75]} />
       <directionalLight
