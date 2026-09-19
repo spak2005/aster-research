@@ -83,3 +83,34 @@ export async function fetchRecording(path: string, signal?: AbortSignal): Promis
   const payload = await readJson(path, signal);
   return assertRecording(payload, path);
 }
+
+/* ---- Development fixture ---------------------------------------------------
+ * A synthetic run used to build and regression-check this interface. It is
+ * served by the dev server only, is never listed in the published catalogue,
+ * and is labelled `development-fixture` so every view marks it as non-research
+ * data. `import.meta.env.DEV` is statically replaced, so production builds drop
+ * the fetch entirely.
+ * -------------------------------------------------------------------------- */
+
+export const DEVELOPMENT_FIXTURE_ID = 'development-fixture';
+export const DEVELOPMENT_FIXTURE_URL = '/contracts/examples/development.json';
+
+export function developmentFixtureSummary(): RecordingSummary {
+  return {
+    id: DEVELOPMENT_FIXTURE_ID,
+    title: 'Development fixture — synthetic heating-profile search',
+    description:
+      'Synthetic data for interface development. Not a scientific result and not published.',
+    path: DEVELOPMENT_FIXTURE_URL,
+    mode: 'development-fixture',
+    created_at: '',
+  };
+}
+
+export async function loadDevelopmentFixture(signal?: AbortSignal): Promise<Recording> {
+  if (!import.meta.env.DEV) {
+    throw new Error('The development fixture is not part of the published build.');
+  }
+  const payload = await readJson(DEVELOPMENT_FIXTURE_URL, signal);
+  return assertRecording(payload, DEVELOPMENT_FIXTURE_URL);
+}
