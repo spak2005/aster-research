@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import SiteHeader from './components/shell/SiteHeader';
 import SiteFooter from './components/shell/SiteFooter';
+import LandingPage from './pages/LandingPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { useRoute } from './lib/router';
 import './styles/shell.css';
@@ -16,11 +17,7 @@ export default function App() {
 
   let page = <NotFoundPage path={route.path} />;
   if (head === undefined) {
-    page = (
-      <div className="shell section">
-        <p className="eyebrow">Aster Research</p>
-      </div>
-    );
+    page = <LandingPage section={route.query.get('section')} />;
   }
 
   return (
