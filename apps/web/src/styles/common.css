@@ -64,6 +64,27 @@
   }
 }
 
+/* Status tones. Set once, consumed through currentColor by dots, rules and text. */
+.tone-signal {
+  --tone: var(--signal);
+  --tone-wash: var(--signal-wash);
+}
+
+.tone-adverse {
+  --tone: var(--adverse);
+  --tone-wash: var(--adverse-wash);
+}
+
+.tone-neutral {
+  --tone: var(--text-dim);
+  --tone-wash: rgba(154, 176, 208, 0.07);
+}
+
+.tone-faint {
+  --tone: var(--text-faint);
+  --tone-wash: rgba(154, 176, 208, 0.05);
+}
+
 /* ---- Notices: empty, error and informational states ---- */
 
 .notice {

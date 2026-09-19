@@ -2,6 +2,7 @@ import type { Recording } from '../../types';
 import ModeBadge from '../common/ModeBadge';
 import { useWorkspace } from './useWorkspace';
 import Transport from './Transport';
+import ResearchTree from './ResearchTree';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -31,10 +32,15 @@ export default function Workspace({ recording }: WorkspaceProps) {
 
       <div className="workspace__console">
         <aside className="workspace__pane workspace__pane--tree" aria-label="Research tree">
-          <p className="label workspace__pane-label">Research tree</p>
-          <p className="workspace__placeholder numeric">
-            {visible.hypotheses.length} hypotheses visible
+          <p className="label workspace__pane-label">
+            Research tree · {visible.hypotheses.length} visible
           </p>
+          <ResearchTree
+            state={visible}
+            selectedHypothesisId={workspace.selectedHypothesisId}
+            selectedExperimentId={workspace.selectedExperimentId}
+            onSelect={workspace.select}
+          />
         </aside>
 
         <section className="workspace__pane workspace__pane--scene" aria-label="Plasma view">
