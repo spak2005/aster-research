@@ -60,8 +60,9 @@ def _executor_factory(energies: dict[tuple[float, float], float]):
             error=None,
             timed_out=False,
             config=config,
-            n_rho=25,
-            chi_timestep_prefactor=50.0,
+            n_rho=budget.n_rho,
+            chi_timestep_prefactor=budget.chi_timestep_prefactor,
+            max_dt_s=budget.max_dt_s,
             sim_error=0,
             sim_status="completed",
         )
