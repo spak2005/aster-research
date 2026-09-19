@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import {
   AdditiveBlending,
-  Color,
   DoubleSide,
   Quaternion,
   Vector3,
 } from 'three';
 import type { ProfileFrame } from '../../../../contracts/recording';
 import { useSceneViewport } from './SceneCanvas';
+import { temperatureColor } from './temperatureScale';
 
 interface PlasmaVolumeProps {
   frame: ProfileFrame;
@@ -46,16 +46,6 @@ function combinedTemperature(frame: ProfileFrame, rho: number) {
   return (electron + ion) / 2;
 }
 
-function provisionalTemperatureColor(
-  temperature: number,
-  [minimum, maximum]: [number, number],
-) {
-  const span = maximum - minimum;
-  const normalized =
-    span > 0 ? Math.min(1, Math.max(0, (temperature - minimum) / span)) : 0;
-  return new Color('#12383c').lerp(new Color('#e4a35c'), normalized);
-}
-
 export function PlasmaVolume({
   frame,
   majorRadius,
@@ -74,7 +64,7 @@ export function PlasmaVolume({
         return {
           rho,
           temperature,
-          color: provisionalTemperatureColor(temperature, temperatureScale),
+          color: temperatureColor(temperature, temperatureScale),
         };
       }),
     [frame, layerCount, temperatureScale],

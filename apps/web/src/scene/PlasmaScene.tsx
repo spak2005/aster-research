@@ -1,9 +1,10 @@
 import { Suspense } from 'react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { PlasmaSceneProps } from '../../../../contracts/recording';
 import { SceneCanvas } from './SceneCanvas';
 import { SceneControls } from './SceneControls';
 import { loadProfileFrame } from './profileFrames';
+import { TemperatureLegend } from './TemperatureLegend';
 import { TokamakStage } from './TokamakStage';
 
 export default function PlasmaScene({
@@ -17,6 +18,11 @@ export default function PlasmaScene({
   className,
 }: PlasmaSceneProps) {
   const [cameraResetRevision, setCameraResetRevision] = useState(0);
+  const [compact, setCompact] = useState(false);
+  const handleViewportChange = useCallback(
+    (viewport: { compact: boolean }) => setCompact(viewport.compact),
+    [],
+  );
   const profile = loadProfileFrame(experiment, frameIndex);
   const label =
     profile.status === 'ready' && experiment
@@ -37,7 +43,11 @@ export default function PlasmaScene({
           'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
       }}
     >
-      <SceneCanvas className={className} reducedMotion={reducedMotion}>
+      <SceneCanvas
+        className={className}
+        reducedMotion={reducedMotion}
+        onViewportChange={handleViewportChange}
+      >
         <Suspense fallback={null}>
           <TokamakStage
             geometry={geometry}
@@ -128,6 +138,9 @@ export default function PlasmaScene({
         >
           {profile.reason}
         </div>
+      ) : null}
+      {profile.status === 'ready' ? (
+        <TemperatureLegend scale={temperatureScale} compact={compact} />
       ) : null}
     </section>
   );
