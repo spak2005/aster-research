@@ -5,7 +5,7 @@ from scripts.validate_recording import ROOT,validate_recording
 
 class RecordingContractTests(unittest.TestCase):
     def setUp(self):
-        self.recording=json.loads((ROOT/'contracts/examples/development.json').read_text())
+        self.recording=json.loads((ROOT/'contracts/examples/contract-test.json').read_text())
     def test_fixture_schema_and_links(self):
         validate_recording(self.recording)
     def test_fixture_cannot_be_published(self):

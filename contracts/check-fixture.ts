@@ -1,5 +1,5 @@
 /** Checked alongside every web build: source fixture and TypeScript contract agree. */
-import fixture from './examples/development.json';
+import fixture from './examples/contract-test.json';
 import type {Recording} from './recording';
 // JSON imports widen string literals; this compile-time shape check keeps nested
 // fields, dimensions, units and nullability aligned without blessing enum strings.
