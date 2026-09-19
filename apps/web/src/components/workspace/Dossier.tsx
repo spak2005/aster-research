@@ -6,6 +6,7 @@ import EnergyChart from '../charts/EnergyChart';
 import ObjectiveComparison from '../charts/ObjectiveComparison';
 import Conclusion from './Conclusion';
 import Provenance from './Provenance';
+import { frameAtTime } from '../../lib/frames';
 import '../../styles/dossier.css';
 
 interface DossierProps {
@@ -24,10 +25,10 @@ export default function Dossier({ recording, workspace }: DossierProps) {
   const baselineFrames = workspace.baseline?.frames ?? [];
   const frameIndex = Math.min(workspace.frameIndex, Math.max(0, frames.length - 1));
   const frame = frames[frameIndex] ?? null;
-  const baselineFrame =
-    workspace.compare && baselineFrames.length > 0
-      ? baselineFrames[Math.min(frameIndex, baselineFrames.length - 1)]
-      : null;
+  // Experiments in one run may store different numbers of frames, so the
+  // baseline is matched on simulation time rather than on position in the array.
+  const alignedBaseline =
+    workspace.compare && frame ? frameAtTime(baselineFrames, frame.time_s) : null;
   const showBaselineSeries =
     workspace.compare && selectedExperiment?.id !== recording.baseline_id;
 
@@ -38,7 +39,8 @@ export default function Dossier({ recording, workspace }: DossierProps) {
       <div className="dossier__charts">
         <ProfileChart
           frame={frame}
-          baselineFrame={showBaselineSeries ? baselineFrame : null}
+          baselineFrame={showBaselineSeries ? alignedBaseline?.frame ?? null : null}
+          baselineOffsetS={alignedBaseline?.offsetS ?? 0}
           temperatureScaleKev={recording.temperature_scale_kev}
           config={selectedExperiment?.config ?? null}
           label={selectedExperiment?.label ?? 'no selection'}
