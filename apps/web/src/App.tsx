@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import SiteHeader from './components/shell/SiteHeader';
 import SiteFooter from './components/shell/SiteFooter';
 import LandingPage from './pages/LandingPage';
+import ResearchIndexPage from './pages/ResearchIndexPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { useRoute } from './lib/router';
 import './styles/shell.css';
@@ -18,6 +19,8 @@ export default function App() {
   let page = <NotFoundPage path={route.path} />;
   if (head === undefined) {
     page = <LandingPage section={route.query.get('section')} />;
+  } else if (head === 'research' && route.segments.length === 1) {
+    page = <ResearchIndexPage />;
   }
 
   return (
