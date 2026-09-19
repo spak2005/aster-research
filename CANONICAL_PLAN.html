@@ -1,0 +1,667 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AI Science Harness · Canonical Build Plan</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f6f8;color:#202735;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}aside{position:fixed;inset:0 auto 0 0;width:290px;padding:32px 22px;overflow:auto;background:#101c2c;color:#dce7f5}aside strong{font-size:20px;color:white}aside a{color:#c7d8ef;text-decoration:none;font-size:13px}aside ul{padding-left:16px}aside li{margin:8px 0}main{margin:32px 40px 80px 330px;max-width:1100px;padding:46px 54px;background:white;border:1px solid #e3e7ed;border-radius:14px}h1{font-size:36px;line-height:1.2;letter-spacing:-1px}h2{font-size:25px;margin-top:52px;padding-top:16px;border-top:1px solid #e3e7ed;scroll-margin-top:24px}h3{font-size:19px;margin-top:30px}a{color:#175dc2}table{width:100%;border-collapse:collapse;font-size:14px;margin:22px 0;display:block;overflow:auto}th,td{border:1px solid #e0e5eb;padding:10px 12px;text-align:left;vertical-align:top}th{background:#edf3fa}tr:nth-child(even){background:#f8fafc}pre{overflow:auto;padding:22px;background:#111e30;color:#deebfc;border-radius:9px;font-size:13px;line-height:1.6}code{font-family:ui-monospace,SFMono-Regular,monospace;font-size:.88em}p code,li code{background:#edf2f8;padding:2px 5px;border-radius:4px}li{margin:6px 0}.label{color:#83b8ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}button{margin-top:18px;padding:9px 14px;background:#dceaff;color:#142b48;border:0;border-radius:6px;cursor:pointer}@media(max-width:1000px){aside{position:relative;width:auto;max-height:250px}main{margin:18px;padding:25px}}@media print{aside{display:none}main{margin:0;padding:0;border:0;max-width:none}body{background:white;font-size:11px}pre{white-space:pre-wrap}h2{break-after:avoid}tr{break-inside:avoid}}</style></head><body><aside><div class="label">Review draft · v1.0</div><strong>Science Harness</strong><button onclick="window.print()">Print / Save as PDF</button><div class="toc">
+<ul>
+<li><a href="#ai-science-research-harness-canonical-build-plan">AI Science Research Harness: Canonical Build Plan</a><ul>
+<li><a href="#1-product-and-thesis">1. Product and thesis</a></li>
+<li><a href="#2-user-experience">2. User experience</a><ul>
+<li><a href="#public-website">Public website</a></li>
+<li><a href="#supported-start-flow">Supported start flow</a></li>
+<li><a href="#investigation-workspace">Investigation workspace</a></li>
+</ul>
+</li>
+<li><a href="#3-visual-direction">3. Visual direction</a><ul>
+<li><a href="#hero-scene">Hero scene</a></li>
+<li><a href="#scientific-representation-boundaries">Scientific representation boundaries</a></li>
+<li><a href="#research-tree">Research tree</a></li>
+<li><a href="#playback-truthfulness">Playback truthfulness</a></li>
+</ul>
+</li>
+<li><a href="#4-scientific-demonstration">4. Scientific demonstration</a><ul>
+<li><a href="#the-research-loop">The research loop</a></li>
+<li><a href="#verification-and-baselines">Verification and baselines</a></li>
+</ul>
+</li>
+<li><a href="#5-architecture-and-ownership-boundaries">5. Architecture and ownership boundaries</a></li>
+<li><a href="#6-contracts-to-freeze-before-parallel-implementation">6. Contracts to freeze before parallel implementation</a><ul>
+<li><a href="#research-event-v1">Research event v1</a></li>
+<li><a href="#run-recording-v1">Run recording v1</a></li>
+<li><a href="#scientific-adapter-v1">Scientific adapter v1</a></li>
+<li><a href="#local-api-v1">Local API v1</a></li>
+</ul>
+</li>
+<li><a href="#7-build-sequence-and-gates">7. Build sequence and gates</a><ul>
+<li><a href="#phase-0-prerequisites-and-feasibility">Phase 0: prerequisites and feasibility</a></li>
+<li><a href="#phase-1-foundations">Phase 1: foundations</a></li>
+<li><a href="#phase-2-parallel-product-construction">Phase 2: parallel product construction</a></li>
+<li><a href="#phase-3-actual-investigation">Phase 3: actual investigation</a></li>
+<li><a href="#phase-4-release-and-demo">Phase 4: release and demo</a></li>
+</ul>
+</li>
+<li><a href="#8-cursor-agent-plan">8. Cursor agent plan</a></li>
+<li><a href="#9-fine-grained-commit-work-breakdown">9. Fine-grained commit work breakdown</a><ul>
+<li><a href="#i-coordinatorfoundationsintegration-16-planned-commits">I: coordinator/foundations/integration — 16 planned commits</a></li>
+<li><a href="#h-grok-harness-16-planned-commits">H: Grok / harness — 16 planned commits</a></li>
+<li><a href="#v-astra-3d-and-playback-16-planned-commits">V: Astra / 3D and playback — 16 planned commits</a></li>
+<li><a href="#u-claude-website-and-ux-16-planned-commits">U: Claude / website and UX — 16 planned commits</a></li>
+</ul>
+</li>
+<li><a href="#10-commit-and-github-contribution-policy">10. Commit and GitHub contribution policy</a></li>
+<li><a href="#11-tests-and-final-acceptance">11. Tests and final acceptance</a></li>
+<li><a href="#12-scope-guardrails-and-cuts">12. Scope guardrails and cuts</a></li>
+<li><a href="#13-review-points-and-working-status">13. Review points and working status</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><main><h1 id="ai-science-research-harness-canonical-build-plan">AI Science Research Harness: Canonical Build Plan</h1>
+<p>Version: 1.0 · September 19, 2026
+Status: <strong>DRAFT FOR ISRAEL'S REVIEW. Implementation has not started.</strong>
+Working descriptor: AI Science Research Harness. Product name and domain are not yet selected; naming must not block implementation.</p>
+<p>This is the source of truth for scope, responsibilities, sequencing, and acceptance. Prior brainstorming is background, not additional requirements. After review, preserve this file in the implementation repository as <code>CANONICAL_PLAN.md</code>. Update it when decisions change; do not silently expand scope.</p>
+<h2 id="1-product-and-thesis">1. Product and thesis</h2>
+<p>Connect a research question to scientific tools and let an agent pursue an evidence-backed investigation: propose hypotheses, predict outcomes, run experiments, interpret results, revise or branch, and conclude within a declared budget.</p>
+<p><strong>The product is the harness. TORAX is the first scientific backend and visual demonstration.</strong> A new scientific discovery is a possible outcome, not a condition for a successful submission.</p>
+<p>The demo must establish:</p>
+<ol>
+<li>The system ran a real closed-loop investigation, not a fixed script dressed as an agent.</li>
+<li>Its next experiment depends on the preceding results.</li>
+<li>Conclusions trace to executable experiments and explicit verification criteria.</li>
+<li>The simulator is integrated through a documented adapter boundary.</li>
+<li>A researcher can understand the investigation and run the supported example themselves.</li>
+</ol>
+<p>We can demonstrate one working integration, not claim universal scientific capability. Generalizability comes from the interface design, not a pretend catalog of supported labs.</p>
+<h2 id="2-user-experience">2. User experience</h2>
+<h3 id="public-website">Public website</h3>
+<ul>
+<li>A polished landing page explaining the product in one sentence and showing a compelling actual investigation.</li>
+<li>Primary CTA: <strong>Explore a real investigation</strong>. Opens recorded playback, clearly labeled as recorded.</li>
+<li>Secondary CTA: <strong>Run your own investigation</strong>. Opens the supported plasma experiment setup, explains prerequisites, and provides an actual local launch path.</li>
+<li>A short How it works section: question → hypothesis → experiment → challenge → conclusion.</li>
+<li>A concrete integration section describing the adapter, with TORAX marked supported and other domains described as future integrations, not functioning products.</li>
+</ul>
+<h3 id="supported-start-flow">Supported start flow</h3>
+<p>For v1, the public website can serve recordings without running expensive compute. A visitor chooses the supported question and bounded settings, downloads the configuration, and follows the documented local install/run command. The local application additionally has a working <strong>Start investigation</strong> action that creates a real run.</p>
+<p>The setup page must explicitly say whether it is connected to a running local backend. When disconnected it offers <strong>Download configuration / Run locally</strong>, never a fake queued job. Hosted authenticated execution is an optional stretch, not necessary for the reviewed MVP.</p>
+<p>This is the proposed scope decision for review: <strong>public self-serve playback + supported local execution</strong>, not an unrestricted public cloud research service.</p>
+<h3 id="investigation-workspace">Investigation workspace</h3>
+<ul>
+<li>3D plasma view, baseline and selected candidate comparison.</li>
+<li>A research tree with explicit parent/child hypotheses and experiments.</li>
+<li>A synchronized timeline with play/pause, scrub, speed controls, and chapter jumps.</li>
+<li>Clear energy input, simulated output, and baseline-relative metrics.</li>
+<li>Evidence panel showing hypothesis, predicted outcome, actual result, verification checks, caveats, and artifacts.</li>
+<li>Overview for the crowd; progressive disclosure for scientific detail.</li>
+</ul>
+<h2 id="3-visual-direction">3. Visual direction</h2>
+<p>Aim for a polished scientific observatory: dark neutral background, disciplined typography, restrained luminous accents, strong depth and readable instrumentation. Avoid tiny unreadable dashboards and gratuitous motion.</p>
+<h3 id="hero-scene">Hero scene</h3>
+<ul>
+<li>Cutaway tokamak schematic with a visible plasma volume/surface.</li>
+<li>Map actual radial temperature data onto toroidal geometry; select time from recorded simulation snapshots.</li>
+<li>Show applied heating as a distinguishable overlay representing the configured spatial deposition, not a invented beam-physics simulation.</li>
+<li>Use a consistent temperature color scale for baseline and candidate. Auto-rescaling must not make a worse candidate appear hotter.</li>
+<li>Use a split comparison or synchronized toggles; never render two expensive scenes unnecessarily on low-performance devices.</li>
+<li>Smooth camera transitions at meaningful investigation events, with manual orbit and reset controls.</li>
+</ul>
+<h3 id="scientific-representation-boundaries">Scientific representation boundaries</h3>
+<p>TORAX supplies radial transport profiles, not a full 3D turbulent-plasma field. Display <strong>schematic 3D reconstruction of simulated radial profiles</strong> in scene information. Decorative particles, if used at all, must not imply tracked physical particles or simulated instability. Do not label results reactor-safe, experimentally validated, globally optimal, or a new discovery without evidence.</p>
+<h3 id="research-tree">Research tree</h3>
+<p>Keep the tree as a readable 2D overlay/panel, not a rotating 3D graph. Branch status: proposed, running, supported, refuted, inconclusive, abandoned. Selecting a node selects its scene, metric history, and evidence. It may show a truthful linear investigation if no branching occurred; do not manufacture branches.</p>
+<h3 id="playback-truthfulness">Playback truthfulness</h3>
+<ul>
+<li>Recorded-run badge and actual run date always available.</li>
+<li>Distinguish research wall-clock time, simulation physical time, and playback position.</li>
+<li>Interpolated visuals between stored samples are presentation only; metrics come from saved outputs.</li>
+<li>A summary at time T uses only evidence available at T. Do not reveal later conclusions early.</li>
+<li>Replay must work without model credentials, a live model connection, or TORAX installed.</li>
+</ul>
+<h2 id="4-scientific-demonstration">4. Scientific demonstration</h2>
+<p>Question: <strong>At fixed total heating energy, can the system find a heating profile that improves the chosen simulated outcome, and does that improvement survive stricter checks?</strong></p>
+<p>First controlled search uses heating location and width. Freeze total heating power, duration, electron/ion split, geometry, objective, and bounds before the investigation. Candidate parameters must remain within reviewed ranges. Select a documented TORAX configuration and record every nonphysical/demo assumption, including enhanced-resistivity settings if present.</p>
+<p>Provisional objective: integrated simulated fusion output over a fixed duration. Validate that the selected configuration exposes this quantity with understood units. If it does not, deliberately revise the plan to a supported temperature-profile objective before running; do not silently substitute a metric.</p>
+<h3 id="the-research-loop">The research loop</h3>
+<ol>
+<li>Read the question, adapter capabilities, constraints, budget, and existing evidence.</li>
+<li>Propose a hypothesis, predicted outcome, and a next experiment or check.</li>
+<li>Harness validates the request against the schema and budget.</li>
+<li>Immutable tool executor runs the experiment and records outputs.</li>
+<li>Agent writes a concise evidence-linked assessment and decides to revise, branch, verify, or stop.</li>
+<li>Independent claim gate decides the permissible conclusion label.</li>
+</ol>
+<p>The research agent is distinct from the coding agents building the product. It gets bounded scientific tools, not general filesystem/shell access to rewrite its judge. No hidden chain-of-thought collection: record short hypotheses, predictions, decisions, and evidence references.</p>
+<h3 id="verification-and-baselines">Verification and baselines</h3>
+<ul>
+<li>Check valid inputs, units, fixed energy budget, solver success, finite outputs, and completion of the requested horizon.</li>
+<li>Re-evaluate both baseline and finalist with refined timestep/grid settings and, where supported, another solver.</li>
+<li>Define numerical tolerances and a minimum meaningful improvement before seeing final results.</li>
+<li>Freeze finalist selection before withheld condition perturbations. Do not repeatedly optimize against the final tests.</li>
+<li>Compare with default configuration and equal-budget grid/random search, including verification cost in budget reporting.</li>
+<li>A simple two-parameter sweep may beat the agent. Report that rather than hiding it.</li>
+<li>Numerical convergence verifies consistency within the model, not the correctness of the learned transport physics.</li>
+</ul>
+<p>Useful endings include a supported modest improvement, a fragile candidate, an apparent gain rejected by verification, or no supported improvement within budget. All are legitimate records; none should be staged.</p>
+<h2 id="5-architecture-and-ownership-boundaries">5. Architecture and ownership boundaries</h2>
+<pre><code class="language-text">Public site + replay assets                 Local research application
+React / TypeScript / R3F                   Python API + bounded worker
+          |                                          |
+          +----- versioned recording contract -------+
+                                                     |
+                                              Research orchestrator
+                                                /             \
+                                         Model adapter     Scientific adapter
+                                                               |
+                                                             TORAX
+</code></pre>
+<p>Proposed implementation defaults:</p>
+<ul>
+<li>Web: React + TypeScript + Vite; React Three Fiber/Three.js for the scene. Static-exportable for easy public hosting.</li>
+<li>Local API: FastAPI, one research worker, typed request validation.</li>
+<li>Scientific runtime: isolated Python &gt;=3.12 environment with pinned compatible TORAX/JAX dependencies; CPU first on Israel's M3 Pro/18 GB Mac.</li>
+<li>Persistence: append-only JSONL events, immutable per-experiment artifacts, small SQLite run/job index locally.</li>
+<li>Visualization exchange: compact JSON manifest and profile frames. Preserve original scientific output separately; don't ship huge raw arrays in the initial page load.</li>
+<li>Model backend: one working configurable provider/CLI adapter chosen after credential checks. No hard dependency on a particular model brand.</li>
+<li>Public delivery: static website + selected recording assets. Hosting provider/domain selected at release based on available access; no paid provisioning implicit in this planning step.</li>
+</ul>
+<p>Suggested repository layout:</p>
+<pre><code class="language-text">CANONICAL_PLAN.md
+BUILD_STATUS.md
+apps/web/src/{pages,components,scene,replay}/
+services/research/{api,orchestrator,models,adapters,verification}/
+contracts/{schemas,examples}/
+experiments/torax/
+recordings/                 # curated manifests/small assets only
+tests/{contracts,research,integration}/
+docs/{setup,adapter,science,demo}/
+</code></pre>
+<p>Create a standalone implementation repository inside the workspace at build start. The surrounding workspace currently has unrelated changes; never stage or commit those. Inspect reuse/licensing before copying from the existing physics-harness repository, and document what predates the hackathon.</p>
+<h2 id="6-contracts-to-freeze-before-parallel-implementation">6. Contracts to freeze before parallel implementation</h2>
+<h3 id="research-event-v1">Research event v1</h3>
+<p>Every event includes <code>schema_version</code>, <code>run_id</code>, monotonic <code>sequence</code>, unique <code>event_id</code>, timestamp, event type, and typed payload. Relationships use <code>hypothesis_id</code>, <code>experiment_id</code>, <code>parent_id</code>, and evidence IDs as applicable.</p>
+<p>Minimum types:</p>
+<p><code>run.started</code>, <code>hypothesis.proposed</code>, <code>experiment.requested</code>, <code>experiment.started</code>, <code>experiment.completed</code>, <code>experiment.failed</code>, <code>assessment.recorded</code>, <code>verification.requested</code>, <code>verification.completed</code>, <code>hypothesis.revised</code>, <code>branch.created</code>, <code>conclusion.recorded</code>, <code>run.completed</code>, <code>run.failed</code>, <code>run.canceled</code>.</p>
+<p>An API acknowledgement is not an experiment result. Failed, canceled, and incomplete runs remain first-class states.</p>
+<h3 id="run-recording-v1">Run recording v1</h3>
+<p>Manifest includes question, provenance, software/model/config versions, frozen metric definition, units, parameter bounds, budgets, baseline IDs, event index, artifact hashes, profile-frame references, conclusion scope, and limitations.</p>
+<p>Profile frames carry physical time, radial coordinate definition, temperature values/units, geometry metadata sufficient for schematic rendering, and available recorded metrics. Renderer does not invent missing fields or compute scientific conclusions.</p>
+<h3 id="scientific-adapter-v1">Scientific adapter v1</h3>
+<p><code>describe()</code> → controls, constraints, observables, units, supported checks.</p>
+<p><code>validate(config)</code> → typed accepted/rejected result.</p>
+<p><code>execute(config, budget)</code> → experiment handle and saved outputs.</p>
+<p><code>extract_observations(outputs)</code> → normalized metrics and profiles.</p>
+<p><code>verification_cases(candidate, baseline)</code> → deterministic check specifications.</p>
+<p><code>cancel(handle)</code> → explicit outcome if supported.</p>
+<p>Generic lifecycle states allow future long-running or human-gated experiments. Implement only the TORAX behavior now; don't build laboratory integrations.</p>
+<h3 id="local-api-v1">Local API v1</h3>
+<p>Health/capabilities; list runs; create bounded run from supported preset; read run and cursor-based events; fetch approved artifacts; cancel owned run. Validate all settings server-side. Keep model keys outside recordings/browser bundles. Bind locally by default; no public unauthenticated compute endpoint.</p>
+<h2 id="7-build-sequence-and-gates">7. Build sequence and gates</h2>
+<h3 id="phase-0-prerequisites-and-feasibility">Phase 0: prerequisites and feasibility</h3>
+<ul>
+<li>Confirm reviewed scope, repository path, GitHub author identity, Cursor authentication, and actual model identifiers.</li>
+<li>Cursor most recently reported not logged in; model access is unverified.</li>
+<li>Install TORAX in an isolated project environment, not system Python.</li>
+<li>Measure cold compile/runtime, warm runtime, peak memory, and output size for baseline plus one changed configuration and one refined run.</li>
+<li>Close other apps only when Israel does so or explicitly instructs us; don't terminate his applications automatically.</li>
+<li>Run a small non-agent sweep to check whether the outcome changes meaningfully.</li>
+</ul>
+<p><strong>Gate A:</strong> chosen metric exists, parameters affect it, scientific outputs are usable, and total proposed run fits measured resource/time budget. If not, stop and propose a bounded alternative; do not spend the remaining build polishing an unusable domain.</p>
+<h3 id="phase-1-foundations">Phase 1: foundations</h3>
+<p>Freeze schemas, package scaffold, typed examples, and ownership. Create a clearly marked synthetic fixture solely for development. Establish one genuine experiment recording as early as possible.</p>
+<p><strong>Gate B:</strong> Python export loads into the TypeScript player with matching IDs, units, and metrics.</p>
+<h3 id="phase-2-parallel-product-construction">Phase 2: parallel product construction</h3>
+<p>Harness, 3D/playback, and website/start flow proceed independently against the frozen contract. Integrate small batches, not three giant final branches.</p>
+<p><strong>Gate C:</strong> one real experiment runs through the backend, appears in the research view, and can be replayed with the backend/model stopped.</p>
+<h3 id="phase-3-actual-investigation">Phase 3: actual investigation</h3>
+<p>Run a bounded closed loop with sequential simulation execution. Save all experiments. Perform baseline comparisons and verification, then freeze a representative real recording regardless of whether it improves the objective.</p>
+<p><strong>Gate D:</strong> at least one next-step decision responds to actual prior evidence; every displayed finding is backed by artifacts. No fabricated successful branch or unseen future evidence.</p>
+<h3 id="phase-4-release-and-demo">Phase 4: release and demo</h3>
+<p>Finish the public site, recording delivery, setup instructions, attribution, artifact export, and presentation. Exercise public URL on a separate browser/device; test camera interaction, replay without backend, and local start flow.</p>
+<p><strong>Gate E:</strong> URL reachable, recording genuine and labeled, local setup reproducible, visual performance acceptable, no misleading controls. Publication/repository visibility must follow the approved release scope.</p>
+<p>Allocate actual time after checking the remaining submission window and smoke-test timings. Protect the last portion for integration and demo rehearsal rather than allocating it all to extra experiments.</p>
+<h2 id="8-cursor-agent-plan">8. Cursor agent plan</h2>
+<p>Use multiple actual Cursor CLI sessions, not native subagents as a silent substitute. Requested model-family assignments are preferences to verify against account availability:</p>
+<table>
+<thead>
+<tr>
+<th>Owner</th>
+<th>Preferred model</th>
+<th>Exclusive primary area</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H: research harness</td>
+<td>Grok</td>
+<td>Python research service, scientific adapter, verifier, experiment recording</td>
+</tr>
+<tr>
+<td>V: 3D and replay</td>
+<td>GPT Astra</td>
+<td>Scene components, visual data mapping, playback engine</td>
+</tr>
+<tr>
+<td>U: website and UX</td>
+<td>Claude</td>
+<td>Landing, setup flow, workspace shell, evidence/tree presentation</td>
+</tr>
+<tr>
+<td>I: coordinator</td>
+<td>Parent assistant</td>
+<td>Contracts, scaffolding, integration, real-run checks, release, canonical plan</td>
+</tr>
+</tbody>
+</table>
+<p>Use separate worktrees/branches so agents cannot stage one another's files. Coordinator owns root configuration and shared contracts. Interface changes require a brief contract update before dependent agents implement against them. Default three concurrent coding sessions, but reduce concurrency if machine pressure affects simulations.</p>
+<p>Every agent kickoff includes this plan, owned paths, assigned task IDs, dependencies, acceptance checks, commit rules, and explicit non-goals. Every handoff reports commits, changed interfaces, checks performed, known limitations, and next dependency.</p>
+<h2 id="9-fine-grained-commit-work-breakdown">9. Fine-grained commit work breakdown</h2>
+<p><strong>Target: approximately 64 substantive implementation commits, not a fixed quota.</strong> Each listed item is an intended independently reviewable commit. Split further when there are genuinely separate changes; do not manufacture empty commits, whitespace churn, backdated history, or break working changes merely to increase counts. Necessary fixes are additional real commits. If scope/time requires cuts, remove tasks honestly rather than faking completion.</p>
+<h3 id="i-coordinatorfoundationsintegration-16-planned-commits">I: coordinator/foundations/integration — 16 planned commits</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Commit-sized deliverable</th>
+<th>Dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I01</td>
+<td>Initialize standalone repository and preserve approved plan</td>
+<td>Review</td>
+</tr>
+<tr>
+<td>I02</td>
+<td>Establish web/Python scaffold and ignore rules</td>
+<td>I01</td>
+</tr>
+<tr>
+<td>I03</td>
+<td>Define versioned event schema and lifecycle semantics</td>
+<td>I02</td>
+</tr>
+<tr>
+<td>I04</td>
+<td>Define recording/profile schema with units and provenance</td>
+<td>I03</td>
+</tr>
+<tr>
+<td>I05</td>
+<td>Add labeled contract fixtures for branches and failures</td>
+<td>I04</td>
+</tr>
+<tr>
+<td>I06</td>
+<td>Add cross-language contract validation check</td>
+<td>I05</td>
+</tr>
+<tr>
+<td>I07</td>
+<td>Document local API and adapter interface</td>
+<td>I04</td>
+</tr>
+<tr>
+<td>I08</td>
+<td>Add project commands for local web/API development</td>
+<td>I02</td>
+</tr>
+<tr>
+<td>I09</td>
+<td>Integrate first real experiment recording end-to-end</td>
+<td>H06, V03, I06</td>
+</tr>
+<tr>
+<td>I10</td>
+<td>Connect setup form to local create-run API</td>
+<td>H13, U11</td>
+</tr>
+<tr>
+<td>I11</td>
+<td>Integrate research tree, scene, and timeline selection</td>
+<td>V12, U12</td>
+</tr>
+<tr>
+<td>I12</td>
+<td>Validate genuine run and publish its local replay bundle</td>
+<td>H16, V14</td>
+</tr>
+<tr>
+<td>I13</td>
+<td>Add deployable static build and recording asset manifest</td>
+<td>U15, I12</td>
+</tr>
+<tr>
+<td>I14</td>
+<td>Document fresh-clone setup and adapter extension example</td>
+<td>H16, I08</td>
+</tr>
+<tr>
+<td>I15</td>
+<td>Add scientific attribution and demo provenance report</td>
+<td>I12</td>
+</tr>
+<tr>
+<td>I16</td>
+<td>Final cross-device fixes and release/runbook checklist</td>
+<td>I13–I15</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h-grok-harness-16-planned-commits">H: Grok / harness — 16 planned commits</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Commit-sized deliverable</th>
+<th>Dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H01</td>
+<td>Pin isolated TORAX environment and benchmark command</td>
+<td>I02</td>
+</tr>
+<tr>
+<td>H02</td>
+<td>Save baseline/warm/refined benchmark measurements</td>
+<td>H01</td>
+</tr>
+<tr>
+<td>H03</td>
+<td>Implement typed TORAX config validation and bounds</td>
+<td>Gate A, I07</td>
+</tr>
+<tr>
+<td>H04</td>
+<td>Implement sequential simulator execution and timeouts</td>
+<td>H03</td>
+</tr>
+<tr>
+<td>H05</td>
+<td>Extract objective metrics with explicit units</td>
+<td>H04</td>
+</tr>
+<tr>
+<td>H06</td>
+<td>Export profile frames and original-output references</td>
+<td>H05, I04</td>
+</tr>
+<tr>
+<td>H07</td>
+<td>Implement append-only event/provenance recording</td>
+<td>I03, H04</td>
+</tr>
+<tr>
+<td>H08</td>
+<td>Add deterministic baseline/random-grid comparison runner</td>
+<td>H05</td>
+</tr>
+<tr>
+<td>H09</td>
+<td>Add one credential-safe research model adapter</td>
+<td>I07</td>
+</tr>
+<tr>
+<td>H10</td>
+<td>Implement hypothesis/prediction/experiment decision loop</td>
+<td>H07, H09</td>
+</tr>
+<tr>
+<td>H11</td>
+<td>Implement evidence-linked revision/branch/stop decisions</td>
+<td>H10</td>
+</tr>
+<tr>
+<td>H12</td>
+<td>Enforce budgets, failure handling, and cancellation</td>
+<td>H10</td>
+</tr>
+<tr>
+<td>H13</td>
+<td>Expose local run creation/status/events API</td>
+<td>H07, H12</td>
+</tr>
+<tr>
+<td>H14</td>
+<td>Implement refinement checks and frozen perturbation cases</td>
+<td>H05, H08</td>
+</tr>
+<tr>
+<td>H15</td>
+<td>Implement deterministic conclusion gate and critical tests</td>
+<td>H11, H14</td>
+</tr>
+<tr>
+<td>H16</td>
+<td>Export a genuine completed investigation with analysis</td>
+<td>H06, H13, H15</td>
+</tr>
+</tbody>
+</table>
+<h3 id="v-astra-3d-and-playback-16-planned-commits">V: Astra / 3D and playback — 16 planned commits</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Commit-sized deliverable</th>
+<th>Dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V01</td>
+<td>Establish scene canvas, quality settings, and viewport API</td>
+<td>I02</td>
+</tr>
+<tr>
+<td>V02</td>
+<td>Build cutaway torus geometry and camera controls</td>
+<td>V01</td>
+</tr>
+<tr>
+<td>V03</td>
+<td>Implement typed profile-frame loader</td>
+<td>I04–I05</td>
+</tr>
+<tr>
+<td>V04</td>
+<td>Map radial temperature onto schematic geometry</td>
+<td>V02–V03</td>
+</tr>
+<tr>
+<td>V05</td>
+<td>Implement stable color scale, units, and legend</td>
+<td>V04</td>
+</tr>
+<tr>
+<td>V06</td>
+<td>Render heating-profile overlay from recorded config</td>
+<td>V04</td>
+</tr>
+<tr>
+<td>V07</td>
+<td>Implement baseline/candidate synchronized comparison</td>
+<td>V05–V06</td>
+</tr>
+<tr>
+<td>V08</td>
+<td>Build deterministic event-to-playback state reducer</td>
+<td>I03–I05</td>
+</tr>
+<tr>
+<td>V09</td>
+<td>Implement play/pause and selectable speed</td>
+<td>V08</td>
+</tr>
+<tr>
+<td>V10</td>
+<td>Implement timeline scrubbing and state reconstruction</td>
+<td>V09</td>
+</tr>
+<tr>
+<td>V11</td>
+<td>Add experiment/verification chapter navigation</td>
+<td>V10</td>
+</tr>
+<tr>
+<td>V12</td>
+<td>Connect selected tree node to scene and playback state</td>
+<td>V07, V11</td>
+</tr>
+<tr>
+<td>V13</td>
+<td>Add restrained event-driven camera transitions</td>
+<td>V12</td>
+</tr>
+<tr>
+<td>V14</td>
+<td>Support lazy-loaded genuine replay assets and error states</td>
+<td>I09, V12</td>
+</tr>
+<tr>
+<td>V15</td>
+<td>Add responsive quality reduction and WebGL fallback</td>
+<td>V14</td>
+</tr>
+<tr>
+<td>V16</td>
+<td>Tune visual performance and verify replay determinism</td>
+<td>V13–V15</td>
+</tr>
+</tbody>
+</table>
+<h3 id="u-claude-website-and-ux-16-planned-commits">U: Claude / website and UX — 16 planned commits</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Commit-sized deliverable</th>
+<th>Dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U01</td>
+<td>Define design tokens, typography, and responsive shell</td>
+<td>I02</td>
+</tr>
+<tr>
+<td>U02</td>
+<td>Build landing hero and clear product proposition</td>
+<td>U01</td>
+</tr>
+<tr>
+<td>U03</td>
+<td>Add real-investigation showcase and playback CTA</td>
+<td>U02</td>
+</tr>
+<tr>
+<td>U04</td>
+<td>Build scientific-loop explanation section</td>
+<td>U02</td>
+</tr>
+<tr>
+<td>U05</td>
+<td>Build supported-adapter/integration explanation</td>
+<td>I07, U04</td>
+</tr>
+<tr>
+<td>U06</td>
+<td>Build investigation workspace layout</td>
+<td>U01</td>
+</tr>
+<tr>
+<td>U07</td>
+<td>Add metric cards and unit-aware comparison charts</td>
+<td>I04, U06</td>
+</tr>
+<tr>
+<td>U08</td>
+<td>Build research-tree nodes and status styling</td>
+<td>I03, U06</td>
+</tr>
+<tr>
+<td>U09</td>
+<td>Add evidence panel and linked experiment details</td>
+<td>U08</td>
+</tr>
+<tr>
+<td>U10</td>
+<td>Add persistent recorded/live mode and provenance labels</td>
+<td>U06</td>
+</tr>
+<tr>
+<td>U11</td>
+<td>Build bounded preset/budget setup form</td>
+<td>I07, U01</td>
+</tr>
+<tr>
+<td>U12</td>
+<td>Wire research tree selection through shared view props</td>
+<td>U08–U09, V12</td>
+</tr>
+<tr>
+<td>U13</td>
+<td>Add backend readiness, queued/running/failure presentation</td>
+<td>U11, H13</td>
+</tr>
+<tr>
+<td>U14</td>
+<td>Add configuration download and truthful local-run guide</td>
+<td>U11, I07</td>
+</tr>
+<tr>
+<td>U15</td>
+<td>Add metadata, shareable run routes, and responsive navigation</td>
+<td>U03, U10</td>
+</tr>
+<tr>
+<td>U16</td>
+<td>Complete keyboard/reduced-motion/mobile UX pass</td>
+<td>U12–U15</td>
+</tr>
+</tbody>
+</table>
+<p>Milestone integration order: contracts → benchmark → first real frame → first full real replay → closed-loop recorded investigation → public release. Agents can develop visuals using labeled fixtures while the harness is being built, but fixtures never become the published research record.</p>
+<h2 id="10-commit-and-github-contribution-policy">10. Commit and GitHub contribution policy</h2>
+<p>Israel explicitly wants many small commits. Preserve that preference across all agents and merges:</p>
+<ul>
+<li>Commit each completed, meaningful task or smaller coherent unit; do not hold all work for one end-of-session commit.</li>
+<li>Suggested format: <code>feat(harness): validate heating bounds [H03]</code> or <code>feat(scene): map radial temperature data [V04]</code>.</li>
+<li>Stage explicit owned files; never <code>git add .</code> in the shared workspace.</li>
+<li>Use Israel's confirmed repository-local Git author identity and an email associated with his GitHub account. Verify this before implementation commits; do not invent an attribution identity or alter global Git settings.</li>
+<li>Integrate tested branches with history preserved; avoid squash merging when it would collapse these commits.</li>
+<li>Make commits reachable from the intended standalone repository's default branch through the agreed release workflow.</li>
+<li>Push visibility/publication follows Israel's approved build/release scope. Local commits alone do not populate GitHub.</li>
+<li>Keep factual AI/tool attribution in project documentation and any required trailers; agent assignments can also be recorded in task IDs.</li>
+</ul>
+<p>GitHub contribution eligibility depends on account-linked commit email, qualifying repository and branch, and other documented conditions. Graph updates may take up to 24 hours; no exact green intensity/count is guaranteed. Sources: <a href="https://docs.github.com/en/account-and-profile/reference/profile-contributions-reference">contribution criteria</a>, <a href="https://docs.github.com/en/account-and-profile/how-tos/contribution-settings/troubleshooting-missing-contributions">missing contributions</a>.</p>
+<h2 id="11-tests-and-final-acceptance">11. Tests and final acceptance</h2>
+<p>Test the important failure modes, not every cosmetic change:</p>
+<ul>
+<li>Malformed config rejected; fixed energy constraint enforced.</li>
+<li>Agent cannot modify evaluator or fabricate an accepted experiment result.</li>
+<li>Budget/timeout/cancellation prevent uncontrolled compute.</li>
+<li>Hypothesis relationships and event sequences validate; replay scrubbing reconstructs the same state.</li>
+<li>Units and selected baseline/candidate match displayed data.</li>
+<li>Failed simulations cannot receive supported-success labels.</li>
+<li>An actual result influences a subsequent model decision.</li>
+<li>Genuine recording plays when all research services and model connections are off.</li>
+<li>Public setup distinguishes local execution from recorded playback and never displays false job progress.</li>
+<li>Website reachable on separate device; scene usable on demo Mac; functional low-performance fallback.</li>
+<li>Shared Git history contains substantive, correctly attributed commits without unrelated workspace/private data.</li>
+</ul>
+<p>Visual target: smooth interaction on the demo Mac, aiming for 60 fps and accepting a measured &gt;=30 fps baseline with adaptive quality. Do not sacrifice reliable playback for visual effects. Desktop presentation first; mobile remains usable, not necessarily identical.</p>
+<h2 id="12-scope-guardrails-and-cuts">12. Scope guardrails and cuts</h2>
+<p>Required: one working TORAX backend, one bounded research question, genuine adaptive loop, evidence ledger, real recorded investigation, attractive truthful 3D replay, public website, supported local start flow, reproducible setup, small commits.</p>
+<p>Out of scope: arbitrary researcher onboarding, multiple scientific backends, lab hardware, unlimited public jobs, new foundation-model training, billing, social collaboration, full experiment scheduler, fabricated findings, a universal proof engine, or real 3D plasma turbulence simulation.</p>
+<p>Cut first if time is short: decorative effects, elaborate camera choreography, hosted live execution, extra model providers, extra experiment families, cross-run comparisons. Preserve authentic data, reliable playback, the actual local run path, and scientific honesty.</p>
+<p>If TORAX fails Gate A, bring the measured blocker and a concrete alternative back to Israel. A different scientific problem materially changes the reviewed demo; do not quietly switch to a toy simulator under TORAX branding.</p>
+<h2 id="13-review-points-and-working-status">13. Review points and working status</h2>
+<p>The plan is complete enough to review. Defaults proposed for approval: plasma fixed-energy question; recorded-first public demo; local real-run flow; Grok/Astra/Claude Cursor ownership; approximately 64 substantive commits; no requirement to discover new physics.</p>
+<p>Still to resolve during prerequisites: name/domain, actual Cursor model IDs/authentication, GitHub author/account and repository visibility, runtime timings, exact TORAX version/config/objective, research-model credentials, public hosting access.</p>
+<p>During implementation maintain <code>BUILD_STATUS.md</code> with task IDs, status, commit hashes, checks, blockers, and the next gate. Update this plan's version and decision log for scope changes. Each agent rereads its assigned scope after handoff or context reset.</p>
+<p>Decision log:</p>
+<ul>
+<li>v1.0: initial review draft. No implementation, real TORAX experiment, repository publishing, or deployment performed under this plan.</li>
+</ul>
+<p>Background: <a href="../../research/ai-science-hackathon/RECOMMENDATION.md">research recommendation</a>. Historical voice-layer plan is shelved and is not part of this product.</p></main></body></html>
