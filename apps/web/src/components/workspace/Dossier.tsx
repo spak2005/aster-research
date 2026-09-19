@@ -1,4 +1,3 @@
-import { nearestFrame } from '../../lib/comparison';
 import type { Recording } from '../../types';
 import type { WorkspaceController } from './useWorkspace';
 import MetricCards from './MetricCards';
@@ -7,6 +6,7 @@ import EnergyChart from '../charts/EnergyChart';
 import ObjectiveComparison from '../charts/ObjectiveComparison';
 import Conclusion from './Conclusion';
 import Provenance from './Provenance';
+import { frameAtTime } from '../../lib/frames';
 import '../../styles/dossier.css';
 
 interface DossierProps {
@@ -25,10 +25,11 @@ export default function Dossier({ recording, workspace }: DossierProps) {
   const baselineFrames = workspace.baseline?.frames ?? [];
   const frameIndex = Math.min(workspace.frameIndex, Math.max(0, frames.length - 1));
   const frame = frames[frameIndex] ?? null;
-  const baselineFrame =
-    workspace.compare && baselineFrames.length > 0
-      ? nearestFrame(baselineFrames, frame?.time_s ?? 0)
-      : null;
+  // Experiments in one run may store different numbers of frames, so the
+  // baseline is matched on simulation time rather than on position in the array.
+  const alignedBaseline =
+    workspace.compare && frame ? frameAtTime(baselineFrames, frame.time_s) : null;
+
   const showBaselineSeries =
     workspace.compare && selectedExperiment?.id !== workspace.baseline?.id;
 
@@ -39,7 +40,8 @@ export default function Dossier({ recording, workspace }: DossierProps) {
       <div className="dossier__charts">
         <ProfileChart
           frame={frame}
-          baselineFrame={showBaselineSeries ? baselineFrame : null}
+          baselineFrame={showBaselineSeries ? alignedBaseline?.frame ?? null : null}
+          baselineOffsetS={alignedBaseline?.offsetS ?? 0}
           temperatureScaleKev={recording.temperature_scale_kev}
           config={selectedExperiment?.config ?? null}
           label={selectedExperiment?.label ?? 'no selection'}
@@ -62,6 +64,8 @@ export default function Dossier({ recording, workspace }: DossierProps) {
         units={recording.provenance.objective_units}
         selectedId={workspace.selectedExperimentId}
         onSelect={workspace.select}
+        leadingId={visible.bestExperimentId}
+        verdict={visible.conclusion?.status ?? null}
       />
 
       <Conclusion state={visible} onSelectEvidence={workspace.select} />

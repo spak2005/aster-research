@@ -38,18 +38,40 @@ async function readJson(url: string, signal?: AbortSignal): Promise<unknown> {
   }
 }
 
+/** A 404, or a host that answers missing files with its own index page. */
+function looksAbsent(response: Response, text: string): boolean {
+  if (response.status === 404 || response.status === 410) return true;
+  const type = response.headers.get('content-type') ?? '';
+  if (type.includes('text/html')) return true;
+  return text.trimStart().startsWith('<');
+}
+
 /**
- * Reads the catalogue. A missing file resolves to an empty list, because "no
- * investigation has been published yet" is a true statement, not a failure.
- * Any other transport or parse problem is reported.
+ * Reads the catalogue. An absent file resolves to an empty list, because "no
+ * investigation has been published yet" is a true statement, not a failure —
+ * and static hosts announce absence inconsistently, some with a 404 and some
+ * with a 200 carrying their own HTML. A file that is present but malformed is
+ * reported instead, since that is a genuine fault rather than an empty shelf.
  */
 export async function fetchRecordingIndex(signal?: AbortSignal): Promise<RecordingSummary[]> {
+  const response = await fetch(RECORDING_INDEX_URL, {
+    signal,
+    headers: { accept: 'application/json' },
+  });
+  const text = response.body ? await response.text() : '';
+
+  if (looksAbsent(response, text)) return [];
+  if (!response.ok) {
+    throw new Error(
+      `${RECORDING_INDEX_URL} responded ${response.status} ${response.statusText}`.trim(),
+    );
+  }
+
   let payload: unknown;
   try {
-    payload = await readJson(RECORDING_INDEX_URL, signal);
-  } catch (error) {
-    if (error instanceof Error && /responded 404/.test(error.message)) return [];
-    throw error;
+    payload = JSON.parse(text) as unknown;
+  } catch {
+    throw new Error('Recording catalogue is present but is not valid JSON.');
   }
   if (!Array.isArray(payload)) {
     throw new Error('Recording catalogue is malformed: expected an array of summaries.');

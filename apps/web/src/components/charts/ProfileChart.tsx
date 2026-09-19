@@ -1,5 +1,6 @@
 import type { Experiment, ProfileFrame } from '../../types';
 import { linePath, linearScale, plotArea, ticks } from './chartUtils';
+import { isMisaligned } from '../../lib/frames';
 import { formatNumber } from '../../lib/format';
 import '../../styles/charts.css';
 
@@ -12,6 +13,8 @@ interface ProfileChartProps {
   config: Experiment['config'] | null;
   label: string;
   baselineLabel?: string;
+  /** Seconds between the two frames when the grids do not line up exactly. */
+  baselineOffsetS?: number;
 }
 
 const W = 470;
@@ -24,6 +27,7 @@ export default function ProfileChart({
   config,
   label,
   baselineLabel,
+  baselineOffsetS = 0,
 }: ProfileChartProps) {
   const plot = plotArea(W, H, { left: 50, right: 18, top: 18, bottom: 40 });
   const x = linearScale([0, 1], [plot.margin.left, plot.margin.left + plot.innerWidth]);
@@ -149,7 +153,12 @@ export default function ProfileChart({
         <li className="chart__key chart__key--ion">Ion temperature · {label}</li>
         <li className="chart__key chart__key--electron">Electron temperature · {label}</li>
         {baselineFrame ? (
-          <li className="chart__key chart__key--reference">Ion temperature · {baselineLabel ?? 'baseline'}</li>
+          <li className="chart__key chart__key--reference">
+            Ion temperature · {baselineLabel ?? 'baseline'}
+            {isMisaligned(baselineOffsetS)
+              ? ` · nearest stored frame, ${formatNumber(Math.abs(baselineOffsetS), 3)} s away`
+              : ''}
+          </li>
         ) : null}
         {config ? <li className="chart__key chart__key--band">Heating deposition</li> : null}
       </ul>
