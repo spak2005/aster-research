@@ -11,6 +11,7 @@ import ScenePane from './ScenePane';
 import ShareMoment from './ShareMoment';
 import type { Moment } from '../../lib/shareLink';
 import { formatDate } from '../../lib/format';
+import { useDocumentMeta } from '../../lib/useDocumentMeta';
 import '../../styles/workspace.css';
 
 interface WorkspaceProps {
@@ -26,6 +27,9 @@ interface WorkspaceProps {
  * fixed-height panel.
  */
 export default function Workspace({ recording, initial }: WorkspaceProps) {
+  // The question, never the conclusion: the page may still be withholding it.
+  useDocumentMeta(recording.title, recording.question);
+
   // Keep the recorded/live label and run date in the site header while open.
   useEffect(() => {
     setRunBadge({

@@ -5,6 +5,7 @@ import { isLiveId, resolveRecording } from '../lib/resolveRecording';
 import { useAsync } from '../lib/useAsync';
 import { useRoute } from '../lib/router';
 import { type Moment, readMoment } from '../lib/shareLink';
+import { useDocumentMeta } from '../lib/useDocumentMeta';
 
 /** How often a run held by the local service is re-read while it is open. */
 const LIVE_POLL_MS = 5000;
@@ -39,6 +40,10 @@ export default function ResearchPage({ id }: ResearchPageProps) {
   }, [live]);
 
   const state = useAsync((signal) => resolveRecording(id, signal), [id, tick]);
+
+  // Left to the workspace once a run is on screen, so the title names the run.
+  const settled = state.status === 'ready' || lastGood !== null;
+  useDocumentMeta(settled ? null : state.status === 'error' ? 'Unavailable' : 'Investigation');
 
   useEffect(() => {
     if (state.status === 'ready') setLastGood(state.data);

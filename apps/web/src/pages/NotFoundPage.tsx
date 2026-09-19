@@ -1,8 +1,12 @@
+import { useDocumentMeta } from '../lib/useDocumentMeta';
+
 interface NotFoundPageProps {
   path: string;
 }
 
 export default function NotFoundPage({ path }: NotFoundPageProps) {
+  useDocumentMeta('Not found');
+
   return (
     <div className="shell section">
       <p className="eyebrow">404</p>

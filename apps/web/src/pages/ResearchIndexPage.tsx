@@ -1,6 +1,12 @@
 import RecordingCatalogue from '../components/recordings/RecordingCatalogue';
+import { useDocumentMeta } from '../lib/useDocumentMeta';
 
 export default function ResearchIndexPage() {
+  useDocumentMeta(
+    'Investigations',
+    'Every published run, replayable in full: the question, the experiments requested, the checks applied, and the conclusion reached.',
+  );
+
   return (
     <div className="shell section">
       <div className="section__head">
