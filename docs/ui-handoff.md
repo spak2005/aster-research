@@ -118,3 +118,12 @@ playback started deliberately still plays.
 
 Parent integration of `public/recordings/`. Nothing in the UI blocks on it —
 the empty state is honest and the routes work without it.
+
+## Coordinator integration corrections
+
+The handoff above describes the isolated UI worktree. In the integrated release,
+`PlasmaScene` and its fallback select baseline frames by physical simulation time,
+not matching index; the obsolete caveat was removed. Main includes all four real
+recordings, deployment-prefixed catalog requests, a lazy-loaded actual 3D module,
+matched-grid metric comparisons and the UI check in CI. Public-browser release
+verification is recorded separately in `RELEASE_REPORT.md`.
