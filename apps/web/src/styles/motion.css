@@ -29,6 +29,15 @@
     transform: none;
   }
 
+  /* Keyboard focus outruns scrolling: a reader who tabs ahead of the reveal
+     gets the block immediately rather than a focus ring on nothing. */
+  :root[data-motion="ready"] .reveal:focus-within {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition-delay: 0s;
+  }
+
   /* A hairline drawing itself open. The page is built from rules; this is how
      they arrive. */
   :root[data-motion="ready"] .reveal--rule {

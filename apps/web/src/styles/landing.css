@@ -319,6 +319,12 @@
     opacity: 1;
     transform: none;
   }
+
+  :root[data-motion="ready"] .showcase .run-list > li:focus-within {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
 }
 
 .showcase .run-list > li:nth-child(1) {
