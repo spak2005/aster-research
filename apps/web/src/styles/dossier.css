@@ -1,0 +1,46 @@
+/* Dossier: detail that continues below the fixed-height console. */
+
+.dossier {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  padding-block: clamp(2rem, 5vw, 3.5rem);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line-faint);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+
+.cards__card {
+  padding: var(--s-4) var(--s-5);
+  background: rgba(11, 14, 20, 0.86);
+}
+
+.cards__value {
+  margin: var(--s-3) 0 0;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  color: var(--text-hi);
+}
+
+.cards__value--tone .numeric {
+  color: var(--tone);
+}
+
+.cards__note {
+  margin-top: var(--s-2);
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
+
+.dossier__charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--s-4);
+}

@@ -1,0 +1,268 @@
+/* Native SVG charts. Every axis states its unit; scales stay fixed across runs. */
+
+.chart {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: linear-gradient(180deg, rgba(15, 20, 28, 0.6), rgba(7, 10, 15, 0.6));
+}
+
+.chart__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.chart__note {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
+
+.chart__svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.chart__grid {
+  stroke: var(--line-faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart__axis {
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart__tick {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  fill: var(--text-faint);
+}
+
+.chart__tick--y {
+  text-anchor: end;
+}
+
+.chart__axis-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--text-faint);
+}
+
+.chart__line {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart__line--ion {
+  stroke: var(--signal);
+}
+
+.chart__line--electron {
+  stroke: var(--signal-deep);
+  stroke-dasharray: 4 3;
+  stroke-width: 1.2;
+}
+
+.chart__line--reference {
+  stroke: rgba(154, 176, 208, 0.42);
+  stroke-width: 1.2;
+}
+
+.chart__band {
+  fill: var(--heat-wash);
+}
+
+.chart__band-centre {
+  stroke: var(--heat-edge);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart__marker {
+  fill: var(--signal);
+  stroke: var(--ink-900);
+  stroke-width: 1.5;
+}
+
+.chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+}
+
+.chart__key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
+
+.chart__key::before {
+  content: "";
+  width: 14px;
+  height: 0;
+  border-top: 2px solid currentColor;
+}
+
+.chart__key--ion {
+  color: var(--signal);
+}
+
+.chart__key--electron {
+  color: var(--signal-deep);
+}
+
+.chart__key--electron::before {
+  border-top-style: dashed;
+}
+
+.chart__key--reference {
+  color: rgba(154, 176, 208, 0.6);
+}
+
+.chart__key--band {
+  color: var(--heat);
+}
+
+.chart__key--band::before {
+  height: 9px;
+  border-top: none;
+  background: var(--heat-wash);
+  border: 1px solid var(--heat-edge);
+}
+
+/* ---- Objective comparison bars ---- */
+
+.bars {
+  display: grid;
+  gap: 1px;
+}
+
+.bars__row {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) minmax(7.5rem, auto);
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-2);
+  border-radius: var(--r-2);
+  transition: background var(--dur-1) var(--ease);
+}
+
+.bars__row:hover {
+  background: rgba(154, 176, 208, 0.04);
+}
+
+.bars__row.is-selected {
+  background: var(--signal-wash);
+}
+
+.bars__label {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  min-width: 0;
+}
+
+.bars__name {
+  font-size: var(--fs-xs);
+  color: var(--text-hi);
+  line-height: 1.35;
+}
+
+.bars__role {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.bars__track {
+  position: relative;
+  display: block;
+  height: 14px;
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.bars__fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 9px;
+  background: linear-gradient(90deg, var(--signal-deep), var(--signal));
+  border-radius: 1px;
+}
+
+.bars__fill--baseline {
+  background: rgba(154, 176, 208, 0.34);
+}
+
+.bars__reference {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 0;
+  border-left: 1px dashed rgba(154, 176, 208, 0.6);
+}
+
+.bars__absent {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
+
+.bars__value {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  font-size: var(--fs-sm);
+  color: var(--text-hi);
+  white-space: nowrap;
+}
+
+.bars__delta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--tone);
+}
+
+.bars__dash {
+  color: var(--text-faint);
+}
+
+@media (max-width: 720px) {
+  .bars__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s-2) var(--s-3);
+  }
+
+  .bars__track {
+    grid-column: 1 / -1;
+    order: 2;
+  }
+}
+
+.chart__empty {
+  padding-block: var(--s-6);
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  text-align: center;
+}
