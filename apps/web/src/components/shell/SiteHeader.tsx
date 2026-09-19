@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import ModeBadge from '../common/ModeBadge';
+import { useRunBadge } from '../../lib/runBadge';
+import { formatDate } from '../../lib/format';
 
 export interface NavItem {
   label: string;
@@ -23,6 +26,7 @@ interface SiteHeaderProps {
 export default function SiteHeader({ path }: SiteHeaderProps) {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const run = useRunBadge();
 
   // Close the mobile sheet on navigation and on Escape.
   useEffect(() => setOpen(false), [path]);
@@ -53,10 +57,20 @@ export default function SiteHeader({ path }: SiteHeaderProps) {
   return (
     <header className="site-header">
       <div className="shell site-header__inner">
-        <a className="wordmark" href="#/" aria-label="Aster Research, home">
-          <span className="wordmark__name">ASTER</span>
-          <span className="wordmark__kind">Research Harness</span>
-        </a>
+        <div className="site-header__left">
+          <a className="wordmark" href="#/" aria-label="Aster Research, home">
+            <span className="wordmark__name">ASTER</span>
+            <span className="wordmark__kind">Research Harness</span>
+          </a>
+          {/* Provenance stays on screen for as long as a run is open. */}
+          {run ? (
+            <ModeBadge
+              mode={run.mode}
+              detail={run.createdAt ? formatDate(run.createdAt) : undefined}
+              className="site-header__run"
+            />
+          ) : null}
+        </div>
 
         <nav className="site-nav" aria-label="Primary">
           {links}

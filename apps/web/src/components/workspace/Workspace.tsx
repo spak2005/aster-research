@@ -1,10 +1,13 @@
+import { useEffect } from 'react';
 import type { Recording } from '../../types';
+import { setRunBadge } from '../../lib/runBadge';
 import ModeBadge from '../common/ModeBadge';
 import { useWorkspace } from './useWorkspace';
 import Transport from './Transport';
 import ResearchTree from './ResearchTree';
 import EvidencePanel from './EvidencePanel';
 import Dossier from './Dossier';
+import ScenePane from './ScenePane';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -19,6 +22,16 @@ interface WorkspaceProps {
  * fixed-height panel.
  */
 export default function Workspace({ recording }: WorkspaceProps) {
+  // Keep the recorded/live label and run date in the site header while open.
+  useEffect(() => {
+    setRunBadge({
+      mode: recording.mode,
+      createdAt: recording.created_at,
+      title: recording.title,
+    });
+    return () => setRunBadge(null);
+  }, [recording.id, recording.mode, recording.created_at, recording.title]);
+
   const workspace = useWorkspace(recording);
   const { visible } = workspace;
   const selectedHypothesis =
@@ -48,10 +61,7 @@ export default function Workspace({ recording }: WorkspaceProps) {
         </aside>
 
         <section className="workspace__pane workspace__pane--scene" aria-label="Plasma view">
-          <p className="label workspace__pane-label">Plasma view</p>
-          <p className="workspace__placeholder numeric">
-            {workspace.selectedExperiment?.label ?? 'No experiment selected'}
-          </p>
+          <ScenePane recording={recording} workspace={workspace} />
         </section>
 
         <aside className="workspace__pane workspace__pane--evidence" aria-label="Evidence">
