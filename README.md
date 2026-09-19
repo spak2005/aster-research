@@ -2,15 +2,19 @@
 
 **A question in. Evidence out.**
 
+[Open the public observatory](https://spak2005.github.io/aster-research/) · [Start a local investigation](https://spak2005.github.io/aster-research/#/start)
+
 A bounded scientific research harness with evidence-linked, recorded playback. Its first supported investigation uses the real [TORAX](https://github.com/google-deepmind/torax) tokamak transport simulator to explore heating profiles at a fixed auxiliary-energy budget.
 
 The product is the closed loop: propose a hypothesis, predict an outcome, run an experiment, inspect measured evidence, revise or verify, and preserve what happened. The 3D observatory replays real recorded radial temperature profiles; it does not run physics in the browser.
 
 ## Explore a recording locally
 
-Requires Node 22 or newer and npm. No model login or Python simulator is required for playback.
+Requires Node 22.12 or newer and npm. No model login or Python simulator is required for playback.
 
 ```sh
+git clone https://github.com/spak2005/aster-research.git
+cd aster-research
 npm ci
 npm run dev
 ```

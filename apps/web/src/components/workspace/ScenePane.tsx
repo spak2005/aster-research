@@ -33,16 +33,6 @@ export default function ScenePane({ recording, workspace }: ScenePaneProps) {
   const frame = frames[frameIndex] ?? null;
   const [scaleMin, scaleMax] = recording.temperature_scale_kev;
 
-  // The scene contract carries a frame index, not a time. When two experiments
-  // were stored on different time grids, stepping them together by index puts
-  // them at different instants, so the pane says so and points at the charts,
-  // which match on time.
-  const baselineFrames = workspace.baseline?.frames ?? [];
-  const gridsDiffer =
-    workspace.compare && frames.length > 0 && baselineFrames.length > 0
-      ? baselineFrames.length !== frames.length
-      : false;
-
   return (
     <div className="scene">
       <header className="scene__head">
@@ -98,14 +88,6 @@ export default function ScenePane({ recording, workspace }: ScenePaneProps) {
           </SceneBoundary>
         )}
       </div>
-
-      {gridsDiffer ? (
-        <p className="scene__caveat">
-          The baseline stores {baselineFrames.length} frames against {frames.length} here. This view
-          steps both by frame, so the two are not at the same instant; the profile chart below
-          matches them on simulation time instead.
-        </p>
-      ) : null}
 
       <footer className="scene__foot">
         <div className="scene__scale" aria-hidden>
