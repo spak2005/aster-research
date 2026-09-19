@@ -16,6 +16,12 @@ from services.research.validation import HeatingConfig, baseline_config, validat
 MIN_IMPROVEMENT_PCT = 5.0
 REFINEMENT_REL_TOL = 0.03
 PERTURBATION_DRHO = 0.03
+SEARCH_BUDGET = ExecutionBudget(timeout_s=180)
+REFINED_BUDGET = ExecutionBudget(
+    timeout_s=180,
+    n_rho=preset.N_RHO_REFINED,
+    chi_timestep_prefactor=preset.CHI_TIMESTEP_PREFACTOR_REFINED,
+)
 
 
 @dataclass(frozen=True)
@@ -33,12 +39,8 @@ def _clip_location(value: float) -> float:
 
 def verification_cases(candidate: HeatingConfig) -> list[VerificationCase]:
     """Deterministic checks. Candidate must already be frozen as finalist."""
-    refined = ExecutionBudget(
-        timeout_s=180,
-        n_rho=preset.N_RHO_REFINED,
-        chi_timestep_prefactor=preset.CHI_TIMESTEP_PREFACTOR_REFINED,
-    )
-    production = ExecutionBudget(timeout_s=180)
+    refined = REFINED_BUDGET
+    production = SEARCH_BUDGET
     perturbed = validate(
         {
             "heating_location": _clip_location(
