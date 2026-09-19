@@ -4,6 +4,8 @@ import MetricCards from './MetricCards';
 import ProfileChart from '../charts/ProfileChart';
 import EnergyChart from '../charts/EnergyChart';
 import ObjectiveComparison from '../charts/ObjectiveComparison';
+import Conclusion from './Conclusion';
+import Provenance from './Provenance';
 import '../../styles/dossier.css';
 
 interface DossierProps {
@@ -60,6 +62,10 @@ export default function Dossier({ recording, workspace }: DossierProps) {
         selectedId={workspace.selectedExperimentId}
         onSelect={workspace.select}
       />
+
+      <Conclusion state={visible} onSelectEvidence={workspace.select} />
+
+      <Provenance recording={recording} state={visible} />
     </section>
   );
 }
