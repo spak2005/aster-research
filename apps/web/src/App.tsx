@@ -4,6 +4,7 @@ import SiteFooter from './components/shell/SiteFooter';
 import LandingPage from './pages/LandingPage';
 import ResearchIndexPage from './pages/ResearchIndexPage';
 import ResearchPage from './pages/ResearchPage';
+import StartPage from './pages/StartPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { useRoute } from './lib/router';
 import './styles/shell.css';
@@ -24,6 +25,8 @@ export default function App() {
     page = <ResearchIndexPage />;
   } else if (head === 'research' && route.segments.length === 2) {
     page = <ResearchPage id={route.segments[1]} />;
+  } else if (head === 'start' && route.segments.length === 1) {
+    page = <StartPage />;
   }
 
   return (

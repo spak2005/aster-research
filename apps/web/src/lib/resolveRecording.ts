@@ -13,10 +13,22 @@ import {
   fetchRecordingIndex,
   loadDevelopmentFixture,
 } from './recordings';
+import { getRun } from './api';
+
+/** Route prefix for a run held by the local research service rather than the catalogue. */
+export const LIVE_PREFIX = 'live:';
+
+export function isLiveId(id: string): boolean {
+  return id.startsWith(LIVE_PREFIX);
+}
 
 export async function resolveRecording(id: string, signal?: AbortSignal): Promise<Recording> {
   if (id === DEVELOPMENT_FIXTURE_ID) {
     return loadDevelopmentFixture(signal);
+  }
+
+  if (isLiveId(id)) {
+    return getRun(id.slice(LIVE_PREFIX.length), signal);
   }
 
   const index = await fetchRecordingIndex(signal);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Experiment, Recording } from '../../types';
 import {
   type Chapter,
@@ -65,12 +65,27 @@ export function useWorkspace(recording: Recording): WorkspaceController {
   const [frameIndex, setFrameIndexRaw] = useState(0);
   const [compare, setCompare] = useState(true);
 
-  // A different recording resets the transport rather than carrying position over.
+  const previousRunId = useRef(recording.id);
+  const previousMax = useRef(bounds.max);
+
   useEffect(() => {
-    setSequenceRaw(bounds.max);
-    setSelectedNodeId(null);
-    setFrameIndexRaw(0);
-    setPlaying(false);
+    if (previousRunId.current !== recording.id) {
+      // A different run resets the transport rather than carrying position over.
+      previousRunId.current = recording.id;
+      previousMax.current = bounds.max;
+      setSequenceRaw(bounds.max);
+      setSelectedNodeId(null);
+      setFrameIndexRaw(0);
+      setPlaying(false);
+      return;
+    }
+    // Same run, new events: follow the live edge only if we were already on it,
+    // so reading an earlier point is not interrupted by incoming evidence.
+    if (bounds.max !== previousMax.current) {
+      const wasAtEnd = previousMax.current;
+      previousMax.current = bounds.max;
+      setSequenceRaw((current) => (current >= wasAtEnd ? bounds.max : current));
+    }
   }, [recording.id, bounds.max]);
 
   const visible = useMemo(() => getVisibleState(recording, sequence), [recording, sequence]);
