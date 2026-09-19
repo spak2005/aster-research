@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Recording, ResearchEvent } from '../../../../contracts/recording';
 import {
+  createReplayChapters,
+  getChapterAtSequence,
+  getNextChapter,
+  getPreviousChapter,
+  type ReplayChapter,
+} from './chapters';
+import {
   createReplayTimeline,
   getProgressAtSequence,
   getSequenceAtProgress,
@@ -22,6 +29,8 @@ export interface ReplayPlaybackController {
   minimumSequence: number;
   maximumSequence: number;
   progress: number;
+  chapter: ReplayChapter | null;
+  chapters: ReplayChapter[];
   playing: boolean;
   speed: ReplaySpeed;
   play: () => void;
@@ -30,6 +39,8 @@ export interface ReplayPlaybackController {
   setSpeed: (speed: ReplaySpeed) => void;
   seek: (sequence: number) => void;
   seekProgress: (progress: number) => void;
+  nextChapter: () => void;
+  previousChapter: () => void;
   restart: () => void;
 }
 
@@ -77,6 +88,7 @@ export function useReplayPlayback(
 ): ReplayPlaybackController {
   const events = useMemo(() => orderedEvents(recording), [recording]);
   const timeline = useMemo(() => createReplayTimeline(recording), [recording]);
+  const chapters = useMemo(() => createReplayChapters(recording), [recording]);
   const minimumSequence = events[0]?.sequence ?? 0;
   const maximumSequence = events[events.length - 1]?.sequence ?? 0;
   const initialSequence = clampSequence(
@@ -140,6 +152,14 @@ export function useReplayPlayback(
     },
     [timeline],
   );
+  const nextChapter = useCallback(() => {
+    const next = getNextChapter(chapters, sequence);
+    if (next) setSequence(next.sequence);
+  }, [chapters, sequence]);
+  const previousChapter = useCallback(() => {
+    const previous = getPreviousChapter(chapters, sequence);
+    if (previous) setSequence(previous.sequence);
+  }, [chapters, sequence]);
   const play = useCallback(() => {
     if (events.length > 0) setPlaying(true);
   }, [events.length]);
@@ -162,6 +182,8 @@ export function useReplayPlayback(
     minimumSequence,
     maximumSequence,
     progress: getProgressAtSequence(timeline, sequence),
+    chapter: getChapterAtSequence(chapters, sequence),
+    chapters,
     playing,
     speed,
     play,
@@ -170,6 +192,8 @@ export function useReplayPlayback(
     setSpeed,
     seek,
     seekProgress,
+    nextChapter,
+    previousChapter,
     restart,
   };
 }

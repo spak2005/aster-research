@@ -24,6 +24,15 @@ export {
   type ReplayTimeline,
   type ReplayTimelinePoint,
 } from './timeline';
+export {
+  createReplayChapters,
+  getChapterAtSequence,
+  getNextChapter,
+  getPreviousChapter,
+  getVisibleChapters,
+  type ReplayChapter,
+  type ReplayChapterKind,
+} from './chapters';
 
 export type ReplayRunStatus = 'pending' | Recording['status'];
 export type VisibleExperimentStatus =
