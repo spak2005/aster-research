@@ -44,6 +44,10 @@ class RunBudget:
     timeout_s: float = 180.0
     seed: int = 0
 
+    def __post_init__(self) -> None:
+        if self.max_experiments < 3 or self.max_experiments > 12:
+            raise ValueError("max_experiments must be between 3 and 12")
+
 
 class Investigation:
     def __init__(
@@ -396,6 +400,7 @@ class Investigation:
                 error=result.error,
             )
             self.recording["experiments"].append(failed)
+            self.recording["budget"]["completed_experiments"] += 1
             self.recording["budget"]["wall_time_s"] += result.wall_time_s
             self._persist()
             return failed
@@ -494,6 +499,35 @@ class Investigation:
         )
         self._persist()
         return {"status": reason}
+
+    def run_closed_loop(self, *, include_baseline: bool = True) -> dict[str, Any]:
+        """Sequential propose → validate → run until stop, cancel, or budget."""
+        if not self.log.events:
+            self.start()
+        if include_baseline and not self.recording["experiments"]:
+            self.run_baseline()
+        last: dict[str, Any] = {"status": "started"}
+        while self.remaining() > 0 and not self.cancel.is_set():
+            decision = self.propose_next()
+            if not decision.ok:
+                last = self.apply_stop(
+                    Decision(
+                        ok=True,
+                        action="stop",
+                        hypothesis="proposer failed",
+                        prediction="no further experiments",
+                        rationale=decision.error or "proposer error",
+                    )
+                )
+                last["proposer_error"] = decision.error
+                break
+            last = self.apply_decision(decision)
+            if last.get("status") in {"stopped", "canceled", "failed", "verify_requested"}:
+                break
+        if self.cancel.is_set() and self.recording["status"] == "running":
+            last = self._fail_run("canceled")
+        self._persist()
+        return last
 
     def propose_next(self) -> Decision:
         return self.proposer(self.context())
