@@ -11,22 +11,24 @@
     "dev:all": "python3 scripts/dev.py",
     "dev:api": ".venv/bin/python -m uvicorn services.research.api:app --host 127.0.0.1 --port 8765",
     "test:contracts": "python3 -m unittest discover -s tests/contracts -v",
-    "validate:recording": "python3 scripts/validate_recording.py"
+    "validate:recording": "python3 scripts/validate_recording.py",
+    "test:replay": "node scripts/check_replay.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "10.7.0",
+    "@react-three/fiber": "9.3.0",
+    "lucide-react": "0.468.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "three": "0.180.0",
-    "@react-three/fiber": "9.3.0",
-    "@react-three/drei": "10.7.0",
-    "lucide-react": "0.468.0"
+    "three": "0.180.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
-    "vite": "^7.1.0",
-    "@vitejs/plugin-react": "^5.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@types/three": "^0.180.0"
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "esbuild": "0.28.2",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
   }
 }
