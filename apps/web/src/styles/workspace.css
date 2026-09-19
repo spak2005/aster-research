@@ -1,0 +1,110 @@
+/* Investigation workspace: fixed-height research console plus a scrolling dossier. */
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace__head {
+  padding-block: var(--s-6) var(--s-5);
+}
+
+.workspace__identity {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+}
+
+.workspace__title {
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  max-width: 24ch;
+}
+
+.workspace__question {
+  max-width: 78ch;
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+/* ---- Console ---- */
+
+.workspace__console {
+  display: grid;
+  grid-template-columns: minmax(260px, 20%) minmax(0, 1fr) minmax(300px, 25%);
+  gap: 1px;
+  /* Hairlines between panes come from the shared background showing through. */
+  background: var(--line-faint);
+  border-block: 1px solid var(--line);
+  height: clamp(520px, calc(100dvh - var(--header-h) - 200px), 780px);
+}
+
+.workspace__pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--s-4);
+  background: linear-gradient(180deg, rgba(15, 20, 28, 0.86), rgba(7, 10, 15, 0.86));
+  overflow: hidden;
+}
+
+.workspace__pane--tree,
+.workspace__pane--evidence {
+  overflow-y: auto;
+}
+
+.workspace__pane--scene {
+  padding: 0;
+  background: radial-gradient(90% 70% at 50% 42%, rgba(24, 48, 62, 0.5), rgba(5, 7, 10, 0.95) 72%);
+}
+
+.workspace__pane-label {
+  flex: none;
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--line-faint);
+  margin-bottom: var(--s-4);
+}
+
+.workspace__placeholder {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+.workspace__pane--scene .workspace__pane-label,
+.workspace__pane--scene .workspace__placeholder {
+  padding: var(--s-4);
+  border: none;
+  margin: 0;
+}
+
+/* ---- Transport ---- */
+
+.workspace__transport {
+  padding: var(--s-4) var(--gutter);
+  border-bottom: 1px solid var(--line);
+  background: rgba(7, 10, 15, 0.72);
+}
+
+/* ---- Stacked layout ---- */
+
+@media (max-width: 1080px) {
+  .workspace__console {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .workspace__pane {
+    height: auto;
+    max-height: none;
+  }
+
+  .workspace__pane--scene {
+    aspect-ratio: 4 / 3;
+    max-height: 60vh;
+  }
+
+  .workspace__pane--tree,
+  .workspace__pane--evidence {
+    max-height: 60vh;
+  }
+}

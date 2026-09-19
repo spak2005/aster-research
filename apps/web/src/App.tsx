@@ -3,6 +3,7 @@ import SiteHeader from './components/shell/SiteHeader';
 import SiteFooter from './components/shell/SiteFooter';
 import LandingPage from './pages/LandingPage';
 import ResearchIndexPage from './pages/ResearchIndexPage';
+import ResearchPage from './pages/ResearchPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { useRoute } from './lib/router';
 import './styles/shell.css';
@@ -21,6 +22,8 @@ export default function App() {
     page = <LandingPage section={route.query.get('section')} />;
   } else if (head === 'research' && route.segments.length === 1) {
     page = <ResearchIndexPage />;
+  } else if (head === 'research' && route.segments.length === 2) {
+    page = <ResearchPage id={route.segments[1]} />;
   }
 
   return (
