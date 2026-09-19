@@ -79,6 +79,150 @@
   margin: 0;
 }
 
+/* ---- Scene pane ---- */
+
+.scene {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+}
+
+.scene__head,
+.scene__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+}
+
+.scene__head {
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.scene__foot {
+  border-top: 1px solid var(--line-faint);
+}
+
+.scene__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.24rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+
+.scene__toggle:hover {
+  color: var(--text-hi);
+}
+
+.scene__toggle.is-active {
+  color: var(--signal);
+  border-color: var(--signal-edge);
+  background: var(--signal-wash);
+}
+
+.scene__stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.scene__canvas,
+.scene__loading,
+.scene__fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.scene__loading {
+  display: grid;
+  place-items: center;
+}
+
+.scene__fallback {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  place-items: center;
+  padding: var(--s-4);
+}
+
+.scene__fallback-figure {
+  max-width: 100%;
+  max-height: 100%;
+  opacity: 0.55;
+}
+
+.scene__fallback-text {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 54ch;
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.scene__scale {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.scene__scale-bar {
+  width: 92px;
+  height: 7px;
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    var(--t-0),
+    var(--t-1) 28%,
+    var(--t-2) 52%,
+    var(--t-3) 78%,
+    var(--t-4)
+  );
+}
+
+.scene__scale-range {
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
+
+.scene__frame {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-width: 0;
+  flex: 1 1 220px;
+  max-width: 420px;
+}
+
+.scene__frame-scrub {
+  flex: 1 1 auto;
+  min-width: 80px;
+}
+
+.scene__frame-scrub:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.scene__frame-value {
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
 /* ---- Transport ---- */
 
 .workspace__transport {

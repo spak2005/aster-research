@@ -1,0 +1,137 @@
+import { Suspense, lazy, type ComponentType } from 'react';
+import { Columns2 } from 'lucide-react';
+import type { PlasmaSceneProps, Recording } from '../../types';
+import type { WorkspaceController } from './useWorkspace';
+import SceneBoundary from './SceneBoundary';
+import TokamakSchematic from '../landing/TokamakSchematic';
+import { formatNumber } from '../../lib/format';
+
+/**
+ * The 3D view is a separately owned module at `src/scene/PlasmaScene.tsx`.
+ *
+ * It is resolved through a glob rather than a direct dynamic import so that a
+ * build without the scene still compiles and runs: an absent module yields an
+ * empty map, and the pane falls back to the schematic. When the scene lands,
+ * it is picked up with no change here. No placeholder module is created, which
+ * would collide with the scene owner's file.
+ */
+const sceneLoaders = import.meta.glob<{ default: ComponentType<PlasmaSceneProps> }>(
+  '../../scene/PlasmaScene.{tsx,ts}',
+);
+const sceneLoader = Object.values(sceneLoaders)[0];
+const PlasmaScene = sceneLoader ? lazy(sceneLoader) : null;
+
+function SceneFallback({ detail }: { detail: string }) {
+  return (
+    <div className="scene__fallback">
+      <TokamakSchematic className="scene__fallback-figure" />
+      <p className="scene__fallback-text">
+        <span className="label">Plasma view unavailable</span>
+        {detail}
+      </p>
+    </div>
+  );
+}
+
+interface ScenePaneProps {
+  recording: Recording;
+  workspace: WorkspaceController;
+}
+
+export default function ScenePane({ recording, workspace }: ScenePaneProps) {
+  const experiment = workspace.selectedExperiment?.result ?? null;
+  const frames = experiment?.frames ?? [];
+  const frameIndex = Math.min(workspace.frameIndex, Math.max(0, frames.length - 1));
+  const frame = frames[frameIndex] ?? null;
+  const [scaleMin, scaleMax] = recording.temperature_scale_kev;
+
+  return (
+    <div className="scene">
+      <header className="scene__head">
+        <p className="label">
+          Plasma view · schematic reconstruction of 1D radial profiles
+        </p>
+        <button
+          className={`scene__toggle${workspace.compare ? ' is-active' : ''}`}
+          onClick={workspace.toggleCompare}
+          aria-pressed={workspace.compare}
+          title="Show the baseline alongside the selection"
+        >
+          <Columns2 size={13} aria-hidden />
+          Compare with baseline
+        </button>
+      </header>
+
+      <div className="scene__stage">
+        {PlasmaScene === null ? (
+          <SceneFallback detail="The 3D plasma view is not part of this build yet. Geometry is shown schematically; every metric, profile and check on this page is unaffected." />
+        ) : experiment === null ? (
+          <div className="scene__fallback">
+            <TokamakSchematic className="scene__fallback-figure" />
+            <p className="scene__fallback-text">
+              <span className="label">No result at this point</span>
+              {workspace.selectedExperiment
+                ? 'The selected experiment had not reported when this event was recorded, so there are no profiles to render.'
+                : 'No experiment had been run yet at this point in the investigation.'}
+            </p>
+          </div>
+        ) : (
+          <SceneBoundary
+            fallback={(reason) => (
+              <SceneFallback
+                detail={`The 3D view could not be loaded in this build, so the geometry is shown schematically. Reported cause: ${reason}`}
+              />
+            )}
+          >
+            <Suspense
+              fallback={
+                <div className="scene__loading">
+                  <span className="label">Preparing plasma view</span>
+                </div>
+              }
+            >
+              <PlasmaScene
+                experiment={experiment}
+                baseline={workspace.compare ? workspace.baseline : null}
+                frameIndex={frameIndex}
+                temperatureScale={recording.temperature_scale_kev}
+                geometry={recording.geometry}
+                compare={workspace.compare}
+                reducedMotion={workspace.reducedMotion}
+                className="scene__canvas"
+              />
+            </Suspense>
+          </SceneBoundary>
+        )}
+      </div>
+
+      <footer className="scene__foot">
+        <div className="scene__scale" aria-hidden>
+          <span className="scene__scale-bar" />
+          <span className="scene__scale-range numeric">
+            {formatNumber(scaleMin, 0)}–{formatNumber(scaleMax, 0)} keV
+          </span>
+        </div>
+
+        <label className="scene__frame">
+          <span className="label">Simulation time</span>
+          <input
+            type="range"
+            className="transport__scrub scene__frame-scrub"
+            min={0}
+            max={Math.max(0, frames.length - 1)}
+            step={1}
+            value={frameIndex}
+            disabled={frames.length < 2}
+            onChange={(input) => workspace.setFrameIndex(Number(input.target.value))}
+            aria-label="Simulation time, by stored profile frame"
+            aria-valuetext={frame ? `${frame.time_s} seconds` : 'no frames'}
+          />
+          <span className="scene__frame-value numeric">
+            {frame ? `${formatNumber(frame.time_s, 2)} s` : '—'}
+          </span>
+        </label>
+      </footer>
+    </div>
+  );
+}

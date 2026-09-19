@@ -5,6 +5,7 @@ import Transport from './Transport';
 import ResearchTree from './ResearchTree';
 import EvidencePanel from './EvidencePanel';
 import Dossier from './Dossier';
+import ScenePane from './ScenePane';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -48,10 +49,7 @@ export default function Workspace({ recording }: WorkspaceProps) {
         </aside>
 
         <section className="workspace__pane workspace__pane--scene" aria-label="Plasma view">
-          <p className="label workspace__pane-label">Plasma view</p>
-          <p className="workspace__placeholder numeric">
-            {workspace.selectedExperiment?.label ?? 'No experiment selected'}
-          </p>
+          <ScenePane recording={recording} workspace={workspace} />
         </section>
 
         <aside className="workspace__pane workspace__pane--evidence" aria-label="Evidence">
