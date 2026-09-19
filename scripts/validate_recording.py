@@ -52,6 +52,18 @@ def validate_recording(recording, *, public=False):
         raise ValueError('Unknown baseline')
     if recording['best_experiment_id'] is not None and recording['best_experiment_id'] not in experiments:
         raise ValueError('Unknown best experiment')
+    known_evidence=set(experiments) | {v['event_id'] for v in recording['events']}
+    known_evidence.update(a['path'] for e in experiments.values() for a in e['artifacts'])
+    for item in [*recording['events'],*recording['hypotheses'],recording['conclusion']]:
+        if any(e not in known_evidence for e in item['evidence_ids']):
+            raise ValueError('Unknown evidence reference')
+    for hyp_id in hypotheses:
+        visited=set()
+        cursor=hyp_id
+        while cursor is not None and cursor in hypotheses:
+            if cursor in visited:raise ValueError('Hypothesis ancestry contains a cycle')
+            visited.add(cursor)
+            cursor=hypotheses[cursor]['parent_id']
     sequences=[v['sequence'] for v in recording['events']]
     if sequences!=sorted(set(sequences)):
         raise ValueError('Event sequences must be strictly increasing')
@@ -82,6 +94,11 @@ def validate_recording(recording, *, public=False):
                     raise ValueError('Temperature profile and radial grid lengths differ')
                 if any(t<0 for t in frame[key]):
                     raise ValueError('Negative temperature')
+        if experiment['status']=='completed' and experiment['frames']:
+            final=experiment['frames'][-1]
+            for metric,field in [('fusion_energy_mj','cumulative_fusion_energy_mj'),('heating_energy_mj','cumulative_heating_energy_mj')]:
+                if not math.isclose(experiment['metrics'][metric],final[field],rel_tol=1e-6,abs_tol=1e-6):
+                    raise ValueError('Reported metric differs from final recorded cumulative energy')
         if experiment['status']=='completed' and not experiment['frames']:
             raise ValueError('Completed experiment has no measured frames')
     return recording

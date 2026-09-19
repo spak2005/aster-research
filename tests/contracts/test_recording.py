@@ -23,6 +23,18 @@ class RecordingContractTests(unittest.TestCase):
         self.recording['events'][1]['sequence']=0
         with self.assertRaisesRegex(ValueError,'strictly increasing'):
             validate_recording(self.recording)
+    def test_unknown_evidence_rejected(self):
+        self.recording['conclusion']['evidence_ids']=['invented']
+        with self.assertRaisesRegex(ValueError,'Unknown evidence'):
+            validate_recording(self.recording)
+    def test_cyclic_ancestry_rejected(self):
+        self.recording['hypotheses'][0]['parent_id']='h1'
+        with self.assertRaisesRegex(ValueError,'cycle'):
+            validate_recording(self.recording)
+    def test_summary_matches_measured_frame(self):
+        self.recording['experiments'][0]['metrics']['fusion_energy_mj']=9999
+        with self.assertRaisesRegex(ValueError,'differs from final'):
+            validate_recording(self.recording)
     def test_dangling_experiment_rejected(self):
         self.recording['events'][2]['experiment_id']='nonexistent'
         with self.assertRaisesRegex(ValueError,'unknown experiment'):
