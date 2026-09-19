@@ -3,6 +3,7 @@ import ModeBadge from '../common/ModeBadge';
 import { useWorkspace } from './useWorkspace';
 import Transport from './Transport';
 import ResearchTree from './ResearchTree';
+import EvidencePanel from './EvidencePanel';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -19,6 +20,8 @@ interface WorkspaceProps {
 export default function Workspace({ recording }: WorkspaceProps) {
   const workspace = useWorkspace(recording);
   const { visible } = workspace;
+  const selectedHypothesis =
+    visible.hypotheses.find((item) => item.id === workspace.selectedHypothesisId) ?? null;
 
   return (
     <div className="workspace">
@@ -51,10 +54,15 @@ export default function Workspace({ recording }: WorkspaceProps) {
         </section>
 
         <aside className="workspace__pane workspace__pane--evidence" aria-label="Evidence">
-          <p className="label workspace__pane-label">Evidence</p>
-          <p className="workspace__placeholder numeric">
-            event {visible.sequence} of {visible.maxSequence}
+          <p className="label workspace__pane-label">
+            Evidence available at event {visible.sequence}
           </p>
+          <EvidencePanel
+            recording={recording}
+            state={visible}
+            hypothesis={selectedHypothesis}
+            experiment={workspace.selectedExperiment}
+          />
         </aside>
       </div>
 
