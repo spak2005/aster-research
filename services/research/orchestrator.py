@@ -202,24 +202,77 @@ class Investigation:
         return exp
 
     def apply_decision(self, decision: Decision) -> dict[str, Any]:
-        """H10: turn a proposer decision into a recorded experiment or stop."""
+        """Turn a proposer decision into revise/branch/stop or an experiment."""
         if self.cancel.is_set():
             return self._fail_run("canceled")
-        if self.remaining() <= 0 and decision.action == "experiment":
+        if self.remaining() <= 0 and decision.action in {"experiment", "revise"}:
             decision = Decision(
                 ok=True,
                 action="stop",
-                hypothesis="budget exhausted",
+                hypothesis=decision.hypothesis or "budget exhausted",
                 prediction="no further experiments",
                 rationale="max_experiments reached",
             )
-        if decision.action in {"experiment", "revise"}:
-            return self._decision_experiment(decision)
         if decision.action == "stop":
-            return {"status": "stop_requested", "decision": decision.as_dict()}
+            return self.apply_stop(decision)
+        if decision.action == "revise":
+            return self.apply_revise(decision)
         if decision.action == "verify":
             return {"status": "verify_requested", "decision": decision.as_dict()}
+        if decision.action == "experiment":
+            return self._decision_experiment(decision)
         return {"status": "ignored", "decision": decision.as_dict()}
+
+    def apply_stop(self, decision: Decision) -> dict[str, Any]:
+        parent = self.recording["hypotheses"][-1]["id"] if self.recording["hypotheses"] else None
+        summary = decision.rationale or decision.hypothesis or "Proposer requested stop."
+        if parent:
+            self._assess(parent, summary, "abandoned")
+        self._emit(
+            event_type="hypothesis.revised",
+            title="Stop requested",
+            summary=summary,
+            hypothesis_id=parent,
+            payload=decision.as_dict(),
+        )
+        return {"status": "stopped", "decision": decision.as_dict()}
+
+    def apply_revise(self, decision: Decision) -> dict[str, Any]:
+        parent = self.recording["hypotheses"][-1]["id"] if self.recording["hypotheses"] else None
+        self._emit(
+            event_type="hypothesis.revised",
+            title=decision.hypothesis or "Revised hypothesis",
+            summary=decision.prediction,
+            hypothesis_id=parent,
+            payload=decision.as_dict(),
+        )
+        if parent and any(
+            hyp["id"] != parent and hyp.get("parent_id") == (
+                self.recording["hypotheses"][0]["id"] if self.recording["hypotheses"] else None
+            )
+            for hyp in self.recording["hypotheses"]
+        ):
+            self._emit(
+                event_type="branch.created",
+                title="Branch from revised hypothesis",
+                summary=decision.hypothesis or "branch",
+                hypothesis_id=parent,
+                parent_id=parent,
+            )
+        return self._decision_experiment(decision)
+
+    def apply_branch(self, decision: Decision, parent_id: str | None = None) -> dict[str, Any]:
+        parent_id = parent_id or (
+            self.recording["hypotheses"][0]["id"] if self.recording["hypotheses"] else None
+        )
+        self._emit(
+            event_type="branch.created",
+            title=decision.hypothesis or "Branch",
+            summary=decision.prediction,
+            parent_id=parent_id,
+            payload=decision.as_dict(),
+        )
+        return self._decision_experiment(decision)
 
     def _decision_experiment(self, decision: Decision) -> dict[str, Any]:
         parent_id = (
