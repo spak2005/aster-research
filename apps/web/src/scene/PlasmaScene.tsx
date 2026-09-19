@@ -109,6 +109,12 @@ export default function PlasmaScene({
             resetRevision={cameraResetRevision}
             reducedMotion={reducedMotion}
             comparison={showSplitComparison}
+            focusRole={showSplitComparison ? null : displayedExperiment?.role}
+            transitionKey={
+              showSplitComparison
+                ? `compare:${baseline?.id ?? 'none'}:${experiment?.id ?? 'none'}`
+                : displayedExperiment?.id
+            }
           />
         </Suspense>
       </SceneCanvas>
