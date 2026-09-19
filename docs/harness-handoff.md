@@ -22,7 +22,7 @@ H02–H16 on this worktree. Interpreter: `/Users/israelogbonna/.openclaw/workspa
 | H13 | 139e49a | feat(harness): expose local run creation and events API |
 | H14 | 856c66a | feat(harness): add refined-grid and frozen perturbation checks |
 | H15 | 4f8d97c | feat(harness): add deterministic conclusion gate |
-| H16 | (this commit) | genuine closed-loop recording + handoff |
+| H16 | b4a7e49 | genuine closed-loop recording + handoff |
 
 ## Parent-facing artifacts
 
