@@ -4,6 +4,7 @@ import App from './App';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/common.css';
+import './styles/motion.css';
 
 const container = document.getElementById('root');
 if (!container) {

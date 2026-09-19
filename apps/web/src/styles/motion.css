@@ -1,0 +1,52 @@
+/* Reveal primitives for scroll-coordinated entrances.
+   Everything here is opt-in twice over: the hidden state applies only when the
+   reveal module marked the root ready and the visitor has not asked for less
+   motion. Absent either, elements render in their final state. */
+
+:root {
+  /* One rise distance and one step interval, so staggers stay in family. */
+  --reveal-rise: 14px;
+  --reveal-step: 68ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="ready"] .reveal {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-rise), 0);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out),
+      clip-path var(--dur-3) var(--ease-out);
+    transition-delay: calc(var(--step, 0) * var(--reveal-step));
+  }
+
+  /* Revealed either in its own right, or by an ancestor entering the viewport. */
+  :root[data-motion="ready"] .reveal[data-revealed],
+  :root[data-motion="ready"] [data-revealed] .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* A hairline drawing itself open. The page is built from rules; this is how
+     they arrive. */
+  :root[data-motion="ready"] .reveal--rule {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  /* Instrument aperture: opens about its own centre rather than rising. */
+  :root[data-motion="ready"] .reveal--iris {
+    transform: scale(0.94);
+  }
+
+  /* Panels that unfold downward from their top edge. */
+  :root[data-motion="ready"] .reveal--unfold {
+    clip-path: inset(0 0 100% 0);
+    transform: translate3d(0, calc(var(--reveal-rise) * 0.5), 0);
+  }
+
+  :root[data-motion="ready"] .reveal--unfold[data-revealed],
+  :root[data-motion="ready"] [data-revealed] .reveal--unfold {
+    clip-path: inset(0 0 0 0);
+  }
+}
