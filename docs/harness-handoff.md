@@ -26,8 +26,9 @@ H02–H16 on this worktree, then post-review fixes on the same branch. Interpret
 | H17 | d5d2b16 | bind verification checks to heating+grid |
 | H18 | 93facf2 | solver grid metadata and SHA-256 hashes |
 | H19 | 6160024 | proposal bounds, baseline fail, worker reserve |
+| H20 | a496fc2 | v2 investigation + equal-budget control recording |
 
-Post-review H17–H20 are in git log after H16. v1 scientific result below is unchanged history.
+Post-review H17–H20 are listed above. v1 scientific result below is unchanged history.
 
 ## Parent-facing artifacts
 
