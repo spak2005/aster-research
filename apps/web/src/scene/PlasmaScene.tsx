@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import type { PlasmaSceneProps } from '../../../../contracts/recording';
 import { SceneCanvas } from './SceneCanvas';
 import { SceneControls } from './SceneControls';
+import { getHeatingEnvelope } from './heatingProfile';
 import { loadProfileFrame } from './profileFrames';
 import { TemperatureLegend } from './TemperatureLegend';
 import { TokamakStage } from './TokamakStage';
@@ -24,6 +25,7 @@ export default function PlasmaScene({
     [],
   );
   const profile = loadProfileFrame(experiment, frameIndex);
+  const heating = getHeatingEnvelope(experiment);
   const label =
     profile.status === 'ready' && experiment
       ? `${experiment.label}, frame ${profile.value.index + 1} of ${profile.value.count}`
@@ -53,6 +55,7 @@ export default function PlasmaScene({
             geometry={geometry}
             frame={profile.status === 'ready' ? profile.value.frame : null}
             temperatureScale={temperatureScale}
+            heating={heating}
           />
           <SceneControls
             resetRevision={cameraResetRevision}
@@ -77,6 +80,26 @@ export default function PlasmaScene({
         {label} · {geometry.major_radius_m.toFixed(2)} m major radius ·{' '}
         {temperatureScale[0].toFixed(1)}–{temperatureScale[1].toFixed(1)} keV
       </div>
+      {heating ? (
+        <div
+          style={{
+            position: 'absolute',
+            left: 16,
+            top: 38,
+            paddingLeft: 8,
+            borderLeft: '2px solid #d99b4f',
+            color: '#c9aa78',
+            fontSize: 10,
+            letterSpacing: '0.045em',
+            fontVariantNumeric: 'tabular-nums',
+            pointerEvents: 'none',
+          }}
+        >
+          CONFIGURED HEATING · ρ {heating.locationRho.toFixed(2)} · Δρ{' '}
+          {heating.widthRho.toFixed(2)}
+          <span style={{ color: '#6f8585' }}> · NOT A MEASURED FIELD</span>
+        </div>
+      ) : null}
       {profile.status === 'ready' ? (
         <div
           style={{

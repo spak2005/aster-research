@@ -2,6 +2,8 @@ import type {
   ProfileFrame,
   Recording,
 } from '../../../../contracts/recording';
+import { HeatingOverlay } from './HeatingOverlay';
+import type { HeatingEnvelope } from './heatingProfile';
 import { PlasmaVolume } from './PlasmaVolume';
 import { useSceneViewport } from './SceneCanvas';
 
@@ -9,6 +11,7 @@ interface TokamakStageProps {
   geometry: Recording['geometry'];
   frame: ProfileFrame | null;
   temperatureScale: [number, number];
+  heating: HeatingEnvelope | null;
 }
 
 function getVisualDimensions(geometry: Recording['geometry']) {
@@ -26,6 +29,7 @@ export function TokamakStage({
   geometry,
   frame,
   temperatureScale,
+  heating,
 }: TokamakStageProps) {
   const { quality } = useSceneViewport();
   const { majorRadius, minorRadius } = getVisualDimensions(geometry);
@@ -61,6 +65,15 @@ export function TokamakStage({
           minorRadius={minorRadius}
           cutawayArc={cutawayArc}
           temperatureScale={temperatureScale}
+          rotation={torusRotation}
+        />
+      ) : null}
+      {heating ? (
+        <HeatingOverlay
+          envelope={heating}
+          majorRadius={majorRadius}
+          minorRadius={minorRadius}
+          cutawayArc={cutawayArc}
           rotation={torusRotation}
         />
       ) : null}
