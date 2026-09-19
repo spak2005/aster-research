@@ -114,6 +114,56 @@
   border-left-color: var(--signal);
 }
 
+/* ---- Code blocks ---- */
+
+.code {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: rgba(5, 7, 10, 0.66);
+  overflow: hidden;
+}
+
+.code__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--line-faint);
+  background: rgba(154, 176, 208, 0.035);
+}
+
+.code__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.22rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+
+.code__copy:hover {
+  color: var(--signal);
+  border-color: var(--signal-edge);
+}
+
+.code__body {
+  margin: 0;
+  padding: var(--s-4);
+  overflow-x: auto;
+  font-size: var(--fs-xs);
+  line-height: 1.75;
+  color: var(--text);
+  tab-size: 2;
+}
+
 /* ---- Loading placeholders ---- */
 
 .skeleton {
