@@ -25,7 +25,7 @@ Source: https://github.com/spak2005/aster-research
 
 Public recorded-first observatory: https://spak2005.github.io/aster-research/
 
-GitHub Pages deployment and delivered-browser checks are the final gate. The public site exposes no compute API. `npm run dev:all` provides actual local research execution.
+GitHub Pages is deployed; delivered desktop/mobile browser checks pass. See `docs/RELEASE_REPORT.md`. The public site exposes no compute API. `npm run dev:all` provides actual local research execution.
 
 ## Scientific result
 
