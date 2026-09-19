@@ -27,6 +27,7 @@ jobs:
           python-version: '3.12'
       - run: npm ci
       - run: npm run test:contracts
+      - run: npm run test:catalog
       - run: npm run test:replay
       - run: npm run test:scene
       - run: npm run test:ui

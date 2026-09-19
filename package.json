@@ -14,7 +14,8 @@
     "validate:recording": "python3 scripts/validate_recording.py",
     "test:replay": "node scripts/check_replay.mjs",
     "test:scene": "esbuild tests/scene/replay.test.ts --bundle --platform=node --format=esm --outfile=runtime/tests/scene-replay.mjs --log-level=warning && node --test runtime/tests/scene-replay.mjs",
-    "test:ui": "node --experimental-strip-types apps/web/src/lib/visibility.check.mjs"
+    "test:ui": "node --experimental-strip-types apps/web/src/lib/visibility.check.mjs",
+    "test:catalog": "node scripts/check_catalog.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.0",
