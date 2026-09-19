@@ -8,11 +8,16 @@ import ResearchTree from './ResearchTree';
 import EvidencePanel from './EvidencePanel';
 import Dossier from './Dossier';
 import ScenePane from './ScenePane';
+import ShareMoment from './ShareMoment';
+import type { Moment } from '../../lib/shareLink';
 import { formatDate } from '../../lib/format';
+import { useDocumentMeta } from '../../lib/useDocumentMeta';
 import '../../styles/workspace.css';
 
 interface WorkspaceProps {
   recording: Recording;
+  /** Opening position carried by a shared link, if any. */
+  initial?: Moment;
 }
 
 /**
@@ -21,7 +26,10 @@ interface WorkspaceProps {
  * continues into a longer-form dossier for detail that does not belong in a
  * fixed-height panel.
  */
-export default function Workspace({ recording }: WorkspaceProps) {
+export default function Workspace({ recording, initial }: WorkspaceProps) {
+  // The question, never the conclusion: the page may still be withholding it.
+  useDocumentMeta(recording.title, recording.question);
+
   // Keep the recorded/live label and run date in the site header while open.
   useEffect(() => {
     setRunBadge({
@@ -32,7 +40,7 @@ export default function Workspace({ recording }: WorkspaceProps) {
     return () => setRunBadge(null);
   }, [recording.id, recording.mode, recording.created_at, recording.title]);
 
-  const workspace = useWorkspace(recording);
+  const workspace = useWorkspace(recording, initial);
   const { visible } = workspace;
   const selectedHypothesis =
     visible.hypotheses.find((item) => item.id === workspace.selectedHypothesisId) ?? null;
@@ -45,6 +53,11 @@ export default function Workspace({ recording }: WorkspaceProps) {
           <h1 className="workspace__title">{recording.title}</h1>
           <p className="workspace__question">{recording.question}</p>
         </div>
+        <ShareMoment
+          nodeId={workspace.selectedNodeId}
+          runId={recording.id}
+          sequence={workspace.sequence}
+        />
       </header>
 
       <div className="workspace__console">

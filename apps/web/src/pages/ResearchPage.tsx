@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Recording } from '../types';
 import Workspace from '../components/workspace/Workspace';
 import { isLiveId, resolveRecording } from '../lib/resolveRecording';
 import { useAsync } from '../lib/useAsync';
+import { useRoute } from '../lib/router';
+import { type Moment, readMoment } from '../lib/shareLink';
+import { useDocumentMeta } from '../lib/useDocumentMeta';
 
 /** How often a run held by the local service is re-read while it is open. */
 const LIVE_POLL_MS = 5000;
@@ -15,6 +18,16 @@ export default function ResearchPage({ id }: ResearchPageProps) {
   const live = isLiveId(id);
   const [tick, setTick] = useState(0);
   const [lastGood, setLastGood] = useState<Recording | null>(null);
+  const route = useRoute();
+
+  // The opening position is read once per run. Afterwards the URL follows the
+  // reader rather than the reverse, so copying a link never rewinds the page.
+  const momentFor = useRef<string | null>(null);
+  const moment = useRef<Moment>({ sequence: null, node: null });
+  if (momentFor.current !== id) {
+    momentFor.current = id;
+    moment.current = readMoment(route.query);
+  }
 
   useEffect(() => {
     setLastGood(null);
@@ -28,6 +41,10 @@ export default function ResearchPage({ id }: ResearchPageProps) {
 
   const state = useAsync((signal) => resolveRecording(id, signal), [id, tick]);
 
+  // Left to the workspace once a run is on screen, so the title names the run.
+  const settled = state.status === 'ready' || lastGood !== null;
+  useDocumentMeta(settled ? null : state.status === 'error' ? 'Unavailable' : 'Investigation');
+
   useEffect(() => {
     if (state.status === 'ready') setLastGood(state.data);
   }, [state]);
@@ -35,7 +52,7 @@ export default function ResearchPage({ id }: ResearchPageProps) {
   // Live refreshes keep the last successful read on screen instead of flashing
   // a loading state every few seconds.
   if (state.status === 'loading' && lastGood) {
-    return <Workspace recording={lastGood} />;
+    return <Workspace initial={moment.current} key={lastGood.id} recording={lastGood} />;
   }
 
   if (state.status === 'loading') {
@@ -50,7 +67,7 @@ export default function ResearchPage({ id }: ResearchPageProps) {
   }
 
   if (state.status === 'error') {
-    if (lastGood) return <Workspace recording={lastGood} />;
+    if (lastGood) return <Workspace initial={moment.current} key={lastGood.id} recording={lastGood} />;
     return (
       <div className="shell section">
         <div className="notice notice--error" role="alert">
@@ -75,5 +92,5 @@ export default function ResearchPage({ id }: ResearchPageProps) {
     );
   }
 
-  return <Workspace recording={state.data} />;
+  return <Workspace initial={moment.current} key={state.data.id} recording={state.data} />;
 }

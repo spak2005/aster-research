@@ -3,10 +3,15 @@ import SetupForm from '../components/start/SetupForm';
 import BackendStatus from '../components/start/BackendStatus';
 import LocalRunGuide from '../components/start/LocalRunGuide';
 import { DEFAULT_CONFIG, type RunConfig } from '../lib/runConfig';
+import { useDocumentMeta } from '../lib/useDocumentMeta';
 import '../styles/start.css';
 
 export default function StartPage() {
   const [config, setConfig] = useState<RunConfig>(DEFAULT_CONFIG);
+  useDocumentMeta(
+    'Run your own',
+    'Configure and launch an Aster investigation on your own machine. The simulator, the agent and the recordings all stay local.',
+  );
 
   return (
     <div className="shell section">

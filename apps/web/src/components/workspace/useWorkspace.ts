@@ -11,6 +11,7 @@ import {
   sequenceBounds,
 } from '../../lib/visibility';
 import { useReducedMotion } from '../../lib/useMediaQuery';
+import type { Moment } from '../../lib/shareLink';
 
 /** Milliseconds one research event occupies at 1x. */
 const EVENT_DWELL_MS = 1100;
@@ -36,6 +37,8 @@ export interface WorkspaceController {
   setSpeed: (value: Speed) => void;
   atEnd: boolean;
 
+  /** The node the reader chose explicitly, if any; null while following the run. */
+  selectedNodeId: string | null;
   /** Selected tree node: a hypothesis, an experiment, or both. */
   selectedHypothesisId: string | null;
   selectedExperimentId: string | null;
@@ -53,15 +56,29 @@ export interface WorkspaceController {
   reducedMotion: boolean;
 }
 
-export function useWorkspace(recording: Recording): WorkspaceController {
+export function useWorkspace(
+  recording: Recording,
+  initial?: Moment,
+): WorkspaceController {
   const bounds = useMemo(() => sequenceBounds(recording), [recording]);
   const chapters = useMemo(() => getChapters(recording), [recording]);
   const reducedMotion = useReducedMotion();
 
-  const [sequence, setSequenceRaw] = useState(bounds.max);
+  // A shared link may open the run at an earlier point. The position is taken
+  // literally: if the link also names a node that is not yet visible there, the
+  // selection is dropped rather than the timeline jumped forward.
+  const [sequence, setSequenceRaw] = useState(() => {
+    const clamp = (value: number) => Math.min(Math.max(value, bounds.min), bounds.max);
+    if (initial?.sequence != null) return clamp(initial.sequence);
+    if (initial?.node) {
+      const reveal = revealSequence(recording, initial.node);
+      if (reveal !== null) return clamp(reveal);
+    }
+    return bounds.max;
+  });
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<Speed>(1);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(initial?.node ?? null);
   const [frameIndex, setFrameIndexRaw] = useState(0);
   const [compare, setCompare] = useState(true);
 
@@ -227,6 +244,7 @@ export function useWorkspace(recording: Recording): WorkspaceController {
     speed,
     setSpeed,
     atEnd,
+    selectedNodeId,
     selectedHypothesisId,
     selectedExperimentId,
     select,
