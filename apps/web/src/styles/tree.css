@@ -59,10 +59,6 @@
 
 .tree__glyph--provisional {
   background: transparent;
-}
-
-.tree__row--experiment .tree__glyph--provisional,
-.tree__glyph--provisional {
   animation: tree-pending 2.6s var(--ease) infinite;
 }
 
