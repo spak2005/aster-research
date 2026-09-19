@@ -15,7 +15,16 @@ import { useTransportKeys } from './useTransportKeys';
 import type { Moment } from '../../lib/shareLink';
 import { formatDate } from '../../lib/format';
 import { useDocumentMeta } from '../../lib/useDocumentMeta';
+import { useIsCompact } from '../../lib/useMediaQuery';
 import '../../styles/workspace.css';
+
+type PaneId = 'tree' | 'scene' | 'evidence';
+
+const PANES: { id: PaneId; label: string }[] = [
+  { id: 'tree', label: 'Reasoning' },
+  { id: 'scene', label: 'Plasma' },
+  { id: 'evidence', label: 'Evidence' },
+];
 
 interface WorkspaceProps {
   recording: Recording;
@@ -49,6 +58,12 @@ export default function Workspace({ recording, initial }: WorkspaceProps) {
     workspace,
     useCallback(() => setHelpOpen((open) => !open), []),
   );
+  // On phones the three panes become one pane and a tab bar, so the transport
+  // stays within reach instead of sitting below three tall scroll regions.
+  const compact = useIsCompact();
+  const [pane, setPane] = useState<PaneId>('scene');
+  const shows = (id: PaneId) => !compact || pane === id;
+
   const { visible } = workspace;
   const selectedHypothesis =
     visible.hypotheses.find((item) => item.id === workspace.selectedHypothesisId) ?? null;
@@ -79,34 +94,59 @@ export default function Workspace({ recording, initial }: WorkspaceProps) {
         </div>
       </header>
 
+      {compact ? (
+        <div className="panetabs shell" role="tablist" aria-label="Console pane">
+          {PANES.map((item) => (
+            <button
+              aria-selected={pane === item.id}
+              className="panetabs__tab"
+              key={item.id}
+              onClick={() => setPane(item.id)}
+              role="tab"
+              type="button"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div className="workspace__console">
-        <aside className="workspace__pane workspace__pane--tree" aria-label="Research tree">
-          <p className="label workspace__pane-label">
-            Research tree · {visible.hypotheses.length} visible
-          </p>
-          <ResearchTree
-            state={visible}
-            selectedHypothesisId={workspace.selectedHypothesisId}
-            selectedExperimentId={workspace.selectedExperimentId}
-            onSelect={workspace.select}
-          />
-        </aside>
+        {shows('tree') ? (
+          <aside className="workspace__pane workspace__pane--tree" aria-label="Research tree">
+            <p className="label workspace__pane-label">
+              Research tree · {visible.hypotheses.length} visible
+            </p>
+            <ResearchTree
+              state={visible}
+              selectedHypothesisId={workspace.selectedHypothesisId}
+              selectedExperimentId={workspace.selectedExperimentId}
+              onSelect={workspace.select}
+            />
+          </aside>
+        ) : null}
 
-        <section className="workspace__pane workspace__pane--scene" aria-label="Plasma view">
-          <ScenePane recording={recording} workspace={workspace} />
-        </section>
+        {/* The scene is unmounted rather than hidden on phones: an off-screen
+            WebGL context would keep drawing frames nobody can see. */}
+        {shows('scene') ? (
+          <section className="workspace__pane workspace__pane--scene" aria-label="Plasma view">
+            <ScenePane recording={recording} workspace={workspace} />
+          </section>
+        ) : null}
 
-        <aside className="workspace__pane workspace__pane--evidence" aria-label="Evidence">
-          <p className="label workspace__pane-label">
-            Evidence available at event {visible.sequence}
-          </p>
-          <EvidencePanel
-            recording={recording}
-            state={visible}
-            hypothesis={selectedHypothesis}
-            experiment={workspace.selectedExperiment}
-          />
-        </aside>
+        {shows('evidence') ? (
+          <aside className="workspace__pane workspace__pane--evidence" aria-label="Evidence">
+            <p className="label workspace__pane-label">
+              Evidence available at event {visible.sequence}
+            </p>
+            <EvidencePanel
+              recording={recording}
+              state={visible}
+              hypothesis={selectedHypothesis}
+              experiment={workspace.selectedExperiment}
+            />
+          </aside>
+        ) : null}
       </div>
 
       <div className="workspace__transport">

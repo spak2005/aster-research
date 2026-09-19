@@ -13,6 +13,33 @@
   padding-block: var(--s-5) var(--s-4);
 }
 
+/* ---- Compact pane tabs (phones) ---- */
+
+.panetabs {
+  display: flex;
+  gap: var(--s-1);
+  padding-bottom: var(--s-3);
+}
+
+.panetabs__tab {
+  flex: 1 1 0;
+  padding: 0.55rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--ink-800);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.panetabs__tab[aria-selected='true'] {
+  border-color: var(--signal-edge);
+  color: var(--signal);
+  background: var(--signal-wash);
+}
+
 /* ---- Keyboard legend ---- */
 
 .keyhelp {
@@ -42,12 +69,6 @@
   from {
     opacity: 0;
     transform: translateY(6px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .keyhelp__panel {
-    animation: none;
   }
 }
 
@@ -592,5 +613,23 @@
   .workspace__pane--tree,
   .workspace__pane--evidence {
     max-height: 60vh;
+  }
+}
+
+@media (max-width: 760px) {
+  .workspace__console {
+    /* One pane at a time: give it a stable height so switching tabs does not
+       move the transport underneath it. */
+    height: clamp(360px, 62dvh, 560px);
+  }
+
+  .workspace__pane {
+    height: 100%;
+    max-height: none;
+  }
+
+  .workspace__pane--scene {
+    aspect-ratio: auto;
+    max-height: none;
   }
 }
