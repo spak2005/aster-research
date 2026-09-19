@@ -1,16 +1,9 @@
 import { Suspense } from 'react';
+import { useState } from 'react';
 import type { PlasmaSceneProps } from '../../../../contracts/recording';
 import { SceneCanvas } from './SceneCanvas';
-
-function EmptyStage() {
-  return (
-    <>
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[4, 6, 4]} intensity={1.2} color="#bfeff2" />
-      <gridHelper args={[12, 24, '#15383c', '#0a1d20']} position={[0, -2.15, 0]} />
-    </>
-  );
-}
+import { SceneControls } from './SceneControls';
+import { TokamakStage } from './TokamakStage';
 
 export default function PlasmaScene({
   experiment,
@@ -22,6 +15,7 @@ export default function PlasmaScene({
   reducedMotion = false,
   className,
 }: PlasmaSceneProps) {
+  const [cameraResetRevision, setCameraResetRevision] = useState(0);
   const label = experiment
     ? `${experiment.label}, frame ${frameIndex + 1}`
     : 'No experiment selected';
@@ -42,7 +36,11 @@ export default function PlasmaScene({
     >
       <SceneCanvas className={className} reducedMotion={reducedMotion}>
         <Suspense fallback={null}>
-          <EmptyStage />
+          <TokamakStage geometry={geometry} />
+          <SceneControls
+            resetRevision={cameraResetRevision}
+            reducedMotion={reducedMotion}
+          />
         </Suspense>
       </SceneCanvas>
       <div
@@ -62,6 +60,28 @@ export default function PlasmaScene({
         {label} · {geometry.major_radius_m.toFixed(2)} m major radius ·{' '}
         {temperatureScale[0].toFixed(1)}–{temperatureScale[1].toFixed(1)} keV
       </div>
+      <button
+        type="button"
+        onClick={() => setCameraResetRevision((revision) => revision + 1)}
+        style={{
+          position: 'absolute',
+          right: 14,
+          top: 12,
+          border: '1px solid rgba(125, 197, 202, 0.32)',
+          borderRadius: 999,
+          padding: '7px 11px',
+          background: 'rgba(4, 13, 15, 0.78)',
+          color: '#a9cdd0',
+          font: 'inherit',
+          fontSize: 10,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          cursor: 'pointer',
+        }}
+        aria-label="Reset plasma camera"
+      >
+        Reset view
+      </button>
     </section>
   );
 }

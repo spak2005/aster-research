@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import type { PropsWithChildren } from 'react';
+import { createContext, type PropsWithChildren, useContext } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { resolveSceneQuality, type SceneViewport } from './quality';
 
@@ -10,6 +10,15 @@ interface SceneCanvasProps extends PropsWithChildren {
 }
 
 const INITIAL_VIEWPORT = { width: 960, height: 640 };
+const SceneViewportContext = createContext<SceneViewport>({
+  ...INITIAL_VIEWPORT,
+  compact: false,
+  quality: resolveSceneQuality(960, 640, 1, false),
+});
+
+export function useSceneViewport() {
+  return useContext(SceneViewportContext);
+}
 
 export function SceneCanvas({
   children,
@@ -85,7 +94,9 @@ export function SceneCanvas({
         style={{ position: 'absolute', inset: 0 }}
       >
         <color attach="background" args={['#03080a']} />
-        {children}
+        <SceneViewportContext.Provider value={viewport}>
+          {children}
+        </SceneViewportContext.Provider>
       </Canvas>
     </div>
   );
