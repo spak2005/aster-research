@@ -388,3 +388,15 @@ Decision log:
 - v1.0: initial review draft. No implementation, real TORAX experiment, repository publishing, or deployment performed under this plan.
 
 Background: [research recommendation](../../research/ai-science-hackathon/RECOMMENDATION.md). Historical voice-layer plan is shelved and is not part of this product.
+
+
+## Implementation decision log: v1.1
+
+September 19, 2026. Israel approved v1 and authorized the build.
+
+- Working name: Aster Research.
+- Cursor authentication verified. Actual build workers use Cursor Grok 4.6 Fast (harness), Claude Opus 5 Thinking High (UI), and GPT-5.6 Sol Extra High (3D). Astra was unavailable in the returned model catalog; the fallback was stated during the build.
+- Gate A passed with TORAX 1.4.3 on the M3 Pro. Scenario: constant transport, frozen current/density, no pedestal, one-second horizon, fixed 51 MW auxiliary heating, 25 radial cells and 40-cell refinement. Exact deviations and timing evidence live in docs/science/FEASIBILITY.md. This remains the approved plasma problem, with explicitly bounded model assumptions.
+- Public site is recorded-first; real execution binds locally. Repository visibility remains a user preference pending response. No hosted unrestricted compute.
+- Shared TypeScript/JSON recording contract and independent evidence consistency checks are implemented. Development fixtures remain outside public assets.
+- Build status tracks implementation; the original v1 review remains preserved above.
