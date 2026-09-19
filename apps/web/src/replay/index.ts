@@ -99,6 +99,15 @@ export interface VisibleReplayState {
   };
 }
 
+export interface SceneReplaySelection {
+  experiment: Experiment | null;
+  baseline: Experiment | null;
+  frameIndex: number;
+  compare: boolean;
+  selectedExperimentId: string | null;
+  status: 'ready' | 'pending' | 'empty';
+}
+
 const TERMINAL_EVENT_STATUS: Partial<
   Record<ResearchEvent['type'], Recording['status']>
 > = {
@@ -392,6 +401,116 @@ export function getVisibleStateAtProgress(
     recording,
     getSequenceAtProgress(timeline, progress),
   );
+}
+
+function toSceneExperiment(
+  experiment: VisibleExperiment | null | undefined,
+): Experiment | null {
+  if (!experiment?.resultVisible || !experiment.metrics) return null;
+  return {
+    id: experiment.id,
+    hypothesis_id: experiment.hypothesisId,
+    label: experiment.label,
+    role: experiment.role,
+    status: 'completed',
+    config: { ...experiment.config },
+    metrics: { ...experiment.metrics },
+    frames: experiment.frames.slice(),
+    artifacts: experiment.artifacts.map((artifact) => ({ ...artifact })),
+    checks: experiment.checks.map((check) => ({ ...check })),
+    wall_time_s: experiment.wallTimeS ?? 0,
+  };
+}
+
+/**
+ * Resolves tree/experiment selection into leak-safe PlasmaScene inputs.
+ * Explicit experiment selection wins, followed by the latest completed
+ * experiment on the selected visible hypothesis, then the active experiment.
+ */
+export function getSceneSelection(
+  recording: Recording,
+  sequence: number,
+  options: {
+    selectedHypothesisId?: string | null;
+    selectedExperimentId?: string | null;
+    frameIndex?: number;
+    compare?: boolean;
+  } = {},
+): SceneReplaySelection {
+  const state = getVisibleState(recording, sequence);
+  let selected: VisibleExperiment | null = null;
+  let selectedKnownButPending = false;
+
+  if (options.selectedExperimentId) {
+    selected =
+      state.experiments.find(
+        (experiment) => experiment.id === options.selectedExperimentId,
+      ) ?? null;
+    selectedKnownButPending = Boolean(selected && !selected.resultVisible);
+  } else if (options.selectedHypothesisId) {
+    const hypothesis = state.hypotheses.find(
+      (item) => item.id === options.selectedHypothesisId,
+    );
+    if (hypothesis) {
+      for (let index = hypothesis.experimentIds.length - 1; index >= 0; index -= 1) {
+        const experimentId = hypothesis.experimentIds[index];
+        const candidate = state.experiments.find(
+          (experiment) => experiment.id === experimentId,
+        );
+        if (candidate?.resultVisible) {
+          selected = candidate;
+          break;
+        }
+        if (candidate) selectedKnownButPending = true;
+      }
+    }
+  } else {
+    selected = state.activeExperiment;
+    selectedKnownButPending = Boolean(selected && !selected.resultVisible);
+  }
+
+  if (
+    !selected?.resultVisible &&
+    !options.selectedExperimentId &&
+    !options.selectedHypothesisId
+  ) {
+    selected =
+      state.experiments
+        .slice()
+        .reverse()
+        .find((experiment) => experiment.resultVisible) ?? selected;
+  }
+
+  const sceneExperiment = toSceneExperiment(selected);
+  const baselineVisible = state.experiments.find(
+    (experiment) => experiment.id === recording.baseline_id,
+  );
+  const sceneBaseline =
+    baselineVisible?.id === sceneExperiment?.id
+      ? null
+      : toSceneExperiment(baselineVisible);
+  const requestedFrame = Number.isFinite(options.frameIndex)
+    ? Math.round(options.frameIndex ?? 0)
+    : 0;
+  const frameIndex = sceneExperiment
+    ? Math.min(
+        Math.max(0, requestedFrame),
+        Math.max(0, sceneExperiment.frames.length - 1),
+      )
+    : 0;
+
+  return {
+    experiment: sceneExperiment,
+    baseline: sceneBaseline,
+    frameIndex,
+    compare: Boolean(options.compare && sceneExperiment && sceneBaseline),
+    selectedExperimentId: selected?.id ?? null,
+    status: sceneExperiment
+      ? 'ready'
+      : selectedKnownButPending
+        ? 'pending'
+        : 'empty',
+  };
 }
 
 /**
