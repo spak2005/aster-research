@@ -68,6 +68,32 @@
   color: var(--signal);
 }
 
+/* Development shelf: visually quarantined from published runs. */
+.run-list__dev {
+  margin-top: var(--s-6);
+  padding: var(--s-4) var(--s-4) var(--s-2);
+  border: 1px dashed rgba(224, 103, 79, 0.32);
+  border-radius: var(--r-2);
+  background: rgba(224, 103, 79, 0.03);
+}
+
+.run-list__dev .run-list {
+  border-top: none;
+}
+
+.run-list__dev .run-list > li:last-child {
+  border-bottom: none;
+}
+
+.run-list__dev .run-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-block: var(--s-3);
+}
+
+.run-list__dev .run-row__index {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .run-row {
     grid-template-columns: 1fr;

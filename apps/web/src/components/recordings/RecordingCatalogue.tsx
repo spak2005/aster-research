@@ -1,9 +1,34 @@
 import { ArrowUpRight } from 'lucide-react';
 import ModeBadge from '../common/ModeBadge';
-import { RECORDING_INDEX_URL, fetchRecordingIndex } from '../../lib/recordings';
+import {
+  RECORDING_INDEX_URL,
+  developmentFixtureSummary,
+  fetchRecordingIndex,
+} from '../../lib/recordings';
 import { useAsync } from '../../lib/useAsync';
 import { formatDate } from '../../lib/format';
+import type { RecordingSummary } from '../../types';
 import '../../styles/recordings.css';
+
+function RunRow({ run, index }: { run: RecordingSummary; index?: number }) {
+  return (
+    <li>
+      <a className="run-row" href={`#/research/${encodeURIComponent(run.id)}`}>
+        <span className="run-row__index numeric">
+          {index === undefined ? '' : String(index + 1).padStart(2, '0')}
+        </span>
+        <span className="run-row__body">
+          <span className="run-row__title">{run.title}</span>
+          {run.description ? <span className="run-row__description">{run.description}</span> : null}
+        </span>
+        <span className="run-row__meta">
+          <ModeBadge mode={run.mode} detail={run.created_at ? formatDate(run.created_at) : undefined} />
+          <ArrowUpRight size={16} className="run-row__arrow" aria-hidden />
+        </span>
+      </a>
+    </li>
+  );
+}
 
 /** Rows shown while the catalogue is being read. */
 function CatalogueSkeleton() {
@@ -17,6 +42,19 @@ function CatalogueSkeleton() {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** Visible only in development builds, and never mixed in with published runs. */
+function DevelopmentFixtureShelf() {
+  if (!import.meta.env.DEV) return null;
+  return (
+    <div className="run-list__dev">
+      <p className="label">Development build only — not part of the published site</p>
+      <ul className="run-list">
+        <RunRow run={developmentFixtureSummary()} />
+      </ul>
+    </div>
   );
 }
 
@@ -36,62 +74,55 @@ export default function RecordingCatalogue() {
 
   if (state.status === 'error') {
     return (
-      <div className="notice notice--error" role="alert">
-        <p className="label">Catalogue unreadable</p>
-        <h3 className="notice__title">The recording index could not be read</h3>
-        <p className="notice__body">
-          The site will not substitute stand-in data for a missing investigation, so nothing is
-          shown below. The underlying error is printed verbatim:
-        </p>
-        <p className="notice__detail">{state.error}</p>
-      </div>
+      <>
+        <div className="notice notice--error" role="alert">
+          <p className="label">Catalogue unreadable</p>
+          <h3 className="notice__title">The recording index could not be read</h3>
+          <p className="notice__body">
+            The site will not substitute stand-in data for a missing investigation, so nothing is
+            listed below. The underlying error is printed verbatim:
+          </p>
+          <p className="notice__detail">{state.error}</p>
+        </div>
+        <DevelopmentFixtureShelf />
+      </>
     );
   }
 
   if (state.data.length === 0) {
     return (
-      <div className="notice notice--signal">
-        <p className="label">Catalogue empty</p>
-        <h3 className="notice__title">No investigation has been published yet</h3>
-        <p className="notice__body">
-          <code className="numeric">{RECORDING_INDEX_URL}</code> is written by the harness when a
-          completed run is exported, together with its event log, saved profiles and artifact
-          hashes. Until a genuine run exists there is nothing truthful to replay here, and this
-          build ships no placeholder result in its place.
-        </p>
-        <div className="notice__actions">
-          <a className="btn btn--sm" href="#/start">
-            Run an investigation locally
-          </a>
-          <a className="btn btn--sm btn--ghost" href="#/?section=loop">
-            See what a run produces
-          </a>
+      <>
+        <div className="notice notice--signal">
+          <p className="label">Catalogue empty</p>
+          <h3 className="notice__title">No investigation has been published yet</h3>
+          <p className="notice__body">
+            <code className="numeric">{RECORDING_INDEX_URL}</code> is written by the harness when a
+            completed run is exported, together with its event log, saved profiles and artifact
+            hashes. Until a genuine run exists there is nothing truthful to replay here, and this
+            build ships no placeholder result in its place.
+          </p>
+          <div className="notice__actions">
+            <a className="btn btn--sm" href="#/start">
+              Run an investigation locally
+            </a>
+            <a className="btn btn--sm btn--ghost" href="#/?section=loop">
+              See what a run produces
+            </a>
+          </div>
         </div>
-      </div>
+        <DevelopmentFixtureShelf />
+      </>
     );
   }
 
   return (
-    <ul className="run-list">
-      {state.data.map((run, index) => (
-        <li key={run.id}>
-          <a className="run-row" href={`#/research/${encodeURIComponent(run.id)}`}>
-            <span className="run-row__index numeric">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <span className="run-row__body">
-              <span className="run-row__title">{run.title}</span>
-              {run.description ? (
-                <span className="run-row__description">{run.description}</span>
-              ) : null}
-            </span>
-            <span className="run-row__meta">
-              <ModeBadge mode={run.mode} detail={run.created_at ? formatDate(run.created_at) : undefined} />
-              <ArrowUpRight size={16} className="run-row__arrow" aria-hidden />
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className="run-list">
+        {state.data.map((run, index) => (
+          <RunRow key={run.id} run={run} index={index} />
+        ))}
+      </ul>
+      <DevelopmentFixtureShelf />
+    </>
   );
 }
