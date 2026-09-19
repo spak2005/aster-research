@@ -1,3 +1,4 @@
+import { publicAssetUrl } from '../../../../../contracts/public-url';
 import type { Recording } from '../../types';
 import type { VisibleExperiment, VisibleHypothesis, VisibleState } from '../../lib/visibility';
 import { CHECK_META, EXPERIMENT_STATUS_META, ROLE_LABEL, VERDICT_META } from '../../lib/status';
@@ -219,7 +220,11 @@ export default function EvidencePanel({
               <ul className="evidence__artifacts">
                 {experiment.result.artifacts.map((artifact) => (
                   <li key={artifact.path}>
-                    <span className="evidence__artifact-label">{artifact.label}</span>
+                    {artifact.path.startsWith('/recordings/') ? (
+                      <a className="evidence__artifact-label" href={publicAssetUrl(artifact.path, import.meta.env.BASE_URL)} download>
+                        Download {artifact.label} ↗
+                      </a>
+                    ) : <span className="evidence__artifact-label">{artifact.label} (local file)</span>}
                     <span className="evidence__artifact-path numeric">{artifact.path}</span>
                     {artifact.sha256 ? (
                       <span className="evidence__artifact-hash numeric">

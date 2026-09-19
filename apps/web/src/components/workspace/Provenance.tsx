@@ -1,3 +1,4 @@
+import { publicAssetUrl } from '../../../../../contracts/public-url';
 import type { Recording } from '../../types';
 import type { VisibleState } from '../../lib/visibility';
 import { formatDateTime, formatDuration } from '../../lib/format';
@@ -26,8 +27,8 @@ export default function Provenance({ recording, state }: ProvenanceProps) {
       label: 'Experiments completed',
       value: `${state.completedExperiments} of ${recording.budget.max_experiments} authorised`,
     },
-    { label: 'Total research time', value: formatDuration(recording.budget.wall_time_s) },
-    { label: 'Recorded status', value: recording.status },
+    { label: 'Solver time recorded', value: formatDuration(state.experiments.reduce((sum, e) => sum + (e.result?.wall_time_s ?? 0), 0)) },
+    { label: 'Run status at cursor', value: [...state.events].reverse().find(e => ['run.completed','run.failed','run.canceled'].includes(e.type))?.type.split('.')[1] ?? (state.events.length ? 'running' : 'not started') },
   ];
 
   const versions = Object.entries(recording.provenance.software_versions);
@@ -36,6 +37,7 @@ export default function Provenance({ recording, state }: ProvenanceProps) {
     <section className="provenance">
       <div className="provenance__col">
         <p className="label">Provenance</p>
+        {recording.mode === 'recorded' && <p><a href={publicAssetUrl(`/recordings/${recording.id}.json`, import.meta.env.BASE_URL)} download>Download investigation JSON ↗</a></p>}
         <dl className="provenance__facts">
           {facts.map((fact) => (
             <div key={fact.label}>
@@ -55,7 +57,9 @@ export default function Provenance({ recording, state }: ProvenanceProps) {
         ) : null}
         {recording.provenance.raw_artifact_path ? (
           <p className="provenance__raw numeric">
-            Raw output preserved at {recording.provenance.raw_artifact_path}
+            {recording.provenance.raw_artifact_path.startsWith('/recordings/')
+              ? <a href={publicAssetUrl(recording.provenance.raw_artifact_path, import.meta.env.BASE_URL)} download>Download raw evidence manifest ↗</a>
+              : <>Raw output preserved at {recording.provenance.raw_artifact_path}</>}
           </p>
         ) : null}
       </div>

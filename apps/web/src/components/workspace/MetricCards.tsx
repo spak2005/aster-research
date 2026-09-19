@@ -21,13 +21,13 @@ interface Card {
  * of showing a zero.
  */
 export default function MetricCards({ recording, experiment }: MetricCardsProps) {
-  const result = experiment?.result ?? null;
+  const result = experiment?.result?.status === 'completed' ? experiment.result : null;
   const metrics = result?.metrics ?? null;
   const improvement = metrics?.improvement_pct ?? null;
 
   const cards: Card[] = [
     {
-      label: recording.provenance.objective,
+      label: recording.provenance.objective === 'integrated_P_fusion' ? 'Fusion energy produced' : recording.provenance.objective,
       value: metrics ? formatNumber(metrics.fusion_energy_mj, 2) : '—',
       unit: metrics ? recording.provenance.objective_units : undefined,
       note: metrics ? 'frozen objective definition' : 'no value recorded yet',
@@ -42,7 +42,7 @@ export default function MetricCards({ recording, experiment }: MetricCardsProps)
       label: 'Peak ion temperature',
       value: metrics ? formatNumber(metrics.peak_ion_temperature_kev, 2) : '—',
       unit: metrics ? 'keV' : undefined,
-      note: 'maximum over the radial profile',
+      note: 'maximum over time and radius',
     },
     {
       label: 'Heating energy delivered',
