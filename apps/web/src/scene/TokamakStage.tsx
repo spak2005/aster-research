@@ -2,6 +2,7 @@ import type {
   ProfileFrame,
   Recording,
 } from '../../../../contracts/recording';
+import { FieldGuides } from './FieldGuides';
 import { HeatingOverlay } from './HeatingOverlay';
 import type { HeatingEnvelope } from './heatingProfile';
 import { PlasmaVolume } from './PlasmaVolume';
@@ -14,6 +15,8 @@ interface TokamakStageProps {
   heating: HeatingEnvelope | null;
   position?: [number, number, number];
   scale?: number;
+  showLights?: boolean;
+  showGrid?: boolean;
 }
 
 function getVisualDimensions(geometry: Recording['geometry']) {
@@ -34,9 +37,12 @@ export function TokamakStage({
   heating,
   position = [0, 0, 0],
   scale = 1,
+  showLights = true,
+  showGrid = true,
 }: TokamakStageProps) {
   const { quality } = useSceneViewport();
   const { majorRadius, minorRadius } = getVisualDimensions(geometry);
+  const visualElongation = Math.min(2.2, Math.max(0.75, geometry.elongation));
   const cutawayArc = Math.PI * 1.72;
   const torusRotation: [number, number, number] = [
     Math.PI / 2,
@@ -46,27 +52,32 @@ export function TokamakStage({
 
   return (
     <group position={position} scale={scale}>
-      <ambientLight intensity={0.24} color="#8ab9bd" />
-      <hemisphereLight args={['#9debf0', '#071113', 0.75]} />
-      <directionalLight
-        position={[4.2, 6.5, 4.8]}
-        intensity={2.25}
-        color="#d7fbff"
-        castShadow={quality.shadows}
-      />
-      <pointLight
-        position={[-4, 1.5, -2.5]}
-        intensity={24}
-        distance={12}
-        decay={2}
-        color="#d49a54"
-      />
+      {showLights ? (
+        <>
+          <ambientLight intensity={0.24} color="#8ab9bd" />
+          <hemisphereLight args={['#9debf0', '#071113', 0.75]} />
+          <directionalLight
+            position={[4.2, 6.5, 4.8]}
+            intensity={2.25}
+            color="#d7fbff"
+            castShadow={quality.shadows}
+          />
+          <pointLight
+            position={[-4, 1.5, -2.5]}
+            intensity={24}
+            distance={12}
+            decay={2}
+            color="#d49a54"
+          />
+        </>
+      ) : null}
 
       {frame ? (
         <PlasmaVolume
           frame={frame}
           majorRadius={majorRadius}
           minorRadius={minorRadius}
+          elongation={visualElongation}
           cutawayArc={cutawayArc}
           temperatureScale={temperatureScale}
           rotation={torusRotation}
@@ -77,12 +88,26 @@ export function TokamakStage({
           envelope={heating}
           majorRadius={majorRadius}
           minorRadius={minorRadius}
+          elongation={visualElongation}
+          cutawayArc={cutawayArc}
+          rotation={torusRotation}
+        />
+      ) : null}
+      {frame ? (
+        <FieldGuides
+          majorRadius={majorRadius}
+          minorRadius={minorRadius}
+          elongation={visualElongation}
           cutawayArc={cutawayArc}
           rotation={torusRotation}
         />
       ) : null}
 
-      <mesh rotation={torusRotation} receiveShadow>
+      <mesh
+        rotation={torusRotation}
+        scale={[1, 1, visualElongation]}
+        receiveShadow
+      >
         <torusGeometry
           args={[
             majorRadius,
@@ -92,7 +117,7 @@ export function TokamakStage({
             cutawayArc,
           ]}
         />
-        <meshPhysicalMaterial
+        <meshStandardMaterial
           color="#16383d"
           emissive="#07191c"
           emissiveIntensity={0.8}
@@ -105,7 +130,10 @@ export function TokamakStage({
         />
       </mesh>
 
-      <mesh rotation={torusRotation} scale={1.035}>
+      <mesh
+        rotation={torusRotation}
+        scale={[1.035, 1.035, 1.035 * visualElongation]}
+      >
         <torusGeometry
           args={[
             majorRadius,
@@ -137,10 +165,17 @@ export function TokamakStage({
         />
       </mesh>
 
-      <gridHelper
-        args={[13, quality.level === 'compact' ? 18 : 30, '#1a454a', '#0a2023']}
-        position={[0, -minorRadius - 0.72, 0]}
-      />
+      {showGrid ? (
+        <gridHelper
+          args={[
+            13,
+            quality.level === 'compact' ? 18 : 30,
+            '#1a454a',
+            '#0a2023',
+          ]}
+          position={[0, -minorRadius * visualElongation - 0.72, 0]}
+        />
+      ) : null}
     </group>
   );
 }

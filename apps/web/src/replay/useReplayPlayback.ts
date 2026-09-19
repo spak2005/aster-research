@@ -77,6 +77,14 @@ function eventDelayMs(current: ResearchEvent | undefined, next: ResearchEvent) {
   return nextTime - currentTime;
 }
 
+function eventAtOrBefore(events: ResearchEvent[], sequence: number) {
+  for (let index = events.length - 1; index >= 0; index -= 1) {
+    const event = events[index];
+    if (event && event.sequence <= sequence) return event;
+  }
+  return undefined;
+}
+
 /**
  * Advances replay sequence using recorded event timestamps.
  * Speed changes presentation timing only; events and scientific frames are
@@ -126,10 +134,7 @@ export function useReplayPlayback(
       onCompleteRef.current?.();
       return;
     }
-    const current = events
-      .slice()
-      .reverse()
-      .find((event) => event.sequence <= sequence);
+    const current = eventAtOrBefore(events, sequence);
     const delay = Math.min(
       2_147_000_000,
       Math.max(0, eventDelayMs(current, next) / speed),

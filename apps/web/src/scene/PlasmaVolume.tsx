@@ -13,6 +13,7 @@ interface PlasmaVolumeProps {
   frame: ProfileFrame;
   majorRadius: number;
   minorRadius: number;
+  elongation: number;
   cutawayArc: number;
   temperatureScale: [number, number];
   rotation: [number, number, number];
@@ -50,6 +51,7 @@ export function PlasmaVolume({
   frame,
   majorRadius,
   minorRadius,
+  elongation,
   cutawayArc,
   temperatureScale,
   rotation,
@@ -85,7 +87,7 @@ export function PlasmaVolume({
   ];
 
   return (
-    <group rotation={rotation}>
+    <group rotation={rotation} scale={[1, 1, elongation]}>
       {layers.map(({ rho, color }, index) => (
         <mesh key={rho}>
           <torusGeometry

@@ -7,6 +7,7 @@ interface HeatingOverlayProps {
   envelope: HeatingEnvelope;
   majorRadius: number;
   minorRadius: number;
+  elongation: number;
   cutawayArc: number;
   rotation: [number, number, number];
 }
@@ -15,6 +16,7 @@ export function HeatingOverlay({
   envelope,
   majorRadius,
   minorRadius,
+  elongation,
   cutawayArc,
   rotation,
 }: HeatingOverlayProps) {
@@ -34,7 +36,7 @@ export function HeatingOverlay({
   ];
 
   return (
-    <group rotation={rotation}>
+    <group rotation={rotation} scale={[1, 1, elongation]}>
       <mesh userData={{ encoding: 'configured heating location in rho' }}>
         <torusGeometry
           args={[

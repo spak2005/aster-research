@@ -110,6 +110,7 @@ export default function PlasmaScene({
                 heating={heating}
                 position={[3.3, 0, 0]}
                 scale={0.6}
+                showLights={false}
               />
             </>
           ) : (
@@ -151,7 +152,8 @@ export default function PlasmaScene({
           pointerEvents: 'none',
         }}
       >
-        {label} · {geometry.major_radius_m.toFixed(2)} m major radius ·{' '}
+        {label} · R {geometry.major_radius_m.toFixed(2)} m · a{' '}
+        {geometry.minor_radius_m.toFixed(2)} m · κ {geometry.elongation.toFixed(2)} ·{' '}
         {temperatureScale[0].toFixed(1)}–{temperatureScale[1].toFixed(1)} keV
       </div>
       {showSplitComparison ? (
@@ -305,6 +307,8 @@ export default function PlasmaScene({
           SCHEMATIC AXISYMMETRIC RECONSTRUCTION
           <br />
           VOLUME ENCODING: MEAN RECORDED Tₑ / Tᵢ PROFILE
+          <br />
+          FIELD GUIDES: SCHEMATIC, NOT SOLVER OUTPUT
         </div>
       ) : null}
       <button
