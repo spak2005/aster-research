@@ -1,25 +1,13 @@
-import { Suspense, lazy, type ComponentType } from 'react';
+import { Suspense, lazy } from 'react';
 import { Columns2 } from 'lucide-react';
-import type { PlasmaSceneProps, Recording } from '../../types';
+import type { Recording } from '../../types';
 import type { WorkspaceController } from './useWorkspace';
 import SceneBoundary from './SceneBoundary';
 import TokamakSchematic from '../landing/TokamakSchematic';
 import { formatNumber } from '../../lib/format';
 
-/**
- * The 3D view is a separately owned module at `src/scene/PlasmaScene.tsx`.
- *
- * It is resolved through a glob rather than a direct dynamic import so that a
- * build without the scene still compiles and runs: an absent module yields an
- * empty map, and the pane falls back to the schematic. When the scene lands,
- * it is picked up with no change here. No placeholder module is created, which
- * would collide with the scene owner's file.
- */
-const sceneLoaders = import.meta.glob<{ default: ComponentType<PlasmaSceneProps> }>(
-  '../../scene/PlasmaScene.{tsx,ts}',
-);
-const sceneLoader = Object.values(sceneLoaders)[0];
-const PlasmaScene = sceneLoader ? lazy(sceneLoader) : null;
+/** The release requires the real scene module; WebGL failures have a runtime fallback. */
+const PlasmaScene = lazy(() => import('../../scene/PlasmaScene'));
 
 function SceneFallback({ detail }: { detail: string }) {
   return (
@@ -63,9 +51,7 @@ export default function ScenePane({ recording, workspace }: ScenePaneProps) {
       </header>
 
       <div className="scene__stage">
-        {PlasmaScene === null ? (
-          <SceneFallback detail="The 3D plasma view is not part of this build yet. Geometry is shown schematically; every metric, profile and check on this page is unaffected." />
-        ) : experiment === null ? (
+        {experiment === null ? (
           <div className="scene__fallback">
             <TokamakSchematic className="scene__fallback-figure" />
             <p className="scene__fallback-text">
@@ -77,10 +63,8 @@ export default function ScenePane({ recording, workspace }: ScenePaneProps) {
           </div>
         ) : (
           <SceneBoundary
-            fallback={(reason) => (
-              <SceneFallback
-                detail={`The 3D view could not be loaded in this build, so the geometry is shown schematically. Reported cause: ${reason}`}
-              />
+            fallback={() => (
+              <SceneFallback detail="This device could not render the 3D view. Recorded measurements and profile charts remain available below." />
             )}
           >
             <Suspense
