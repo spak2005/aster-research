@@ -24,7 +24,7 @@
     "objective": "integrated_P_fusion",
     "objective_units": "MJ",
     "config_hash": "iterhybrid-fixed-energy-v1",
-    "raw_artifact_path": "runtime/experiments/baseline-h06/output.nc"
+    "raw_artifact_path": "/recordings/archive/MANIFEST.json"
   },
   "budget": {
     "max_experiments": 6,
@@ -738,7 +738,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/baseline-h06/output.nc",
+          "path": "/recordings/archive/baseline-1s/exp-baseline/output.nc",
           "sha256": "94263fe7c283ced4842e43e15cc270b3561835d66b1531a8bef13ec2d8ca515d"
         }
       ],

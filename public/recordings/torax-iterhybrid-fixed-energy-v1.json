@@ -22,7 +22,8 @@
     "seed": 7,
     "objective": "integrated_P_fusion",
     "objective_units": "MJ",
-    "config_hash": "iterhybrid-fixed-energy-v1"
+    "config_hash": "iterhybrid-fixed-energy-v1",
+    "raw_artifact_path": "/recordings/archive/MANIFEST.json"
   },
   "budget": {
     "max_experiments": 6,
@@ -802,7 +803,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/exp-d1c0113135/output.nc",
+          "path": "/recordings/archive/v1/exp-d1c0113135/output.nc",
           "sha256": "7829ad37e51760f5dc72b20f496bb906e15f17008d344aa4cc0df3b36c72744d"
         }
       ],
@@ -1507,7 +1508,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/exp-707c1ced1a/output.nc",
+          "path": "/recordings/archive/v1/exp-707c1ced1a/output.nc",
           "sha256": "300a9d97184b85ee0b6ee62e763c5fb2348ae4a693e747624e14c5683e3f9727"
         }
       ],
@@ -2212,7 +2213,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/exp-c807064004/output.nc",
+          "path": "/recordings/archive/v1/exp-c807064004/output.nc",
           "sha256": "d90a493fe5b0262f116a12c8ef8ca0dcbc898a3579b2079c6d8a2f19327cd171"
         }
       ],
@@ -2917,7 +2918,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/exp-59e8be0416/output.nc",
+          "path": "/recordings/archive/v1/exp-59e8be0416/output.nc",
           "sha256": "3b971aa8f87b187cd1674d5c847aaeb8af16cb1a5393c1aefc8bf7a4c0508c96"
         }
       ],
@@ -3622,7 +3623,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/exp-c6f1be95ba/output.nc",
+          "path": "/recordings/archive/v1/exp-c6f1be95ba/output.nc",
           "sha256": "e5277999c6c2c696da9f30601a2fb636767e5f4e492bf9d3d0f13030df5e97f4"
         }
       ],
@@ -5884,7 +5885,7 @@
       "artifacts": [
         {
           "label": "torax-netcdf",
-          "path": "runtime/experiments/exp-dd8111db93/output.nc",
+          "path": "/recordings/archive/v1/exp-dd8111db93/output.nc",
           "sha256": "c25dd4fe54cc4fec1ea9aa00ded73a99a6667a63c7442b9d771ccc3762984c23"
         }
       ],
