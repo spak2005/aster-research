@@ -4,8 +4,8 @@
 
 1. **The product:** Aster is a research harness. It turns a bounded question into experiments, evidence and a recorded investigation that someone else can inspect.
 2. **The question:** With the same heating input, does changing where we heat a simulated plasma produce more fusion energy? The scene shows actual TORAX radial temperatures as a labeled 3D schematic.
-3. **The closed loop:** Select the broad-heating hypothesis, show its prediction, advance to its measured result, then show how the next model decision changes direction in response. Do not describe a fixed sweep as adaptive research.
-4. **The check:** Contrast apparent gains with verification and the predeclared acceptance threshold. In the first six-experiment study, the best apparent gain was 2.32%, so the harness reported no verified improvement. That refusal to overclaim is part of the product.
+3. **The closed loop:** In the featured study, open a candidate hypothesis, show its prediction, then scrub to its measured result and the next model decision. For a clear rejected direction, the first exploration records broader heating reducing fusion output. Do not describe a fixed sweep as adaptive research.
+4. **The check:** Contrast apparent gains with verification and the predeclared acceptance threshold. The featured study found a 2.32% coarse gain and approximately 2.37% against a matched refined baseline, below the predeclared 5% threshold; its verdict is inconclusive. That refusal to overclaim is part of the product.
 5. **The portability:** The browser replays recorded evidence without a running model or solver. Open setup to show the supported local-run flow and explain the adapter boundary. Another scientific setup needs its own validator, evaluator and verifier; universal plug-and-play support is not shipped.
 
 ## Before presenting
