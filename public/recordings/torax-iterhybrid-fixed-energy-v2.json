@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
   "id": "torax-iterhybrid-fixed-energy-v2",
-  "title": "Fixed-energy heating-profile investigation (v2, reserved verification)",
+  "title": "Where should we heat a fusion plasma?",
   "question": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
   "created_at": "2026-09-19T18:04:58Z",
   "mode": "recorded",
   "status": "completed",
   "simulator": "TORAX 1.4.3",
   "model": "cursor-grok-4.6-high-fast",
-  "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+  "description": "A real eight-experiment investigation with a frozen finalist, grid refinement and a heating-location perturbation.",
   "limitations": [
     "Horizon is 1.0 s, shortened from the documented 5 s example.",
     "Constant transport and heat-only evolution.",

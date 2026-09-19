@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
   "id": "torax-iterhybrid-fixed-energy-control-9",
-  "title": "Deterministic equal-budget control (NO MODEL)",
+  "title": "Reference study: a fixed grid, no research agent",
   "question": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
   "created_at": "2026-09-19T18:09:35Z",
   "mode": "recorded",
   "status": "completed",
   "simulator": "TORAX 1.4.3",
   "model": "none (deterministic control)",
-  "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+  "description": "A deterministic reference with the same nine-experiment budget. This limited grid is not a general comparison of search methods.",
   "limitations": [
     "This recording is a deterministic grid/random control. It is not adaptive research.",
     "No research model was queried. Do not label this as agent-led investigation.",

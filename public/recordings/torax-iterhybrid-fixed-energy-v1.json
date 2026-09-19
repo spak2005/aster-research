@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
   "id": "torax-iterhybrid-fixed-energy-v1",
-  "title": "Fixed-energy heating-profile investigation",
+  "title": "First exploration: broader or more central heating?",
   "question": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
   "created_at": "2026-09-19T17:52:44Z",
   "mode": "recorded",
   "status": "completed",
   "simulator": "TORAX 1.4.3",
   "model": "cursor-grok-4.6-high-fast",
-  "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+  "description": "The original six-experiment closed loop. It preserved a failed broad-heating idea and ended with incomplete verification.",
   "limitations": [
     "Horizon is 1.0 s, shortened from the documented 5 s example.",
     "Constant transport and heat-only evolution.",

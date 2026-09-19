@@ -137,3 +137,8 @@ Parent can rewrite v1 artifact paths after this. Hashes below match the v1 recor
 ## Integration notes
 
 Shared `contracts/recording.ts` was not modified. Recording JSON matches that shape. Scene/UI can load `/recordings/index.json` now. Developer fixtures stay labeled; public files listed above are `mode: recorded`.
+
+
+## Coordinator packaging update
+
+Original raw-file handoff moved from `_handoff` to `public/recordings/archive`. v1 and baseline artifact URLs now point at those portable copies. All raw hashes remain unchanged. Display titles/descriptions were edited for readability; scientific values and recorded events were not changed. Recording JSON hashes listed above describe the pre-publication metadata version. The current public catalog passes full path/hash validation.

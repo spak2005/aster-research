@@ -1,24 +1,24 @@
 [
   {
     "id": "torax-iterhybrid-fixed-energy-v2",
-    "title": "Fixed-energy heating-profile investigation (v2, reserved verification)",
-    "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "title": "Where should we heat a fusion plasma?",
+    "description": "A real eight-experiment investigation with a frozen finalist, grid refinement and a heating-location perturbation.",
     "path": "/recordings/torax-iterhybrid-fixed-energy-v2.json",
     "mode": "recorded",
     "created_at": "2026-09-19T18:04:58Z"
   },
   {
     "id": "torax-iterhybrid-fixed-energy-v1",
-    "title": "Fixed-energy heating-profile investigation",
-    "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "title": "First exploration: broader or more central heating?",
+    "description": "The original six-experiment closed loop. It preserved a failed broad-heating idea and ended with incomplete verification.",
     "path": "/recordings/torax-iterhybrid-fixed-energy-v1.json",
     "mode": "recorded",
     "created_at": "2026-09-19T17:52:44Z"
   },
   {
     "id": "torax-iterhybrid-fixed-energy-control-9",
-    "title": "Deterministic equal-budget control (NO MODEL)",
-    "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "title": "Reference study: a fixed grid, no research agent",
+    "description": "A deterministic reference with the same nine-experiment budget. This limited grid is not a general comparison of search methods.",
     "path": "/recordings/torax-iterhybrid-fixed-energy-control-9.json",
     "mode": "recorded",
     "created_at": "2026-09-19T18:09:35Z"
