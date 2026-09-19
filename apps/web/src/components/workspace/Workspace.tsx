@@ -1,6 +1,9 @@
 import type { Recording } from '../../types';
 import ModeBadge from '../common/ModeBadge';
 import { useWorkspace } from './useWorkspace';
+import Transport from './Transport';
+import ResearchTree from './ResearchTree';
+import EvidencePanel from './EvidencePanel';
 import { formatDate } from '../../lib/format';
 import '../../styles/workspace.css';
 
@@ -17,6 +20,8 @@ interface WorkspaceProps {
 export default function Workspace({ recording }: WorkspaceProps) {
   const workspace = useWorkspace(recording);
   const { visible } = workspace;
+  const selectedHypothesis =
+    visible.hypotheses.find((item) => item.id === workspace.selectedHypothesisId) ?? null;
 
   return (
     <div className="workspace">
@@ -30,10 +35,15 @@ export default function Workspace({ recording }: WorkspaceProps) {
 
       <div className="workspace__console">
         <aside className="workspace__pane workspace__pane--tree" aria-label="Research tree">
-          <p className="label workspace__pane-label">Research tree</p>
-          <p className="workspace__placeholder numeric">
-            {visible.hypotheses.length} hypotheses visible
+          <p className="label workspace__pane-label">
+            Research tree · {visible.hypotheses.length} visible
           </p>
+          <ResearchTree
+            state={visible}
+            selectedHypothesisId={workspace.selectedHypothesisId}
+            selectedExperimentId={workspace.selectedExperimentId}
+            onSelect={workspace.select}
+          />
         </aside>
 
         <section className="workspace__pane workspace__pane--scene" aria-label="Plasma view">
@@ -44,15 +54,20 @@ export default function Workspace({ recording }: WorkspaceProps) {
         </section>
 
         <aside className="workspace__pane workspace__pane--evidence" aria-label="Evidence">
-          <p className="label workspace__pane-label">Evidence</p>
-          <p className="workspace__placeholder numeric">
-            event {visible.sequence} of {visible.maxSequence}
+          <p className="label workspace__pane-label">
+            Evidence available at event {visible.sequence}
           </p>
+          <EvidencePanel
+            recording={recording}
+            state={visible}
+            hypothesis={selectedHypothesis}
+            experiment={workspace.selectedExperiment}
+          />
         </aside>
       </div>
 
-      <div className="workspace__transport" aria-label="Playback transport">
-        <p className="label">Transport</p>
+      <div className="workspace__transport">
+        <Transport workspace={workspace} />
       </div>
     </div>
   );

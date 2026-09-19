@@ -1,0 +1,113 @@
+/* Research tree: indented rails, status glyphs, no rotating graph. */
+
+.tree {
+  display: grid;
+  gap: 2px;
+}
+
+.tree__empty {
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--text-faint);
+}
+
+.tree__row {
+  margin-left: calc(var(--depth, 0) * 14px);
+}
+
+.tree__row--nested {
+  border-left: 1px solid var(--line-faint);
+}
+
+.tree__node {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-2);
+  border-radius: var(--r-2);
+  text-align: left;
+  color: var(--text);
+  transition: background var(--dur-1) var(--ease);
+}
+
+.tree__node:hover {
+  background: rgba(154, 176, 208, 0.05);
+}
+
+.tree__node.is-selected {
+  background: var(--tone-wash);
+  box-shadow: inset 2px 0 0 var(--tone);
+}
+
+.tree__glyph {
+  width: 9px;
+  height: 9px;
+  margin-top: 0.34rem;
+  background: var(--tone);
+  border: 1px solid var(--tone);
+}
+
+.tree__glyph--hypothesis {
+  border-radius: 50%;
+}
+
+.tree__glyph--experiment {
+  border-radius: 1px;
+  transform: rotate(45deg) scale(0.86);
+}
+
+.tree__glyph--provisional {
+  background: transparent;
+}
+
+.tree__row--experiment .tree__glyph--provisional,
+.tree__glyph--provisional {
+  animation: tree-pending 2.6s var(--ease) infinite;
+}
+
+@keyframes tree-pending {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.tree__body {
+  display: grid;
+  gap: var(--s-1);
+  min-width: 0;
+}
+
+.tree__title {
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--text-hi);
+}
+
+.tree__row--experiment .tree__title {
+  color: var(--text);
+}
+
+.tree__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: baseline;
+}
+
+.tree__status {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+
+.tree__detail {
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
