@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Recording, ResearchEvent } from '../../../../contracts/recording';
+import {
+  createReplayTimeline,
+  getProgressAtSequence,
+  getSequenceAtProgress,
+} from './timeline';
 
 export const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 export type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -16,6 +21,7 @@ export interface ReplayPlaybackController {
   sequence: number;
   minimumSequence: number;
   maximumSequence: number;
+  progress: number;
   playing: boolean;
   speed: ReplaySpeed;
   play: () => void;
@@ -23,6 +29,7 @@ export interface ReplayPlaybackController {
   toggle: () => void;
   setSpeed: (speed: ReplaySpeed) => void;
   seek: (sequence: number) => void;
+  seekProgress: (progress: number) => void;
   restart: () => void;
 }
 
@@ -69,6 +76,7 @@ export function useReplayPlayback(
   options: ReplayPlaybackOptions = {},
 ): ReplayPlaybackController {
   const events = useMemo(() => orderedEvents(recording), [recording]);
+  const timeline = useMemo(() => createReplayTimeline(recording), [recording]);
   const minimumSequence = events[0]?.sequence ?? 0;
   const maximumSequence = events[events.length - 1]?.sequence ?? 0;
   const initialSequence = clampSequence(
@@ -126,6 +134,12 @@ export function useReplayPlayback(
     },
     [maximumSequence],
   );
+  const seekProgress = useCallback(
+    (progress: number) => {
+      setSequence(getSequenceAtProgress(timeline, progress));
+    },
+    [timeline],
+  );
   const play = useCallback(() => {
     if (events.length > 0) setPlaying(true);
   }, [events.length]);
@@ -147,6 +161,7 @@ export function useReplayPlayback(
     sequence,
     minimumSequence,
     maximumSequence,
+    progress: getProgressAtSequence(timeline, sequence),
     playing,
     speed,
     play,
@@ -154,6 +169,7 @@ export function useReplayPlayback(
     toggle,
     setSpeed,
     seek,
+    seekProgress,
     restart,
   };
 }

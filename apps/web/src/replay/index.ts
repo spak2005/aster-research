@@ -5,6 +5,10 @@ import type {
   ResearchEvent,
   Verdict,
 } from '../../../../contracts/recording';
+import {
+  createReplayTimeline,
+  getSequenceAtProgress,
+} from './timeline';
 
 export {
   REPLAY_SPEEDS,
@@ -13,6 +17,13 @@ export {
   type ReplayPlaybackOptions,
   type ReplaySpeed,
 } from './useReplayPlayback';
+export {
+  createReplayTimeline,
+  getProgressAtSequence,
+  getSequenceAtProgress,
+  type ReplayTimeline,
+  type ReplayTimelinePoint,
+} from './timeline';
 
 export type ReplayRunStatus = 'pending' | Recording['status'];
 export type VisibleExperimentStatus =
@@ -357,6 +368,21 @@ export function getVisibleState(
       ),
     },
   };
+}
+
+/**
+ * Reconstructs VisibleReplayState from a normalized scrub position in [0, 1].
+ * Invalid progress values resolve to the beginning of the recording.
+ */
+export function getVisibleStateAtProgress(
+  recording: Recording,
+  progress: number,
+): VisibleReplayState {
+  const timeline = createReplayTimeline(recording);
+  return getVisibleState(
+    recording,
+    getSequenceAtProgress(timeline, progress),
+  );
 }
 
 /**
