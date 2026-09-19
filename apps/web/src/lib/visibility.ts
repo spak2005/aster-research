@@ -154,22 +154,25 @@ export function sequenceBounds(recording: Recording): { min: number; max: number
 
 export function getVisibleState(recording: Recording, sequence: number): VisibleState {
   const { min, max } = sequenceBounds(recording);
-  const clamped = Math.min(Math.max(sequence, min), max);
+  const clamped = Number.isFinite(sequence) ? Math.min(Math.max(sequence, min), max) : min;
   const index = indexEvents(recording);
   const events = recording.events.filter((event) => event.sequence <= clamped);
   const latestEvent = events.length > 0 ? events[events.length - 1] : null;
 
   const experiments: VisibleExperiment[] = [];
   for (const experiment of recording.experiments) {
-    // An experiment no event mentions carries no temporal information, so it is
-    // shown as-is rather than hidden; that case is a harness export problem.
-    const intro = index.introSequence.get(experiment.id) ?? min;
-    if (intro > clamped) continue;
+    // Without an introducing event there is no evidence that this experiment
+    // existed at the selected point in the investigation.
+    const intro = index.introSequence.get(experiment.id);
+    if (intro === undefined || intro > clamped) continue;
 
     const resolved = index.resolveSequence.get(experiment.id) ?? null;
     const isResolved = resolved !== null && resolved <= clamped;
-    const checksAt = index.checkSequence.get(experiment.id) ?? resolved;
-    const checksVisible = checksAt !== null && checksAt <= clamped;
+    // Aggregate checks have no individual timestamps in v1. Hold them until
+    // explicit verification or a terminal event instead of leaking later checks.
+    const terminal = events.some(event => ['run.completed','run.failed','run.canceled'].includes(event.type));
+    const checksAt = index.checkSequence.get(experiment.id);
+    const checksVisible = isResolved && (terminal || (checksAt !== undefined && checksAt <= clamped));
 
     experiments.push({
       id: experiment.id,
@@ -180,11 +183,13 @@ export function getVisibleState(recording: Recording, sequence: number): Visible
       status: isResolved ? experiment.status : 'running',
       introSequence: intro,
       completedSequence: isResolved ? resolved : null,
-      result: isResolved ? experiment : null,
+      result: isResolved ? { ...experiment, checks: checksVisible ? experiment.checks : [] } : null,
       checks: checksVisible ? experiment.checks : [],
     });
   }
 
+  const knownExperimentIds = new Set(experiments.map(experiment => experiment.id));
+  const knownEvidenceIds = new Set(events.flatMap(event => event.evidence_ids));
   const hypotheses: VisibleHypothesis[] = [];
   for (const hypothesis of recording.hypotheses) {
     if (hypothesis.created_sequence > clamped) continue;
@@ -198,8 +203,8 @@ export function getVisibleState(recording: Recording, sequence: number): Visible
       status: statusResolved ? hypothesis.status : provisionalStatus(hypothesis, experiments),
       statusResolved,
       assessment: statusResolved ? hypothesis.assessment : '',
-      experimentIds: hypothesis.experiment_ids,
-      evidenceIds: hypothesis.evidence_ids,
+      experimentIds: hypothesis.experiment_ids.filter(id => knownExperimentIds.has(id)),
+      evidenceIds: hypothesis.evidence_ids.filter(id => knownEvidenceIds.has(id)),
       createdSequence: hypothesis.created_sequence,
     });
   }

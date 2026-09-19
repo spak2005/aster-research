@@ -6,7 +6,7 @@ import { build } from 'esbuild';
 const root = new URL('../', import.meta.url);
 const compiled = await build({
   stdin: {
-    contents: "export {getVisibleState} from './apps/web/src/replay/index.ts';",
+    contents: "export {getVisibleState} from './apps/web/src/replay/index.ts'; export {getVisibleState as getVisibleUiState} from './apps/web/src/lib/visibility.ts';",
     resolveDir: root.pathname,
   },
   bundle: true,
@@ -15,7 +15,7 @@ const compiled = await build({
   write: false,
   logLevel: 'silent',
 });
-const {getVisibleState} = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
+const {getVisibleState, getVisibleUiState} = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
 const catalog = JSON.parse(await fs.readFile(new URL('public/recordings/index.json', root)));
 let snapshots = 0;
 for (const entry of catalog) {
@@ -38,6 +38,17 @@ for (const entry of catalog) {
     }
     const conclusionVisible = visibleEvents.some(e => e.type === 'conclusion.recorded');
     assert.equal(state.conclusion !== null, conclusionVisible, 'Conclusion visibility does not match the evidence timeline');
+    const ui = getVisibleUiState(recording, event.sequence);
+    const knownEvidence = new Set(visibleEvents.flatMap(e => e.evidence_ids));
+    for (const hypothesis of ui.hypotheses) {
+      assert(hypothesis.evidenceIds.every(id => knownEvidence.has(id)), 'UI hypothesis exposed future evidence');
+      assert(hypothesis.experimentIds.every(id => ui.experimentById.has(id)), 'UI hypothesis exposed a future experiment');
+    }
+    for (const experiment of ui.experiments) {
+      const resolved = visibleEvents.some(e => e.experiment_id === experiment.id && ['experiment.completed','experiment.failed','verification.completed'].includes(e.type));
+      assert.equal(experiment.result !== null, resolved, 'UI result visibility disagrees with the event log');
+    }
+    assert.equal(ui.conclusion !== null, conclusionVisible, 'UI conclusion appeared before its event');
     snapshots++;
   }
   console.log(`Replay verified: ${recording.id}`);
