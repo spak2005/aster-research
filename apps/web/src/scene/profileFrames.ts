@@ -96,3 +96,28 @@ export function loadProfileFrame(
     value: { frame, index, count: experiment.frames.length },
   };
 }
+
+/**
+ * Selects the stored frame nearest a physical simulation time.
+ * No profile values are interpolated.
+ */
+export function loadProfileFrameAtTime(
+  experiment: Experiment | null | undefined,
+  timeS: number,
+): ProfileFrameLoadResult {
+  if (!experiment || experiment.frames.length === 0) {
+    return loadProfileFrame(experiment, 0);
+  }
+  if (!Number.isFinite(timeS)) return loadProfileFrame(experiment, 0);
+
+  let nearestIndex = 0;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+  experiment.frames.forEach((frame, index) => {
+    const distance = Math.abs(frame.time_s - timeS);
+    if (distance < nearestDistance) {
+      nearestIndex = index;
+      nearestDistance = distance;
+    }
+  });
+  return loadProfileFrame(experiment, nearestIndex);
+}
