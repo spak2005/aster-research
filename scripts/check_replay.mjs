@@ -6,7 +6,7 @@ import { build } from 'esbuild';
 const root = new URL('../', import.meta.url);
 const compiled = await build({
   stdin: {
-    contents: "export {getVisibleState} from './apps/web/src/replay/index.ts'; export {getVisibleState as getVisibleUiState} from './apps/web/src/lib/visibility.ts';",
+    contents: "export {getVisibleState} from './apps/web/src/replay/index.ts'; export {getVisibleState as getVisibleUiState} from './apps/web/src/lib/visibility.ts'; export {matchedBaseline, matchedGain} from './apps/web/src/lib/comparison.ts';",
     resolveDir: root.pathname,
   },
   bundle: true,
@@ -15,7 +15,7 @@ const compiled = await build({
   write: false,
   logLevel: 'silent',
 });
-const {getVisibleState, getVisibleUiState} = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
+const {getVisibleState, getVisibleUiState, matchedBaseline, matchedGain} = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
 const catalog = JSON.parse(await fs.readFile(new URL('public/recordings/index.json', root)));
 let snapshots = 0;
 for (const entry of catalog) {
@@ -50,6 +50,14 @@ for (const entry of catalog) {
     }
     assert.equal(ui.conclusion !== null, conclusionVisible, 'UI conclusion appeared before its event');
     snapshots++;
+  }
+  if (recording.id === 'torax-iterhybrid-fixed-energy-v2') {
+    const refined = recording.experiments.find(e => e.label === 'candidate_refined');
+    const reference = matchedBaseline(refined, recording.experiments, recording.baseline_id);
+    assert.equal(reference?.label, 'baseline_refined', 'Refined result was compared to a coarse baseline');
+    assert(matchedGain(refined, reference) > 2.3 && matchedGain(refined, reference) < 2.4, 'Matched fine-grid gain should be about 2.37%');
+    const beforeReference = recording.experiments.filter(e => e.id === recording.baseline_id || e.id === refined.id);
+    assert.equal(matchedBaseline(refined, beforeReference, recording.baseline_id), null, 'Missing refined reference must not silently fall back to coarse');
   }
   console.log(`Replay verified: ${recording.id}`);
 }
