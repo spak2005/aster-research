@@ -68,6 +68,7 @@
   filter: drop-shadow(0 0 60px rgba(79, 195, 217, 0.12));
 }
 
+/* Breathes on fill-opacity, leaving `opacity` free for the aperture below. */
 .schematic__glow {
   animation: schematic-breathe 9s var(--ease) infinite;
   transform-origin: center;
@@ -87,11 +88,86 @@
 @keyframes schematic-breathe {
   0%,
   100% {
-    opacity: 0.82;
+    fill-opacity: 0.82;
   }
   50% {
-    opacity: 1;
+    fill-opacity: 1;
   }
+}
+
+/* ---- Hero aperture ----
+   The cross-section arrives the way an instrument iris opens: vessel first,
+   then the plasma wash, then flux surfaces outward from the magnetic axis, and
+   the heating band last. One inherited `--aperture` drives every layer, so the
+   whole figure is closed or open in a single place. */
+
+.hero__schematic {
+  --aperture: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="ready"] .hero__schematic {
+    --aperture: 0;
+  }
+
+  :root[data-motion="ready"] [data-revealed] .hero__schematic {
+    --aperture: 1;
+  }
+}
+
+.hero__schematic .schematic__vessel,
+.hero__schematic .schematic__glow,
+.hero__schematic .schematic__axis,
+.hero__schematic .schematic__band,
+.hero__schematic .schematic__surfaces > path {
+  opacity: var(--aperture);
+  /* Scale about the magnetic axis, 3.36 across and 4.5 down from the viewBox
+     corner, so the surfaces widen rather than drift. */
+  transform: scale(calc(0.912 + 0.088 * var(--aperture)));
+  transform-box: view-box;
+  transform-origin: 3.36px 4.5px;
+  transition: opacity var(--dur-3) var(--ease-out), transform 1s var(--ease-out);
+  transition-delay: calc(var(--step, 0) * var(--reveal-step));
+}
+
+.hero__schematic .schematic__glow {
+  --step: 1;
+}
+
+.hero__schematic .schematic__axis {
+  --step: 1.6;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(1) {
+  --step: 2;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(2) {
+  --step: 2.4;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(3) {
+  --step: 2.8;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(4) {
+  --step: 3.2;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(5) {
+  --step: 3.6;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(6) {
+  --step: 4;
+}
+
+.hero__schematic .schematic__surfaces > path:nth-child(7) {
+  --step: 4.4;
+}
+
+.hero__schematic .schematic__band {
+  --step: 5.2;
 }
 
 @keyframes schematic-drift {

@@ -1,5 +1,6 @@
 import { ArrowRight, Terminal } from 'lucide-react';
 import TokamakSchematic from './TokamakSchematic';
+import { useReveal } from '../../lib/useReveal';
 
 /** Facts about the harness itself, not results. Nothing here is a measurement. */
 const FACTS: { label: string; value: string }[] = [
@@ -9,8 +10,10 @@ const FACTS: { label: string; value: string }[] = [
 ];
 
 export default function Hero() {
+  const reveal = useReveal<HTMLElement>();
+
   return (
-    <section className="hero" aria-labelledby="hero-title">
+    <section className="hero" aria-labelledby="hero-title" ref={reveal}>
       <div className="shell hero__inner">
         <div className="hero__copy">
           <p className="eyebrow">Closed-loop scientific investigation</p>

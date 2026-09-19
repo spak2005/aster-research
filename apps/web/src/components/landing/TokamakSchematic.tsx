@@ -62,26 +62,33 @@ export default function TokamakSchematic({ className }: TokamakSchematicProps) {
       </defs>
 
       {/* Vacuum vessel wall */}
-      <path
-        d={surfacePath(1.19)}
-        fill="none"
-        stroke="var(--line-strong)"
-        strokeWidth="0.045"
-        vectorEffect="non-scaling-stroke"
-      />
-      <path
-        d={surfacePath(1.11)}
-        fill="none"
-        stroke="var(--line)"
-        strokeWidth="0.02"
-        vectorEffect="non-scaling-stroke"
-      />
+      <g className="schematic__vessel">
+        <path
+          d={surfacePath(1.19)}
+          fill="none"
+          stroke="var(--line-strong)"
+          strokeWidth="0.045"
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d={surfacePath(1.11)}
+          fill="none"
+          stroke="var(--line)"
+          strokeWidth="0.02"
+          vectorEffect="non-scaling-stroke"
+        />
+      </g>
 
       {/* Plasma volume wash */}
       <path d={surfacePath(1)} fill="url(#aster-core)" className="schematic__glow" />
 
       {/* Flux surfaces */}
-      <g fill="none" strokeWidth="0.018" vectorEffect="non-scaling-stroke">
+      <g
+        className="schematic__surfaces"
+        fill="none"
+        strokeWidth="0.018"
+        vectorEffect="non-scaling-stroke"
+      >
         {CONTOURS.map((rho) => (
           <path
             key={rho}
@@ -93,7 +100,7 @@ export default function TokamakSchematic({ className }: TokamakSchematicProps) {
       </g>
 
       {/* Illustrative heating deposition band */}
-      <g clipPath="url(#aster-plasma-clip)">
+      <g className="schematic__band" clipPath="url(#aster-plasma-clip)">
         <path
           d={surfacePath(0.36)}
           fill="none"
@@ -107,7 +114,14 @@ export default function TokamakSchematic({ className }: TokamakSchematicProps) {
       </g>
 
       {/* Magnetic axis */}
-      <circle cx={R0 + SHIFT} cy={midZ} r="0.045" fill="var(--t-4)" fillOpacity="0.9" />
+      <circle
+        className="schematic__axis"
+        cx={R0 + SHIFT}
+        cy={midZ}
+        r="0.045"
+        fill="var(--t-4)"
+        fillOpacity="0.9"
+      />
     </svg>
   );
 }
