@@ -11,7 +11,6 @@ import os
 import re
 import shutil
 import subprocess
-import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -21,6 +20,7 @@ RESEARCH_MODEL = os.environ.get(
     "RESEARCH_MODEL", "cursor-grok-4.6-high-fast"
 )
 DEFAULT_TIMEOUT_S = 120
+ROOT = Path(__file__).resolve().parents[2]
 
 
 @dataclass
@@ -201,7 +201,7 @@ def propose(
 ) -> Decision:
     prompt = build_prompt(context)
     workdir = Path(cwd) if cwd else Path(
-        tempfile.mkdtemp(prefix="research-proposer-")
+        os.environ.get("RESEARCH_PROPOSER_CWD", ROOT / "runtime" / "proposer")
     )
     workdir.mkdir(parents=True, exist_ok=True)
     cmd = [
@@ -209,6 +209,7 @@ def propose(
         "--print",
         "--mode",
         "ask",
+        "--trust",
         "--model",
         RESEARCH_MODEL,
         "--output-format",

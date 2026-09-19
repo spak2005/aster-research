@@ -1,5 +1,13 @@
 [
   {
+    "id": "torax-iterhybrid-fixed-energy-v1",
+    "title": "Fixed-energy heating-profile investigation",
+    "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "path": "/recordings/torax-iterhybrid-fixed-energy-v1.json",
+    "mode": "recorded",
+    "created_at": "2026-09-19T17:52:44Z"
+  },
+  {
     "id": "torax-iterhybrid-baseline-1s",
     "title": "ITER-hybrid baseline snapshot",
     "description": "Genuine TORAX 1.4.3 baseline at the frozen 1.0 s, 51 MW heating point. Not a completed investigation: no agent loop and no candidate comparison have been recorded in this file yet.",

@@ -24,6 +24,7 @@ from services.research.recording import (
     utcnow,
 )
 from services.research.validation import HeatingConfig, baseline_config, validate
+from services.research.verification import verification_cases
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNS_DIR = Path(__file__).resolve().parents[2] / "runtime" / "runs"
@@ -222,7 +223,7 @@ class Investigation:
         if decision.action == "revise":
             return self.apply_revise(decision)
         if decision.action == "verify":
-            return {"status": "verify_requested", "decision": decision.as_dict()}
+            return self.run_verification_from_decision(decision)
         if decision.action == "experiment":
             return self._decision_experiment(decision)
         return {"status": "ignored", "decision": decision.as_dict()}
@@ -277,6 +278,62 @@ class Investigation:
             payload=decision.as_dict(),
         )
         return self._decision_experiment(decision)
+
+    def run_verification_from_decision(self, decision: Decision) -> dict[str, Any]:
+        candidate_exp = None
+        for exp in reversed(self.recording["experiments"]):
+            if exp["role"] == "candidate" and exp["status"] == "completed":
+                candidate_exp = exp
+                break
+        if candidate_exp is None:
+            return self.apply_stop(
+                Decision(
+                    ok=True,
+                    action="stop",
+                    hypothesis="verify without a candidate",
+                    prediction="cannot verify",
+                    rationale="no completed candidate to refine",
+                )
+            )
+        cfg = HeatingConfig(
+            heating_location=float(candidate_exp["config"]["heating_location"]),
+            heating_width=float(candidate_exp["config"]["heating_width"]),
+        )
+        return self.run_verification(cfg, hypothesis_id=candidate_exp["hypothesis_id"])
+
+    def run_verification(
+        self, candidate: HeatingConfig, hypothesis_id: str | None = None
+    ) -> dict[str, Any]:
+        hyp_id = hypothesis_id or (
+            self.recording["hypotheses"][-1]["id"] if self.recording["hypotheses"] else new_id("hyp-")
+        )
+        self._emit(
+            event_type="verification.requested",
+            title="Verification requested",
+            summary="Refined grid plus frozen location perturbation",
+            hypothesis_id=hyp_id,
+        )
+        outcomes = []
+        for case in verification_cases(candidate):
+            if self.cancel.is_set() or self.remaining() <= 0:
+                break
+            outcomes.append(
+                self._run_experiment(
+                    hypothesis_id=hyp_id,
+                    config=case.config,
+                    role="verification",
+                    label=case.name,
+                    budget=case.budget,
+                )
+            )
+        self._emit(
+            event_type="verification.completed",
+            title="Verification finished",
+            summary=f"{len(outcomes)} verification runs",
+            hypothesis_id=hyp_id,
+            evidence_ids=[item["id"] for item in outcomes],
+        )
+        return {"status": "verified", "experiments": outcomes}
 
     def _decision_experiment(self, decision: Decision) -> dict[str, Any]:
         parent_id = (
@@ -346,6 +403,7 @@ class Investigation:
         config: HeatingConfig,
         role: str,
         label: str,
+        budget: ExecutionBudget | None = None,
     ) -> dict[str, Any]:
         exp_id = new_id("exp-")
         self._emit(
@@ -363,8 +421,8 @@ class Investigation:
             hypothesis_id=hypothesis_id,
             experiment_id=exp_id,
         )
-        budget = ExecutionBudget(timeout_s=self.budget.timeout_s)
-        result = self.executor(config, budget, exp_id)
+        exec_budget = budget or ExecutionBudget(timeout_s=self.budget.timeout_s)
+        result = self.executor(config, exec_budget, exp_id)
         if not result.ok or not result.output_nc:
             self._emit(
                 event_type="experiment.failed",
@@ -522,12 +580,51 @@ class Investigation:
                 last["proposer_error"] = decision.error
                 break
             last = self.apply_decision(decision)
-            if last.get("status") in {"stopped", "canceled", "failed", "verify_requested"}:
+            if last.get("status") in {"stopped", "canceled", "failed", "verified"}:
                 break
+        if (
+            not self.cancel.is_set()
+            and self.remaining() > 0
+            and any(
+                exp["role"] == "candidate" and exp["status"] == "completed"
+                for exp in self.recording["experiments"]
+            )
+            and last.get("status") != "verified"
+        ):
+            last = self.run_verification_from_decision(
+                Decision(
+                    ok=True,
+                    action="verify",
+                    hypothesis="Frozen verification of the latest candidate",
+                    prediction="Refinement will not invent an improvement",
+                    rationale="End-of-loop withheld checks",
+                )
+            )
         if self.cancel.is_set() and self.recording["status"] == "running":
             last = self._fail_run("canceled")
+            return last
+        last["conclusion"] = self.finish()
         self._persist()
         return last
 
     def propose_next(self) -> Decision:
         return self.proposer(self.context())
+
+    def finish(self) -> dict[str, Any]:
+        from services.research.gate import apply_gate
+
+        conclusion = apply_gate(self.recording)
+        self._emit(
+            event_type="conclusion.recorded",
+            title=conclusion["title"],
+            summary=conclusion["summary"],
+            evidence_ids=conclusion["evidence_ids"],
+            payload={"status": conclusion["status"]},
+        )
+        self._emit(
+            event_type="run.completed",
+            title="Run completed",
+            summary=conclusion["summary"],
+        )
+        self._persist()
+        return conclusion
