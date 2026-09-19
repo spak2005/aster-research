@@ -16,22 +16,22 @@ export default function Hero() {
     <section className="hero" aria-labelledby="hero-title" ref={reveal}>
       <div className="shell hero__inner">
         <div className="hero__copy">
-          <p className="eyebrow">Closed-loop scientific investigation</p>
+          <p className="eyebrow reveal">Closed-loop scientific investigation</p>
 
-          <h1 className="hero__title" id="hero-title">
+          <h1 className="hero__title reveal" id="hero-title">
             A question in.
             <br />
             <em>Evidence</em> out.
           </h1>
 
-          <p className="hero__lede prose">
+          <p className="hero__lede prose reveal">
             Aster hands a research question to an agent with bounded scientific tools, then records
             the entire investigation — every hypothesis, prediction, simulator run, verification
             check, and the conclusion each one actually earns. You replay the reasoning instead of
             trusting a summary of it.
           </p>
 
-          <div className="hero__actions">
+          <div className="hero__actions reveal">
             <a className="btn btn--primary" href="#/research">
               Explore a real investigation
               <ArrowRight size={16} aria-hidden />
@@ -42,7 +42,7 @@ export default function Hero() {
             </a>
           </div>
 
-          <dl className="hero__facts">
+          <dl className="hero__facts reveal">
             {FACTS.map((fact) => (
               <div className="hero__fact" key={fact.label}>
                 <dt className="label">{fact.label}</dt>
@@ -54,7 +54,7 @@ export default function Hero() {
 
         <figure className="hero__figure">
           <TokamakSchematic className="hero__schematic" />
-          <figcaption className="hero__caption">
+          <figcaption className="hero__caption reveal">
             <span className="label">Figure 01</span>
             Schematic poloidal cross-section. Flux-surface geometry only — this figure carries no
             simulation output.

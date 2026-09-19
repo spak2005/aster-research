@@ -56,6 +56,28 @@
   line-height: 1.45;
 }
 
+/* Reading order, slowed just enough to be felt: label, headline, argument,
+   then the two ways in. */
+.hero__copy .eyebrow {
+  --step: 0;
+}
+
+.hero__title {
+  --step: 0.7;
+}
+
+.hero__lede {
+  --step: 1.4;
+}
+
+.hero__actions {
+  --step: 2;
+}
+
+.hero__facts {
+  --step: 2.6;
+}
+
 .hero__figure {
   position: relative;
   margin: 0;
@@ -177,6 +199,7 @@
 }
 
 .hero__caption {
+  --step: 5.6;
   display: grid;
   gap: var(--s-2);
   max-width: 42ch;
