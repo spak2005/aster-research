@@ -30,6 +30,7 @@ interface BackendStatusProps {
 export default function BackendStatus({ config }: BackendStatusProps) {
   const [probe, setProbe] = useState<BackendProbe | null>(null);
   const [checking, setChecking] = useState(true);
+  const [operationError, setOperationError] = useState<string | null>(null);
   const [launch, setLaunch] = useState<Launch>({ state: 'idle' });
 
   const check = useCallback(async () => {
@@ -45,7 +46,7 @@ export default function BackendStatus({ config }: BackendStatusProps) {
 
   // Follow a started run until it stops changing state.
   useEffect(() => {
-    if (launch.state !== 'created') return undefined;
+    if (launch.state !== 'created' || ['completed','failed','canceled'].includes(launch.status)) return undefined;
     const id = launch.run.id;
     let active = true;
     const timer = window.setInterval(async () => {
@@ -56,7 +57,7 @@ export default function BackendStatus({ config }: BackendStatusProps) {
           current.state === 'created' && current.run.id === id
             ? {
                 ...current,
-                status: recording.status,
+                status: current.status === 'canceling' && recording.status === 'running' ? 'canceling' : recording.status,
                 experiments: recording.budget.completed_experiments,
               }
             : current,
@@ -69,9 +70,10 @@ export default function BackendStatus({ config }: BackendStatusProps) {
       active = false;
       window.clearInterval(timer);
     };
-  }, [launch.state, launch.state === 'created' ? launch.run.id : null]);
+  }, [launch.state, launch.state === 'created' ? launch.run.id : null, launch.state === 'created' ? launch.status : null]);
 
   async function start() {
+    setOperationError(null);
     setLaunch({ state: 'creating' });
     try {
       const run = await createRun(toRequestBody(config));
@@ -86,18 +88,17 @@ export default function BackendStatus({ config }: BackendStatusProps) {
 
   async function stop() {
     if (launch.state !== 'created') return;
+    setOperationError(null);
     try {
       await cancelRun(launch.run.id);
       setLaunch({ ...launch, status: 'canceling' });
     } catch (error) {
-      setLaunch({
-        state: 'error',
-        message: error instanceof Error ? error.message : String(error),
-      });
+      setOperationError(`Cancellation was not confirmed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
   const connected = probe?.state === 'connected';
+  const runActive = launch.state === 'created' && !['completed','failed','canceled'].includes(launch.status);
 
   return (
     <section className={`backend${connected ? ' backend--connected' : ''}`}>
@@ -110,7 +111,7 @@ export default function BackendStatus({ config }: BackendStatusProps) {
       </header>
 
       {checking && probe === null ? (
-        <p className="backend__line">Looking for a service on this machine…</p>
+        <p className="backend__line">Looking for a connected research service…</p>
       ) : null}
 
       {probe?.state === 'connected' ? (
@@ -134,9 +135,8 @@ export default function BackendStatus({ config }: BackendStatusProps) {
             Not connected
           </p>
           <p className="backend__line">
-            Nothing answered at <code className="numeric">/api/health</code>. That is expected on the
-            public site. Download the configuration below and run it on a machine where the service
-            is installed — this page will not pretend to queue a job.
+            This website replays recorded investigations. Follow the local setup below, then open
+            the local website to start a new investigation on your own machine.
           </p>
         </>
       ) : null}
@@ -157,12 +157,12 @@ export default function BackendStatus({ config }: BackendStatusProps) {
           <button
             className="btn btn--primary"
             onClick={() => void start()}
-            disabled={launch.state === 'creating' || launch.state === 'created'}
+            disabled={launch.state === 'creating' || runActive || (probe?.state === 'connected' && !probe.health.ready)}
           >
             <Play size={15} aria-hidden />
             {launch.state === 'creating' ? 'Creating run…' : 'Start investigation'}
           </button>
-          {launch.state === 'created' ? (
+          {runActive ? (
             <button className="btn btn--sm" onClick={() => void stop()}>
               <Square size={13} aria-hidden />
               Cancel run
@@ -189,11 +189,13 @@ export default function BackendStatus({ config }: BackendStatusProps) {
         </div>
       ) : null}
 
+      {operationError && <p className="notice notice--error" role="alert">{operationError}</p>}
       {launch.state === 'error' ? (
         <div className="notice notice--error" role="alert">
-          <p className="label">Run not created</p>
+          <p className="label">Request not confirmed</p>
           <p className="notice__body">
-            The service refused the request. Nothing was started, and no partial run exists.
+            The request could not be confirmed. If the connection dropped, a run may still exist;
+            check the local service before retrying.
           </p>
           <p className="notice__detail">{launch.message}</p>
         </div>

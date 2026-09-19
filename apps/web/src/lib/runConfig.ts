@@ -9,7 +9,7 @@
 import { MAX_EXPERIMENTS, MIN_EXPERIMENTS, type CreateRunRequest } from './api';
 
 export const SUPPORTED_QUESTION =
-  'At fixed total heating energy, can the system find a heating profile that improves the chosen simulated outcome, and does that improvement survive stricter checks?';
+  'At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?';
 
 export const SUPPORTED_PRESET = 'fixed-energy' as const;
 
@@ -29,8 +29,8 @@ export function randomSeed(): number {
 export const DEFAULT_CONFIG: RunConfig = {
   question: SUPPORTED_QUESTION,
   preset: SUPPORTED_PRESET,
-  max_experiments: 6,
-  seed: 20260918,
+  max_experiments: 9,
+  seed: 20260919,
 };
 
 export function clampConfig(config: RunConfig): RunConfig {

@@ -69,8 +69,8 @@ export default function SetupForm({ config, onChange, disabled }: SetupFormProps
         </div>
         <p className="setup__hint" id="budget-hint">
           Between {MIN_EXPERIMENTS} and {MAX_EXPERIMENTS} simulator runs, including the baseline and
-          any verification re-runs. The service enforces the same limit; a larger number is refused
-          rather than silently trimmed.
+          verification. The default allocation reserves three checks. Choose at least five runs
+          for one candidate plus all three checks; smaller budgets can leave verification incomplete.
         </p>
       </div>
 
@@ -101,8 +101,8 @@ export default function SetupForm({ config, onChange, disabled }: SetupFormProps
           </button>
         </div>
         <p className="setup__hint">
-          Recorded with the run so the same starting conditions can be reproduced. It does not make
-          the simulator's output deterministic on its own.
+          Recorded for reproducibility bookkeeping and seeded controls. Model decisions can still
+          vary between runs.
         </p>
       </div>
     </div>
