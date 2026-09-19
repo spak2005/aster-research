@@ -253,6 +253,15 @@
   border-bottom: 1px solid var(--line-faint);
 }
 
+.scene__caveat {
+  padding: var(--s-2) var(--s-4);
+  border-top: 1px solid var(--heat-edge);
+  background: var(--heat-wash);
+  font-size: var(--fs-micro);
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
 .scene__foot {
   border-top: 1px solid var(--line-faint);
 }
