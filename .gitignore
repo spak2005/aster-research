@@ -11,3 +11,4 @@ runtime/
 *.sqlite*
 *.log
 .DS_Store
+.vercel/

@@ -2,7 +2,7 @@
 
 **A question in. Evidence out.**
 
-[Open the public observatory](https://spak2005.github.io/aster-research/) · [Start a local investigation](https://spak2005.github.io/aster-research/#/start)
+[Open the public observatory](https://aster-research.vercel.app/) · [Start a local investigation](https://aster-research.vercel.app/#/start)
 
 A bounded scientific research harness with evidence-linked, recorded playback. Its first supported investigation uses the real [TORAX](https://github.com/google-deepmind/torax) tokamak transport simulator to explore heating profiles at a fixed auxiliary-energy budget.
 

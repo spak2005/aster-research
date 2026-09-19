@@ -1,0 +1,12 @@
+.venv/
+.cache/
+runtime/
+node_modules/
+dist/
+.git/
+.env
+.env.*
+services/
+experiments/
+__pycache__/
+*.log
