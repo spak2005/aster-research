@@ -54,7 +54,7 @@ function looksAbsent(response: Response, text: string): boolean {
  * reported instead, since that is a genuine fault rather than an empty shelf.
  */
 export async function fetchRecordingIndex(signal?: AbortSignal): Promise<RecordingSummary[]> {
-  const response = await fetch(RECORDING_INDEX_URL, {
+  const response = await fetch(publicAssetUrl(RECORDING_INDEX_URL, import.meta.env.BASE_URL), {
     signal,
     headers: { accept: 'application/json' },
   });
