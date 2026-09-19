@@ -1,0 +1,260 @@
+{
+  "model": "none (deterministic control)",
+  "recorded_at": "2026-09-19T18:09:42Z",
+  "context": {
+    "question": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "objective": "integrated_P_fusion",
+    "objective_units": "MJ",
+    "location_bounds": [
+      0.05,
+      0.8
+    ],
+    "width_bounds": [
+      0.05,
+      0.35
+    ],
+    "frozen_power_mw": 51.0,
+    "frozen_duration_s": 1.0,
+    "baseline_fusion_energy_mj": 110.36053618063139,
+    "completed_experiments": 4,
+    "max_experiments": 9,
+    "remaining": 5,
+    "search_budget": {
+      "used": 4,
+      "max": 6,
+      "remaining": 2
+    },
+    "verification_budget": {
+      "reserved": 3,
+      "used": 0,
+      "remaining": 3,
+      "note": "Verification runs only after the search finalist is frozen."
+    },
+    "proposal_attempts": 3,
+    "max_proposal_attempts": 12,
+    "frozen_finalist_id": null,
+    "hypotheses": [
+      {
+        "id": "hyp-4fb159f6b0",
+        "title": "Measure the frozen ITER-hybrid heating baseline",
+        "prediction": "E_fusion is finite and heating energy is 51 MJ at 1.0 s.",
+        "status": "inconclusive",
+        "assessment": "Baseline E_fusion=110.36053618063139 MJ at 51 MJ heating. Reference only; not an improvement claim."
+      },
+      {
+        "id": "hyp-4a1f20b3fa",
+        "title": "Deterministic control heating point (NO MODEL)",
+        "prediction": "Record E_fusion at this predeclared location/width",
+        "status": "inconclusive",
+        "assessment": "Measured E_fusion=109.28454539211221 MJ (\u0394 vs baseline -1.075990788519178 MJ). Prediction: Record E_fusion at this predeclared location/width"
+      },
+      {
+        "id": "hyp-4cf6140fc6",
+        "title": "Deterministic control heating point (NO MODEL)",
+        "prediction": "Record E_fusion at this predeclared location/width",
+        "status": "inconclusive",
+        "assessment": "Measured E_fusion=102.51479804472507 MJ (\u0394 vs baseline -7.845738135906316 MJ). Prediction: Record E_fusion at this predeclared location/width"
+      },
+      {
+        "id": "hyp-a47cc43d78",
+        "title": "Deterministic control heating point (NO MODEL)",
+        "prediction": "Record E_fusion at this predeclared location/width",
+        "status": "inconclusive",
+        "assessment": "Measured E_fusion=98.81848171729376 MJ (\u0394 vs baseline -11.542054463337621 MJ). Prediction: Record E_fusion at this predeclared location/width"
+      }
+    ],
+    "experiments": [
+      {
+        "id": "exp-821520d2f7",
+        "role": "baseline",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.12741589640723575,
+          "heating_width": 0.07280908366127758,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "55591163f18b6184e62ceecf00130765616b54c0a930c71b89b67b9baae65c04"
+        },
+        "metrics": {
+          "fusion_energy_mj": 110.36053618063139,
+          "heating_energy_mj": 51.0,
+          "peak_ion_temperature_kev": 16.655230458088397,
+          "improvement_pct": null
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      },
+      {
+        "id": "exp-52f762d1b5",
+        "role": "control",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.15,
+          "heating_width": 0.08,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "28615fd44c93e5a8d3e92b6d996cc703312a4e79baf5a86e40ae2699fedbe577"
+        },
+        "metrics": {
+          "fusion_energy_mj": 109.28454539211221,
+          "heating_energy_mj": 51.0,
+          "peak_ion_temperature_kev": 15.872620199824977,
+          "improvement_pct": -0.9749778550894878
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      },
+      {
+        "id": "exp-44ef65fdd3",
+        "role": "control",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.15,
+          "heating_width": 0.18,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "161e348a935549e13541c59da32dfcf29584d09f736c5e8bbd73c5963fa5a56c"
+        },
+        "metrics": {
+          "fusion_energy_mj": 102.51479804472507,
+          "heating_energy_mj": 51.0,
+          "peak_ion_temperature_kev": 14.704,
+          "improvement_pct": -7.109188127778658
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      },
+      {
+        "id": "exp-603415fbbd",
+        "role": "control",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.35,
+          "heating_width": 0.08,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "40af1c0881930598fc0e61474f9d72a19ff9fec30182102c14aa2065603658df"
+        },
+        "metrics": {
+          "fusion_energy_mj": 98.81848171729376,
+          "heating_energy_mj": 50.99999999999998,
+          "peak_ion_temperature_kev": 14.704,
+          "improvement_pct": -10.458497994651179
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      }
+    ],
+    "canceled": false
+  },
+  "decision": {
+    "ok": true,
+    "action": "experiment",
+    "hypothesis": "Deterministic control heating point (NO MODEL)",
+    "prediction": "Record E_fusion at this predeclared location/width",
+    "heating_location": 0.35,
+    "heating_width": 0.18,
+    "rationale": "grid then seeded-random control; not a model proposal",
+    "error": null
+  }
+}

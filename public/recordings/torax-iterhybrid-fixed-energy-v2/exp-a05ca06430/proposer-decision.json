@@ -1,0 +1,104 @@
+{
+  "model": "cursor-grok-4.6-high-fast",
+  "recorded_at": "2026-09-19T18:06:20Z",
+  "context": {
+    "question": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "objective": "integrated_P_fusion",
+    "objective_units": "MJ",
+    "location_bounds": [
+      0.05,
+      0.8
+    ],
+    "width_bounds": [
+      0.05,
+      0.35
+    ],
+    "frozen_power_mw": 51.0,
+    "frozen_duration_s": 1.0,
+    "baseline_fusion_energy_mj": 110.36053618063139,
+    "completed_experiments": 1,
+    "max_experiments": 9,
+    "remaining": 8,
+    "search_budget": {
+      "used": 1,
+      "max": 6,
+      "remaining": 5
+    },
+    "verification_budget": {
+      "reserved": 3,
+      "used": 0,
+      "remaining": 3,
+      "note": "Verification runs only after the search finalist is frozen."
+    },
+    "proposal_attempts": 0,
+    "max_proposal_attempts": 12,
+    "frozen_finalist_id": null,
+    "hypotheses": [
+      {
+        "id": "hyp-cde98a4578",
+        "title": "Measure the frozen ITER-hybrid heating baseline",
+        "prediction": "E_fusion is finite and heating energy is 51 MJ at 1.0 s.",
+        "status": "inconclusive",
+        "assessment": "Baseline E_fusion=110.36053618063139 MJ at 51 MJ heating. Reference only; not an improvement claim."
+      }
+    ],
+    "experiments": [
+      {
+        "id": "exp-6dd64c3011",
+        "role": "baseline",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.12741589640723575,
+          "heating_width": 0.07280908366127758,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "55591163f18b6184e62ceecf00130765616b54c0a930c71b89b67b9baae65c04"
+        },
+        "metrics": {
+          "fusion_energy_mj": 110.36053618063139,
+          "heating_energy_mj": 51.0,
+          "peak_ion_temperature_kev": 16.655230458088397,
+          "improvement_pct": null
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      }
+    ],
+    "canceled": false
+  },
+  "decision": {
+    "ok": true,
+    "action": "experiment",
+    "hypothesis": "At fixed 51 MJ, more on-axis deposition than the measured baseline raises core-weighted fusion yield.",
+    "prediction": "E_fusion exceeds the measured 110.36053618063139 MJ at location=0.05, width=0.07280908366127758.",
+    "heating_location": 0.05,
+    "heating_width": 0.07280908366127758,
+    "rationale": "The only completed run is the ITER-hybrid baseline: location=0.12741589640723575, width=0.07280908366127758, E_fusion=110.36053618063139 MJ, peak Ti=16.655230458088397 keV, all checks passed. Transport is constant-\u03c7, so heat stays near the deposit; fusion is core-weighted. The first contrast therefore holds width fixed at the measured baseline value and moves location to the on-axis bound 0.05, isolating whether more central heating increases integrated P_fusion.",
+    "error": null
+  }
+}

@@ -97,6 +97,85 @@ class BudgetTests(unittest.TestCase):
         failed = inv.run_baseline()
         self.assertEqual(failed["status"], "failed")
         self.assertEqual(inv.recording["budget"]["completed_experiments"], 1)
+        self.assertEqual(inv.recording["status"], "failed")
+        self.assertIsNone(inv._baseline_mj)
+        self.assertIn(failed["id"], inv.recording["hypotheses"][0]["experiment_ids"])
+        self.assertIn("failed", inv.recording["hypotheses"][0]["assessment"].lower())
+        self.assertNotIn("Measured E_fusion=0", inv.recording["hypotheses"][0]["assessment"])
+
+    def test_invalid_proposals_do_not_consume_experiment_slots(self) -> None:
+        energies = {
+            (round(preset.BASELINE_LOCATION, 5), round(preset.BASELINE_WIDTH, 5)): 100.0e6,
+        }
+        inv = Investigation(
+            budget=RunBudget(max_experiments=4, max_proposal_attempts=3, seed=0),
+            proposer=lambda ctx: Decision(
+                ok=True,
+                action="experiment",
+                hypothesis="out of bounds",
+                prediction="none",
+                heating_location=0.99,
+                heating_width=0.1,
+            ),
+            executor=_executor_factory(energies),
+            run_id="test-reject-bound",
+        )
+        last = inv.run_closed_loop()
+        self.assertEqual(inv.recording["budget"]["completed_experiments"], 1)
+        roles = [exp["role"] for exp in inv.recording["experiments"]]
+        self.assertEqual(roles, ["baseline"])
+        self.assertGreaterEqual(inv._proposal_attempts, 3)
+        self.assertIn(last["status"], {"stopped", "completed"})
+
+    def test_verification_uses_frozen_finalist_not_latest_label(self) -> None:
+        energies = {
+            (round(preset.BASELINE_LOCATION, 5), round(preset.BASELINE_WIDTH, 5)): 100.0e6,
+            (0.05, 0.05): 110.0e6,
+            (0.4, 0.15): 90.0e6,
+        }
+        decisions = iter(
+            [
+                Decision(
+                    ok=True,
+                    action="experiment",
+                    hypothesis="on-axis",
+                    prediction="higher",
+                    heating_location=0.05,
+                    heating_width=0.05,
+                ),
+                Decision(
+                    ok=True,
+                    action="experiment",
+                    hypothesis="off-axis worse",
+                    prediction="lower",
+                    heating_location=0.4,
+                    heating_width=0.15,
+                ),
+                Decision(ok=True, action="stop", hypothesis="stop", prediction="stop", rationale="done"),
+            ]
+        )
+        inv = Investigation(
+            budget=RunBudget(
+                max_experiments=6,
+                search_slots=3,
+                verification_slots=3,
+                seed=0,
+            ),
+            proposer=lambda ctx: next(decisions),
+            executor=_executor_factory(energies),
+            run_id="test-freeze-finalist",
+        )
+        inv.run_closed_loop()
+        self.assertIsNotNone(inv._frozen_finalist)
+        self.assertAlmostEqual(inv._frozen_finalist["config"]["heating_location"], 0.05)
+        labels = [exp["label"] for exp in inv.recording["experiments"] if exp["role"] == "verification"]
+        self.assertEqual(
+            labels,
+            ["baseline_refined", "candidate_refined", "candidate_location_perturbation"],
+        )
+        refined = next(exp for exp in inv.recording["experiments"] if exp["label"] == "candidate_refined")
+        self.assertAlmostEqual(refined["config"]["heating_location"], 0.05)
+        self.assertEqual(refined["config"]["n_rho"], 40)
 
 
 if __name__ == "__main__":

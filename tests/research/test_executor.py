@@ -41,6 +41,7 @@ class ExecutorTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertFalse(result.timed_out)
         self.assertTrue(Path(result.output_nc).exists())
+        self.assertEqual(len(result.config_hash or ""), 64)
 
     def test_timeout_marks_failure(self) -> None:
         cfg = HeatingConfig(heating_location=0.2, heating_width=0.1)

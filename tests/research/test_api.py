@@ -30,6 +30,7 @@ class ApiTests(unittest.TestCase):
         )
         api._RUNS.clear()
         api._WORKER = None
+        api._WORKER_RESERVED = False
 
     def tearDown(self) -> None:
         worker = api._WORKER
@@ -38,6 +39,7 @@ class ApiTests(unittest.TestCase):
         api._FACTORY.clear()
         api._RUNS.clear()
         api._WORKER = None
+        api._WORKER_RESERVED = False
 
     def test_health(self) -> None:
         body = api.health()
@@ -73,6 +75,53 @@ class ApiTests(unittest.TestCase):
         self.assertIsInstance(events, list)
         canceled = api.cancel_run(run_id)
         self.assertEqual(canceled["status"], "cancel_requested")
+
+    def test_invalid_run_id_rejected_before_disk(self) -> None:
+        with self.assertRaises(HTTPException) as ctx:
+            api.get_run("../etc/passwd")
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_second_create_is_409_without_orphan(self) -> None:
+        import threading
+        import time
+
+        from services.research.executor import ExecutionBudget, ExecutionResult
+        from services.research.validation import HeatingConfig
+
+        release = threading.Event()
+
+        def blocking_executor(
+            config: HeatingConfig, budget: ExecutionBudget, experiment_id: str
+        ) -> ExecutionResult:
+            release.wait(timeout=5)
+            return ExecutionResult(
+                experiment_id=experiment_id,
+                ok=False,
+                wall_time_s=0.01,
+                output_nc=None,
+                error="blocked",
+                timed_out=False,
+                config=config,
+                n_rho=budget.n_rho,
+                chi_timestep_prefactor=budget.chi_timestep_prefactor,
+            )
+
+        api._FACTORY["executor"] = blocking_executor
+        first = api.create_run(
+            CreateRun(question=preset.QUESTION, preset="fixed-energy", max_experiments=3, seed=0)
+        )
+        time.sleep(0.05)
+        with self.assertRaises(HTTPException) as ctx:
+            api.create_run(
+                CreateRun(question=preset.QUESTION, preset="fixed-energy", max_experiments=3, seed=1)
+            )
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertEqual(len(api._RUNS), 1)
+        self.assertIn(first["id"], api._RUNS)
+        release.set()
+        worker = api._WORKER
+        if worker is not None:
+            worker.join(timeout=10)
 
 
 if __name__ == "__main__":

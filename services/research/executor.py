@@ -7,6 +7,7 @@ for killable budgets and tests.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import threading
@@ -49,6 +50,8 @@ class ExecutionResult:
     config: HeatingConfig
     n_rho: int
     chi_timestep_prefactor: float
+    max_dt_s: float = preset.MAX_DT_S
+    config_hash: str | None = None
     sim_error: Any = None
     sim_status: str | None = None
 
@@ -63,6 +66,10 @@ class ExecutionResult:
             "config": self.config.as_contract_dict(),
             "n_rho": self.n_rho,
             "chi_timestep_prefactor": self.chi_timestep_prefactor,
+            "max_dt_s": self.max_dt_s,
+            "config_hash": self.config_hash,
+            "transport": "constant",
+            "preset": "fixed-energy",
             "sim_error": self.sim_error,
             "sim_status": self.sim_status,
         }
@@ -77,6 +84,11 @@ def _torax_dict(config: HeatingConfig, budget: ExecutionBudget) -> dict[str, Any
         chi_timestep_prefactor=budget.chi_timestep_prefactor,
         max_dt_s=budget.max_dt_s,
     )
+
+
+def solver_config_hash(config: HeatingConfig, budget: ExecutionBudget) -> str:
+    blob = json.dumps(_torax_dict(config, budget), sort_keys=True, default=str)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
 def _simulate(config: HeatingConfig, budget: ExecutionBudget, dest: Path) -> dict[str, Any]:
@@ -173,6 +185,7 @@ def execute(
     budget = budget or ExecutionBudget()
     experiment_id = experiment_id or uuid.uuid4().hex[:12]
     dest = EXPERIMENT_DIR / experiment_id
+    config_hash = solver_config_hash(config, budget)
     acquired = _LOCK.acquire(timeout=budget.timeout_s)
     if not acquired:
         return ExecutionResult(
@@ -185,6 +198,8 @@ def execute(
             config=config,
             n_rho=budget.n_rho,
             chi_timestep_prefactor=budget.chi_timestep_prefactor,
+            max_dt_s=budget.max_dt_s,
+            config_hash=config_hash,
         )
     wall0 = time.perf_counter()
     timed_out = False
@@ -216,6 +231,8 @@ def execute(
             config=config,
             n_rho=budget.n_rho,
             chi_timestep_prefactor=budget.chi_timestep_prefactor,
+            max_dt_s=budget.max_dt_s,
+            config_hash=config_hash,
             sim_error=raw.get("sim_error"),
             sim_status=raw.get("sim_status"),
         )
@@ -233,6 +250,8 @@ def execute(
             config=config,
             n_rho=budget.n_rho,
             chi_timestep_prefactor=budget.chi_timestep_prefactor,
+            max_dt_s=budget.max_dt_s,
+            config_hash=config_hash,
         )
         dest.mkdir(parents=True, exist_ok=True)
         (dest / "meta.json").write_text(json.dumps(result.as_dict(), indent=2, default=str) + "\n")

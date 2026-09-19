@@ -1,5 +1,21 @@
 [
   {
+    "id": "torax-iterhybrid-fixed-energy-control-9",
+    "title": "Deterministic equal-budget control (NO MODEL)",
+    "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "path": "/recordings/torax-iterhybrid-fixed-energy-control-9.json",
+    "mode": "recorded",
+    "created_at": "2026-09-19T18:09:35Z"
+  },
+  {
+    "id": "torax-iterhybrid-fixed-energy-v2",
+    "title": "Fixed-energy heating-profile investigation (v2, reserved verification)",
+    "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "path": "/recordings/torax-iterhybrid-fixed-energy-v2.json",
+    "mode": "recorded",
+    "created_at": "2026-09-19T18:04:58Z"
+  },
+  {
     "id": "torax-iterhybrid-fixed-energy-v1",
     "title": "Fixed-energy heating-profile investigation",
     "description": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",

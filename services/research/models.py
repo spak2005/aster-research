@@ -48,6 +48,10 @@ class Decision:
             "error": self.error,
         }
 
+    def as_public_dict(self) -> dict[str, Any]:
+        """Decision summary suitable for recorded artifacts. No raw logs."""
+        return self.as_dict()
+
 
 def _extract_json_object(text: str) -> dict[str, Any] | None:
     stripped = text.strip()
@@ -167,12 +171,18 @@ def _decision_from_mapping(
     )
 
 
+def recorded_model_name() -> str:
+    """Return the model id actually used, including RESEARCH_MODEL overrides."""
+    return RESEARCH_MODEL
+
+
 def build_prompt(context: dict[str, Any]) -> str:
+    search = context.get("search_budget") or {}
     return (
         "You are the scientific proposer for a bounded TORAX heating-profile "
         "search. You do not run tools. You do not edit files. Reply with ONE "
         "JSON object and nothing else, using this shape:\n"
-        '{"action":"experiment"|"verify"|"revise"|"stop",'
+        '{"action":"experiment"|"revise"|"stop",'
         '"hypothesis":"short",'
         '"prediction":"short measurable prediction",'
         '"heating_location":number|null,'
@@ -186,8 +196,11 @@ def build_prompt(context: dict[str, Any]) -> str:
         "- Power 51 MW and duration 1.0 s are frozen.\n"
         "- Objective is integrated P_fusion as E_fusion/1e6 megajoules.\n"
         "- action=experiment requires location and width.\n"
-        "- action=verify if a candidate looks better and needs a refined grid.\n"
-        "- action=stop if budget is gone or further search is not justified.\n"
+        f"- SEARCH budget: {search.get('remaining')} remaining of "
+        f"{search.get('max')} search slots "
+        f"({search.get('used')} used). Verification slots are reserved and "
+        "will run only after the finalist is frozen; do not request them.\n"
+        "- action=stop if search budget is gone or further search is not justified.\n"
         "- Do not claim discovery. Do not invent metrics.\n\n"
         f"CONTEXT:\n{json.dumps(context, indent=2, default=str)}\n"
     )

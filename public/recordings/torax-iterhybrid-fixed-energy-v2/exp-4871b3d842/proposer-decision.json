@@ -1,0 +1,156 @@
+{
+  "model": "cursor-grok-4.6-high-fast",
+  "recorded_at": "2026-09-19T18:07:07Z",
+  "context": {
+    "question": "At fixed total heating energy, can the system find a heating profile that improves integrated simulated fusion energy, and does that improvement survive stricter checks?",
+    "objective": "integrated_P_fusion",
+    "objective_units": "MJ",
+    "location_bounds": [
+      0.05,
+      0.8
+    ],
+    "width_bounds": [
+      0.05,
+      0.35
+    ],
+    "frozen_power_mw": 51.0,
+    "frozen_duration_s": 1.0,
+    "baseline_fusion_energy_mj": 110.36053618063139,
+    "completed_experiments": 2,
+    "max_experiments": 9,
+    "remaining": 7,
+    "search_budget": {
+      "used": 2,
+      "max": 6,
+      "remaining": 4
+    },
+    "verification_budget": {
+      "reserved": 3,
+      "used": 0,
+      "remaining": 3,
+      "note": "Verification runs only after the search finalist is frozen."
+    },
+    "proposal_attempts": 1,
+    "max_proposal_attempts": 12,
+    "frozen_finalist_id": null,
+    "hypotheses": [
+      {
+        "id": "hyp-cde98a4578",
+        "title": "Measure the frozen ITER-hybrid heating baseline",
+        "prediction": "E_fusion is finite and heating energy is 51 MJ at 1.0 s.",
+        "status": "inconclusive",
+        "assessment": "Baseline E_fusion=110.36053618063139 MJ at 51 MJ heating. Reference only; not an improvement claim."
+      },
+      {
+        "id": "hyp-2960a45dee",
+        "title": "At fixed 51 MJ, more on-axis deposition than the measured baseline raises core-weighted fusion yield.",
+        "prediction": "E_fusion exceeds the measured 110.36053618063139 MJ at location=0.05, width=0.07280908366127758.",
+        "status": "inconclusive",
+        "assessment": "Measured E_fusion=112.14294243200452 MJ (\u0394 vs baseline 1.782406251373132 MJ). Prediction: E_fusion exceeds the measured 110.36053618063139 MJ at location=0.05, width=0.07280908366127758."
+      }
+    ],
+    "experiments": [
+      {
+        "id": "exp-6dd64c3011",
+        "role": "baseline",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.12741589640723575,
+          "heating_width": 0.07280908366127758,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "55591163f18b6184e62ceecf00130765616b54c0a930c71b89b67b9baae65c04"
+        },
+        "metrics": {
+          "fusion_energy_mj": 110.36053618063139,
+          "heating_energy_mj": 51.0,
+          "peak_ion_temperature_kev": 16.655230458088397,
+          "improvement_pct": null
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      },
+      {
+        "id": "exp-a05ca06430",
+        "role": "candidate",
+        "status": "completed",
+        "config": {
+          "heating_location": 0.05,
+          "heating_width": 0.07280908366127758,
+          "heating_power_mw": 51.0,
+          "duration_s": 1.0,
+          "n_rho": 25,
+          "chi_timestep_prefactor": 50.0,
+          "max_dt_s": 0.2,
+          "transport": "constant",
+          "preset": "fixed-energy",
+          "config_hash": "0de9725739849fd89524c641856006f85bac88a0c98ebe70c9d877ee533da8cb"
+        },
+        "metrics": {
+          "fusion_energy_mj": 112.14294243200452,
+          "heating_energy_mj": 51.00000000000001,
+          "peak_ion_temperature_kev": 18.946693712039323,
+          "improvement_pct": 1.615075744517767
+        },
+        "checks": [
+          {
+            "name": "finite_outputs",
+            "status": "passed",
+            "detail": "all extracted arrays finite"
+          },
+          {
+            "name": "horizon",
+            "status": "passed",
+            "detail": "t_final=1.0s expected 1.0s"
+          },
+          {
+            "name": "fixed_energy",
+            "status": "passed",
+            "detail": "E_aux_total=51.000000 MJ expected 51.000000 MJ"
+          },
+          {
+            "name": "solver_success",
+            "status": "passed",
+            "detail": "completed"
+          }
+        ]
+      }
+    ],
+    "canceled": false
+  },
+  "decision": {
+    "ok": true,
+    "action": "experiment",
+    "hypothesis": "At the measured better on-axis location, a narrower Gaussian further raises core-weighted fusion yield.",
+    "prediction": "E_fusion exceeds the measured 112.14294243200452 MJ at location=0.05, width=0.05.",
+    "heating_location": 0.05,
+    "heating_width": 0.05,
+    "rationale": "Same width, location 0.127\u21920.05 raised E_fusion from 110.361 to 112.143 MJ and peak Ti from 16.655 to 18.947 keV. Width is still unvaried; narrowing it at that better location tests whether more peaked on-axis deposition increases integrated fusion further.",
+    "error": null
+  }
+}
