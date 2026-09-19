@@ -6,6 +6,14 @@ import type {
   Verdict,
 } from '../../../../contracts/recording';
 
+export {
+  REPLAY_SPEEDS,
+  useReplayPlayback,
+  type ReplayPlaybackController,
+  type ReplayPlaybackOptions,
+  type ReplaySpeed,
+} from './useReplayPlayback';
+
 export type ReplayRunStatus = 'pending' | Recording['status'];
 export type VisibleExperimentStatus =
   | 'requested'
