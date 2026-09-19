@@ -14,6 +14,7 @@ export interface SceneViewport {
   width: number;
   height: number;
   compact: boolean;
+  degraded: boolean;
   quality: SceneQuality;
 }
 
@@ -58,5 +59,17 @@ export function resolveSceneQuality(
     fieldLineCount: 8,
     shadows: true,
     animate: !reducedMotion,
+  };
+}
+
+export function downgradeSceneQuality(quality: SceneQuality): SceneQuality {
+  return {
+    level: 'compact',
+    dpr: [1, Math.min(quality.dpr[1], 1.25)],
+    radialSegments: Math.min(quality.radialSegments, 18),
+    tubularSegments: Math.min(quality.tubularSegments, 72),
+    fieldLineCount: Math.min(quality.fieldLineCount, 4),
+    shadows: false,
+    animate: quality.animate,
   };
 }

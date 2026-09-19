@@ -1,18 +1,25 @@
+import { PerformanceMonitor } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { createContext, type PropsWithChildren, useContext } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { resolveSceneQuality, type SceneViewport } from './quality';
+import {
+  downgradeSceneQuality,
+  resolveSceneQuality,
+  type SceneViewport,
+} from './quality';
 
 interface SceneCanvasProps extends PropsWithChildren {
   className?: string;
   reducedMotion: boolean;
   onViewportChange?: (viewport: SceneViewport) => void;
+  onContextLost?: () => void;
 }
 
 const INITIAL_VIEWPORT = { width: 960, height: 640 };
 const SceneViewportContext = createContext<SceneViewport>({
   ...INITIAL_VIEWPORT,
   compact: false,
+  degraded: false,
   quality: resolveSceneQuality(960, 640, 1, false),
 });
 
@@ -25,9 +32,11 @@ export function SceneCanvas({
   className,
   reducedMotion,
   onViewportChange,
+  onContextLost,
 }: SceneCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(INITIAL_VIEWPORT);
+  const [performanceDegraded, setPerformanceDegraded] = useState(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -50,18 +59,22 @@ export function SceneCanvas({
   const viewport = useMemo<SceneViewport>(() => {
     const devicePixelRatio =
       typeof window === 'undefined' ? 1 : window.devicePixelRatio;
-    const quality = resolveSceneQuality(
+    const preferredQuality = resolveSceneQuality(
       size.width,
       size.height,
       devicePixelRatio,
       reducedMotion,
     );
+    const quality = performanceDegraded
+      ? downgradeSceneQuality(preferredQuality)
+      : preferredQuality;
     return {
       ...size,
-      compact: quality.level === 'compact',
+      compact: size.width < 720 || size.height < 440,
+      degraded: performanceDegraded,
       quality,
     };
-  }, [reducedMotion, size]);
+  }, [performanceDegraded, reducedMotion, size]);
 
   useEffect(() => {
     onViewportChange?.(viewport);
@@ -72,6 +85,7 @@ export function SceneCanvas({
       ref={containerRef}
       className={className}
       data-scene-quality={viewport.quality.level}
+      data-scene-degraded={viewport.degraded || undefined}
       style={{
         position: 'relative',
         width: '100%',
@@ -92,8 +106,21 @@ export function SceneCanvas({
         }}
         shadows={viewport.quality.shadows}
         style={{ position: 'absolute', inset: 0 }}
+        onCreated={({ gl }) => {
+          gl.domElement.addEventListener(
+            'webglcontextlost',
+            (event) => {
+              event.preventDefault();
+              onContextLost?.();
+            },
+            { once: true },
+          );
+        }}
       >
         <color attach="background" args={['#03080a']} />
+        <PerformanceMonitor
+          onDecline={() => setPerformanceDegraded(true)}
+        />
         <SceneViewportContext.Provider value={viewport}>
           {children}
         </SceneViewportContext.Provider>

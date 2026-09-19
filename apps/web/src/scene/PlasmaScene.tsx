@@ -10,6 +10,7 @@ import {
 } from './profileFrames';
 import { TemperatureLegend } from './TemperatureLegend';
 import { TokamakStage } from './TokamakStage';
+import { hasWebGLSupport, WebGLFallback } from './WebGLFallback';
 
 export default function PlasmaScene({
   experiment,
@@ -21,6 +22,7 @@ export default function PlasmaScene({
   reducedMotion = false,
   className,
 }: PlasmaSceneProps) {
+  const [webGLAvailable, setWebGLAvailable] = useState(hasWebGLSupport);
   const [cameraResetRevision, setCameraResetRevision] = useState(0);
   const [compact, setCompact] = useState(false);
   const [compactSelection, setCompactSelection] = useState<
@@ -30,6 +32,7 @@ export default function PlasmaScene({
     (viewport: { compact: boolean }) => setCompact(viewport.compact),
     [],
   );
+  const handleContextLost = useCallback(() => setWebGLAvailable(false), []);
   const profile = loadProfileFrame(experiment, frameIndex);
   const heating = getHeatingEnvelope(experiment);
   const comparisonEnabled = Boolean(compare && experiment && baseline);
@@ -50,6 +53,21 @@ export default function PlasmaScene({
       ? `${displayedExperiment.label}, frame ${displayedProfile.value.index + 1} of ${displayedProfile.value.count}`
       : displayedExperiment?.label ?? 'No experiment selected';
 
+  if (!webGLAvailable) {
+    return (
+      <WebGLFallback
+        experiment={experiment}
+        baseline={baseline}
+        frameIndex={frameIndex}
+        temperatureScale={temperatureScale}
+        geometry={geometry}
+        compare={compare}
+        reducedMotion={reducedMotion}
+        className={className}
+      />
+    );
+  }
+
   return (
     <section
       aria-label={`Schematic plasma visualization: ${label}`}
@@ -68,6 +86,7 @@ export default function PlasmaScene({
         className={className}
         reducedMotion={reducedMotion}
         onViewportChange={handleViewportChange}
+        onContextLost={handleContextLost}
       >
         <Suspense fallback={null}>
           {showSplitComparison ? (
