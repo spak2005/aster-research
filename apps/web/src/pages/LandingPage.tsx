@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Hero from '../components/landing/Hero';
+import Showcase from '../components/landing/Showcase';
 import '../styles/landing.css';
 
 interface LandingPageProps {
@@ -18,6 +19,7 @@ export default function LandingPage({ section }: LandingPageProps) {
   return (
     <>
       <Hero />
+      <Showcase />
     </>
   );
 }
